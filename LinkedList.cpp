@@ -2,6 +2,7 @@
 #include "LinkedList.h"
 
 #include <exception>
+#include <iostream>
 
 LinkedList::LinkedList() : head(nullptr), tail(nullptr), length(0) {}
 
@@ -93,9 +94,9 @@ void LinkedList::remove(unsigned int index) {
     delete toBeDeleted;
 }
 
-Tile* LinkedList::operator[](unsigned int index) {
+Tile* LinkedList::at(unsigned int index) {
     if (index >= length)
-        throw std::out_of_range("invalid index for LinkedList::operator[]");
+        throw std::out_of_range("invalid index for LinkedList::at");
 
     Node* toReturn = head;
     for (unsigned int i = 0; i < index; ++i)

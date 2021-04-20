@@ -16,6 +16,7 @@ int main(void) {
     Tile* tile5 = new Tile('B', 5);
     Tile* tile6 = new Tile('P', 6);
 
+    // simple tests of LinkedList methods
     list->addFront(tile1);
     list->addBack(tile2);
     list->addFront(tile3);
@@ -35,6 +36,7 @@ int main(void) {
     list->removeFront();
     list->removeBack();
 
+    std::cout << *list->at(1) << std::endl;
     std::cout << *list << std::endl;
     delete list;
 
