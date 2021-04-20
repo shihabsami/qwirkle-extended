@@ -6,12 +6,14 @@
 
 class Node {
 public:
+    Node(Tile* tile, Node* next, Node* previous);
+    Node(const Node& other);
+    ~Node();
+    friend bool operator==(const Node& node1, const Node& node2);
 
-   Node(Tile* tile, Node* next);
-   Node(Node& other);
-
-   Tile*    tile;
-   Node*    next;
+    Tile* tile;
+    Node* next;
+    Node* previous;
 };
 
 #endif // ASSIGN2_NODE_H
