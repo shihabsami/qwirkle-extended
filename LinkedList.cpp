@@ -94,6 +94,8 @@ void LinkedList::remove(unsigned int index) {
     delete toBeDeleted;
 }
 
+unsigned int LinkedList::size() { return length; }
+
 Tile* LinkedList::at(unsigned int index) {
     if (index >= length)
         throw std::out_of_range("invalid index for LinkedList::at");
