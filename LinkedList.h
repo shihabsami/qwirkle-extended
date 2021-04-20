@@ -18,7 +18,7 @@ public:
     void remove(Node* node);
     void remove(unsigned int index);
     unsigned int size();
-    Tile* LinkedList::at(unsigned int index);
+    Tile* at(unsigned int index);
     Tile* operator[](unsigned int index);
     friend std::ostream& operator<<(std::ostream& os, const LinkedList& list);
 
