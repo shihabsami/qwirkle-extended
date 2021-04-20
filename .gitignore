@@ -5,8 +5,9 @@
 # workspace file
 *.code-workspace
 
-# debug symbols
+# debug symbols and object files
 *.dSYM
+*.o
 
 # code history
 .history/
