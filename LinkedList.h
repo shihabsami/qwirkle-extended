@@ -14,12 +14,11 @@ public:
     void addBack(Tile* tile);
     void removeFront();
     void removeBack();
-    void insert(Node* node, unsigned int index);
-    void remove(Node* node);
+    void insert(Tile* tile, unsigned int index, bool replace);
+    void remove(Tile* tile);
     void remove(unsigned int index);
     unsigned int size();
     Tile* at(unsigned int index);
-    Tile* operator[](unsigned int index);
     friend std::ostream& operator<<(std::ostream& os, const LinkedList& list);
 
 private:
