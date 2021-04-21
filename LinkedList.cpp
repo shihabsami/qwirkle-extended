@@ -73,27 +73,49 @@ void LinkedList::insert(Tile* tile, unsigned int index, bool replace) {
 
     // TODO if tile exists more than twice, don't add
     Node* toBeInserted = new Node(tile, nullptr, nullptr);
+
     Node* current = head;
     for (unsigned int i = 0; i < index; ++i)
         current = current->next;
 
-    // update previous node's next reference to point to the new node
-    current->previous->next = toBeInserted;
-
     if (replace) {
         /*
         when replacing, update new node's references to point to current node's
-        next and previous nodes, also update the next node's previous reference
-        to point to the new node
+        next and previous nodes, also update the next and previous nodes'
+        references to point to the new node
         */
         toBeInserted->next = current->next;
         toBeInserted->previous = current->previous;
-        current->next->previous = toBeInserted;
+
+        // if replacing head or tail, update references of head and tail
+        if (index == 0) {
+            current->next->previous = toBeInserted;
+            head = toBeInserted;
+        } else if (index == length - 1) {
+            current->previous->next = toBeInserted;
+            tail = toBeInserted;
+        } else {
+            current->next->previous = toBeInserted;
+            current->previous->next = toBeInserted;
+        }
+
         delete current;
     } else {
-        toBeInserted->next = current;
-        toBeInserted->previous = current->previous;
-        current->previous = toBeInserted;
+        if (index == 0) {
+            toBeInserted->next = current;
+            current->previous = toBeInserted;
+            head = toBeInserted;
+        } else if (index == length - 1) {
+            toBeInserted->previous = current;
+            current->next = toBeInserted;
+            tail = toBeInserted;
+        } else {
+            toBeInserted->next = current;
+            toBeInserted->previous = current->previous;
+            current->previous->next = toBeInserted;
+            current->previous = toBeInserted;
+        }
+
         ++length;
     }
 }
