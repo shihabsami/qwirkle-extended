@@ -67,20 +67,40 @@ void LinkedList::removeBack() {
     --length;
 }
 
-void LinkedList::insert(Node* node, unsigned int index) {
+void LinkedList::insert(Tile* tile, unsigned int index, bool replace) {
     if (index >= length)
         throw std::out_of_range("invalid index for LinkedList::insert");
 
+    // TODO if tile exists more than twice, don't add
+    Node* toBeInserted = new Node(tile, nullptr, nullptr);
     Node* current = head;
     for (unsigned int i = 0; i < index; ++i)
         current = current->next;
 
-    current->previous->next = node;
-    current->previous = node;
+    // update previous node's next reference to point to the new node
+    current->previous->next = toBeInserted;
+
+    if (replace) {
+        /*
+        when replacing, update new node's references to point to current node's
+        next and previous nodes, also update the next node's previous reference
+        to point to the new node
+        */
+        toBeInserted->next = current->next;
+        toBeInserted->previous = current->previous;
+        current->next->previous = toBeInserted;
+        delete current;
+    } else {
+        toBeInserted->next = current;
+        toBeInserted->previous = current->previous;
+        current->previous = toBeInserted;
+        ++length;
+    }
 }
 
-void LinkedList::remove(Node* node) {
+void LinkedList::remove(Tile* tile) {
     // TODO discuss whether this removes original Node* or Node with same value
+    // TODO decide later when this method is actually used
 }
 
 void LinkedList::remove(unsigned int index) {
