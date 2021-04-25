@@ -1,7 +1,7 @@
 #include <cctype>
-#include <exception>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 
@@ -15,6 +15,7 @@ void newGame();
 bool StringCheck(std::string name);
 void credits();
 void loadGame();
+void prompt();
 int quit();
 
 int main(int argc, char** argv) {
@@ -37,26 +38,38 @@ void menu() {
 void selection() {
 
     menu();
-    int option = 0;
-    cout << " " << endl;
-    cin >> option;
-    try {
-        if (option == 1) {
-            newGame();
-        } else if (option == 2) {
-            loadGame();
-        } else if (option == 3) {
-            credits();
-        } else if (option == 4) {
-            quit();
-        } else {
-            cout << " " << endl;
-            throw std::runtime_error("You can only enter numbers 1 - 4");
+
+    bool flag = true;
+    while (!std::cin.eof() && flag) {
+        int option = 0;
+        cout << " " << endl;
+        prompt();
+        cin >> option;
+        try {
+            if (option == 1) {
+                newGame();
+                flag = false;
+            } else if (option == 2) {
+                loadGame();
+                flag = false;
+            } else if (option == 3) {
+                credits();
+                flag = false;
+            } else if (option == 4 && !cin.eof()) {
+                quit();
+                flag = false;
+            } else if (cin.eof()) {
+                quit();
+            } else {
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                cout << " " << endl;
+                throw std::runtime_error("Invalid Input");
+            }
+        } catch (const std::runtime_error& e) {
+            std::cerr << e.what() << endl;
+            cout << endl;
         }
-    } catch (const std::runtime_error& e) {
-        std::cerr << e.what() << " Please Try Again!" << std::endl;
-        cout << endl;
-        quit();
     }
 }
 
@@ -72,6 +85,7 @@ void newGame() {
         try {
             cout << "Enter a name for player 1 (uppercase characters only)"
                  << endl;
+            prompt();
             cin >> player1Name;
             if (StringCheck(player1Name)) {
                 cout << endl;
@@ -81,6 +95,7 @@ void newGame() {
             }
             cout << "Enter a name for player 2 (uppercase characters only)"
                  << endl;
+            prompt();
             cin >> player2Name;
             if (StringCheck(player2Name)) {
                 cout << endl;
@@ -109,6 +124,7 @@ void newGame() {
 void loadGame() {
     std::string filename;
     cout << "Enter the filename from which load a game" << endl;
+    prompt();
     cin >> filename;
     std::ifstream file(filename);
 
@@ -233,6 +249,8 @@ bool StringCheck(std::string name) {
     }
     return state;
 }
+
+void prompt() { cout << "> "; }
 
 int quit() {
     cout << "Goodbye" << endl;
