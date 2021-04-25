@@ -1,7 +1,5 @@
-#include <cstring>
 #include <exception>
 #include <iostream>
-#include <locale>
 #include <string>
 
 using std::cin;
@@ -12,6 +10,7 @@ void menu();
 void selection();
 void newGame();
 bool StringCheck(std::string name);
+void credits();
 
 int main(int argc, char** argv) {
 
@@ -42,7 +41,7 @@ void selection() {
         } else if (option == 2) {
             // loadGame();
         } else if (option == 3) {
-            // credits();
+            credits();
         } else if (option == 4) {
             // std::exit;
         } else {
@@ -101,7 +100,31 @@ void newGame() {
 }
 // void loadGame() {}
 
-// void credits() {}
+void credits() {
+    cout << "----------------------------------" << endl;
+    cout << "Name : Shihab Sami" << endl;
+    cout << "Student ID : S3823710" << endl;
+    cout << "Email : S3823710@student.rmit.edu.au" << endl;
+
+    cout << endl;
+
+    cout << "Name : Harrison Lorraway" << endl;
+    cout << "Student ID : S3856166" << endl;
+    cout << "Email : S3856166@student.rmit.edu.au" << endl;
+
+    cout << endl;
+
+    cout << "Name : Yeu Haw Teh" << endl;
+    cout << "Student ID : S3813866" << endl;
+    cout << "Email : S3813866@student.rmit.edu.au" << endl;
+
+    cout << endl;
+
+    cout << "Name : Andrew Nhan Trong Tran" << endl;
+    cout << "Student ID : S3785952" << endl;
+    cout << "Email : S3785952@student.rmit.edu.au" << endl;
+    cout << "----------------------------------" << endl;
+}
 bool StringCheck(std::string name) {
 
     bool state = false;
