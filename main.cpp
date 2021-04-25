@@ -104,6 +104,8 @@ void newGame() {
     cout << "Let's Play!" << endl;
     selection();
 }
+
+// to load game copy path of t1.save
 void loadGame() {
     std::string filename;
     cout << "Enter the filename from which load a game" << endl;
@@ -156,6 +158,7 @@ void loadGame() {
                 while (ss.good()) {
                     std::string substr;
                     getline(ss, substr, ',');
+
                     int number = std::stoi(substr);
                     if (!(number >= 0) || (number > 26)) {
                         throw std::invalid_argument(
