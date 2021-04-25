@@ -72,7 +72,8 @@ void newGame() {
             if (StringCheck(player1Name)) {
                 cout << endl;
                 throw std::invalid_argument(
-                    "Must enter a name in CAPS for player 1");
+                    "Must enter a name in CAPS for Player 1 and name must not "
+                    "contain numbers or symbols");
             }
             cout << "Enter a name for player 2 (uppercase characters only)"
                  << endl;
@@ -80,8 +81,16 @@ void newGame() {
             if (StringCheck(player2Name)) {
                 cout << endl;
                 throw std::invalid_argument(
-                    "Must enter a name in CAPS for player 2");
+                    "Must enter a name in CAPS for Player 2 and name must not "
+                    "contain numbers or symbols");
             }
+            int compare = player1Name.compare(player2Name);
+
+            if (compare == 0) {
+                throw std::invalid_argument(
+                    "Player Names should not be the same");
+            }
+
             condition = false;
         } catch (const std::invalid_argument& e) {
             std::cerr << e.what() << endl;
