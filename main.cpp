@@ -1,5 +1,8 @@
+#include <cstring>
 #include <exception>
 #include <iostream>
+#include <locale>
+#include <string>
 
 using std::cin;
 using std::cout;
@@ -7,6 +10,8 @@ using std::endl;
 
 void menu();
 void selection();
+void newGame();
+bool StringCheck(std::string name);
 
 int main(int argc, char** argv) {
 
@@ -57,18 +62,49 @@ void newGame() {
 
     cout << "Starting a New Game" << endl;
     cout << endl;
+    bool condition = true;
 
-    try {
-        cout << "Enter a name for player 1 (uppercase characters only)" << endl;
-        cin >> player1Name;
-
-        cout << "Enter a name for player 2 (uppercase characters only)" << endl;
-        cin >> player2Name;
-    } catch (const) {
+    while (condition) {
+        try {
+            cout << "Enter a name for player 1 (uppercase characters only)"
+                 << endl;
+            cin >> player1Name;
+            if (StringCheck(player1Name)) {
+                cout << endl;
+                throw std::invalid_argument(
+                    "Must enter a name in CAPS for player 1");
+            }
+            cout << "Enter a name for player 2 (uppercase characters only)"
+                 << endl;
+            cin >> player2Name;
+            if (StringCheck(player2Name)) {
+                cout << endl;
+                throw std::invalid_argument(
+                    "Must enter a name in CAPS for player 2");
+            }
+            condition = false;
+        } catch (const std::invalid_argument& e) {
+            std::cerr << e.what() << endl;
+            cout << endl;
+        }
     }
-
     cout << "Let's Play!" << endl;
 }
 // void loadGame() {}
 
 // void credits() {}
+bool StringCheck(std::string name) {
+
+    bool state = false;
+    int counter = 0;
+    for (std::size_t i = 0; i < name.length(); i++) {
+        char c = name[i];
+        if (isupper(c) < 1) {
+            counter++;
+        }
+        if (counter >= 1) {
+            state = true;
+        }
+    }
+    return state;
+}
