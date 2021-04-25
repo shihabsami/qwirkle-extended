@@ -1,8 +1,11 @@
 #include "TileBag.h"
-#include "LinkedList.h"
+
 #include "Tile.h"
 #include "TileCodes.h"
+#include "Constants.h"
+
 #include <iostream>
+#include <random>
 
 TileBag::TileBag() : list(new LinkedList()) {
     Colour colours[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
@@ -24,23 +27,32 @@ void TileBag::shuffle() {
     for (unsigned int i = 0; i < list->size(); ++i) {
         int randomIndex = distribution(engine);
         Tile* toBeReplaced = list->at(i);
-        Tile* randomTile = list->at(randomIndex);
+        Tile* randomTile = new Tile(*list->at(randomIndex));
         Tile* temp = new Tile(*toBeReplaced);
 
-        std::cout << "toBeReplaced " << *toBeReplaced << ", randomTile "
-                  << *randomTile << ", temp " << *temp << std::endl;
-
         list->insert(randomTile, i, true);
-        std::cout << "toBeReplaced " << *toBeReplaced << ", randomTile "
-                  << *randomTile << ", temp " << *temp << std::endl;
-
         list->insert(temp, randomIndex, true);
     }
 }
 
+LinkedList* TileBag::getHand() {
+    LinkedList* hand = new LinkedList();
+
+    // TODO assumes bag has 6 tiles
+    // TODO ordered list?
+    for (int i = 0; i < HAND_SIZE; ++i) {
+        hand->addBack(list->at(list->size() - 1));
+        list->removeBack();
+    }
+}
+
 Tile* TileBag::replace(Tile* tile) {
+    // TODO although game logic does not allow same tile more than twice
+    // should check if tile exists more than twice?
+
     std::random_device engine;
     std::uniform_int_distribution<int> distribution(0, (int)list->size() - 1);
+
     int randomIndex = distribution(engine);
     Tile* temp = list->at(randomIndex);
     *list->at(randomIndex) = *tile;
@@ -48,6 +60,6 @@ Tile* TileBag::replace(Tile* tile) {
 }
 
 std::ostream& operator<<(std::ostream& os, const TileBag& bag) {
-    os << *(bag.list);
+    os << *bag.list;
     return os;
 }

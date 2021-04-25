@@ -17,7 +17,6 @@ void testTileBag();
 int main(void) {
     // testLinkedList();
     testTileBag();
-
     return EXIT_SUCCESS;
 }
 
@@ -48,12 +47,13 @@ void testLinkedList() {
     cout << "size() - " << list->size() << endl;
     cout << "at(1) - " << *list->at(1) << endl;
     cout << "at(size() - 1) - " << *list->at(list->size() - 1) << endl;
+    cout << *list << endl;
 
     Tile* tile7 = new Tile(RED, STAR_4);
     Tile* tile8 = new Tile(ORANGE, DIAMOND);
 
     cout << "inserting item at index..." << endl;
-    list->insert(tile7, 2, false);
+    list->insert(tile7, 0, false);
     cout << *list << endl;
 
     cout << "inserting and replacing item at index..." << endl;
@@ -73,5 +73,10 @@ void testLinkedList() {
 
 void testTileBag() {
     TileBag* bag = new TileBag();
+    cout << *bag << endl;
+
     bag->shuffle();
+    cout << *bag << endl;
+
+    delete bag;
 }
