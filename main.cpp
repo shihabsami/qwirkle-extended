@@ -1,5 +1,8 @@
+#include <cctype>
 #include <exception>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 using std::cin;
@@ -11,6 +14,7 @@ void selection();
 void newGame();
 bool StringCheck(std::string name);
 void credits();
+void loadGame();
 int quit();
 
 int main(int argc, char** argv) {
@@ -40,7 +44,7 @@ void selection() {
         if (option == 1) {
             newGame();
         } else if (option == 2) {
-            // loadGame();
+            loadGame();
         } else if (option == 3) {
             credits();
         } else if (option == 4) {
@@ -52,7 +56,7 @@ void selection() {
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << " Please Try Again!" << std::endl;
         cout << endl;
-        selection();
+        quit();
     }
 }
 
@@ -98,8 +102,91 @@ void newGame() {
         }
     }
     cout << "Let's Play!" << endl;
+    selection();
 }
-// void loadGame() {}
+void loadGame() {
+    std::string filename;
+    cout << "Enter the filename from which load a game" << endl;
+    cin >> filename;
+    std::ifstream file(filename);
+
+    // if (file.is_open())
+    // cout << file.rdbuf();
+
+    int count = 0;
+    std::string text;
+    try {
+        while (getline(file, text)) {
+            // cout << text << endl;
+            if (count == 0 || count == 3 || count == 9) {
+                // check name ASCII
+                int ascii = 0;
+
+                for (size_t i = 0; i < text.length(); i++) {
+                    ascii = text[i];
+                    if (!(ascii >= 65) || !(ascii <= 90)) {
+                        throw std::invalid_argument(
+                            "Name format is not part of ASCII text");
+                    }
+                }
+
+                count++;
+            } else if (count == 1 || count == 4) {
+                // Check Interger
+                int number = std::stoi(text);
+                if (!(number >= 0)) {
+                    throw std::invalid_argument(
+                        "The number should be positive");
+                }
+                count++;
+            } else if (count == 2 || count == 5 || count == 8) {
+                // seperated with comma
+                std::stringstream ss(text);
+                while (ss.good()) {
+                    std::string substr;
+                    getline(ss, substr, ',');
+                    if (substr.length() != 2) {
+                        throw std::invalid_argument("Wrong Format");
+                    }
+                }
+                count++;
+            } else if (count == 6) {
+                // height, width
+                std::stringstream ss(text);
+                while (ss.good()) {
+                    std::string substr;
+                    getline(ss, substr, ',');
+                    int number = std::stoi(substr);
+                    if (!(number >= 0) || (number > 26)) {
+                        throw std::invalid_argument(
+                            "The grid should be more than 0 and less that 26");
+                    }
+                }
+                count++;
+            } else if (count == 7) {
+                // all tiles placed on board
+                std::stringstream ss(text);
+                while (ss.good()) {
+                    std::string substr;
+                    getline(ss, substr, ' ');
+                    const char at = '@';
+                    if (substr[2] != at) {
+                        throw std::invalid_argument(
+                            "The board should appear as a list of "
+                            "tile@postion");
+                    }
+                }
+                count++;
+            }
+        }
+        cout << "Qwirkle game successfully loaded" << endl;
+        file.close();
+        selection();
+
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "The error is " << e.what() << endl;
+    }
+}
 
 void credits() {
     cout << "----------------------------------" << endl;
@@ -125,7 +212,9 @@ void credits() {
     cout << "Student ID : S3785952" << endl;
     cout << "Email : S3785952@student.rmit.edu.au" << endl;
     cout << "----------------------------------" << endl;
+    selection();
 }
+
 bool StringCheck(std::string name) {
 
     bool state = false;
