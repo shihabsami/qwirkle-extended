@@ -18,7 +18,7 @@ LinkedList::~LinkedList() {
 }
 
 void LinkedList::addFront(Tile* tile) {
-    Node* toBeAdded = new Node(tile, nullptr, nullptr);
+    Node* toBeAdded = new Node(new Tile(*tile), nullptr, nullptr);
     if (length == 0) {
         head = toBeAdded;
         tail = toBeAdded;
@@ -31,7 +31,7 @@ void LinkedList::addFront(Tile* tile) {
 }
 
 void LinkedList::addBack(Tile* tile) {
-    Node* toBeAdded = new Node(tile, nullptr, nullptr);
+    Node* toBeAdded = new Node(new Tile(*tile), nullptr, nullptr);
     if (length == 0) {
         head = toBeAdded;
         tail = toBeAdded;
@@ -51,6 +51,7 @@ void LinkedList::removeFront() {
         Node* toBeDeleted = head;
         head = head->next;
         delete toBeDeleted;
+        toBeDeleted = nullptr;
     }
     --length;
 }
@@ -63,6 +64,7 @@ void LinkedList::removeBack() {
         Node* toBeDeleted = tail;
         tail = tail->previous;
         delete toBeDeleted;
+        toBeDeleted = nullptr;
     }
     --length;
 }
@@ -71,8 +73,7 @@ void LinkedList::insert(Tile* tile, unsigned int index, bool replace) {
     if (index >= length)
         throw std::out_of_range("invalid index for LinkedList::insert");
 
-    // TODO if tile exists more than twice, don't add
-    Node* toBeInserted = new Node(tile, nullptr, nullptr);
+    Node* toBeInserted = new Node(new Tile(*tile), nullptr, nullptr);
 
     Node* current = head;
     for (unsigned int i = 0; i < index; ++i)
@@ -121,19 +122,31 @@ void LinkedList::insert(Tile* tile, unsigned int index, bool replace) {
 }
 
 void LinkedList::remove(Tile* tile) {
-    // TODO discuss whether this removes original Node* or Node with same value
-    // TODO decide later when this method is actually used
+    Node* current = head;
+    for (unsigned int i = 0; i < length; ++i) {
+        if (*current->tile == *tile)
+            remove(i);
+
+        current = current->next;
+    }
 }
 
 void LinkedList::remove(unsigned int index) {
     if (index >= length)
         throw std::out_of_range("invalid index for LinkedList::remove");
 
-    Node* toBeDeleted = head;
-    for (unsigned int i = 0; i < index; ++i)
-        toBeDeleted = toBeDeleted->next;
+    if (index == 0)
+        removeFront();
+    else if (index == length - 1)
+        removeBack();
+    else {
+        Node* toBeDeleted = head;
+        for (unsigned int i = 0; i < index; ++i)
+            toBeDeleted = toBeDeleted->next;
 
-    delete toBeDeleted;
+        delete toBeDeleted;
+        toBeDeleted = nullptr;
+    }
 }
 
 unsigned int LinkedList::size() { return length; }
