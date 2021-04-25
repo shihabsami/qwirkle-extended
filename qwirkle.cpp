@@ -60,6 +60,14 @@ void testLinkedList() {
     list->insert(tile8, 4, true);
     cout << *list << endl;
 
+    delete tile1;
+    delete tile2;
+    delete tile3;
+    delete tile4;
+    delete tile5;
+    delete tile6;
+    delete tile7;
+    delete tile8;
     delete list;
 }
 

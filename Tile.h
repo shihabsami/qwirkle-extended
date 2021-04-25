@@ -13,6 +13,7 @@ typedef int Shape;
 class Tile {
 public:
     Tile(Colour color, Shape shape);
+    bool operator==(const Tile& other);
     friend std::ostream& operator<<(std::ostream& os, const Tile& tile);
 
     Colour colour;
