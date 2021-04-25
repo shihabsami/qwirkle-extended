@@ -11,6 +11,7 @@ void selection();
 void newGame();
 bool StringCheck(std::string name);
 void credits();
+int quit();
 
 int main(int argc, char** argv) {
 
@@ -43,7 +44,7 @@ void selection() {
         } else if (option == 3) {
             credits();
         } else if (option == 4) {
-            // std::exit;
+            quit();
         } else {
             cout << " " << endl;
             throw std::runtime_error("You can only enter numbers 1 - 4");
@@ -139,4 +140,9 @@ bool StringCheck(std::string name) {
         }
     }
     return state;
+}
+
+int quit() {
+    cout << "Goodbye" << endl;
+    return EXIT_SUCCESS;
 }
