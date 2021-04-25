@@ -55,6 +55,7 @@ Tile* TileBag::replace(Tile* tile) {
 
     int randomIndex = distribution(engine);
     Tile* temp = list->at(randomIndex);
+    // Pretty sure the replaced tile needs to be added at the back
     *list->at(randomIndex) = *tile;
     return temp;
 }
