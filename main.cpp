@@ -117,7 +117,7 @@ void newGame() {
         }
     }
     cout << "Let's Play!" << endl;
-    selection();
+    // method for actual game
 }
 
 // to load game copy path of t1.save
