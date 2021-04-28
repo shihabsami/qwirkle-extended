@@ -1,28 +1,35 @@
 
 #include "LinkedList.h"
 #include "TileCodes.h"
+
 #include <iostream>
+#include <memory>
 
 using std::cout;
 using std::endl;
+using std::unique_ptr;
+using std::make_unique;
+using std::shared_ptr;
+using std::make_shared;
 
 // tests for LinkedList implementation
 void testLinkedList();
 
-int main(void) {
+int main() {
     testLinkedList();
 
     return EXIT_SUCCESS;
 }
 
 void testLinkedList() {
-    LinkedList* list = new LinkedList();
-    Tile* tile1 = new Tile(RED, CIRCLE);
-    Tile* tile2 = new Tile(ORANGE, STAR_4);
-    Tile* tile3 = new Tile(YELLOW, DIAMOND);
-    Tile* tile4 = new Tile(GREEN, SQUARE);
-    Tile* tile5 = new Tile(BLUE, STAR_6);
-    Tile* tile6 = new Tile(PURPLE, CLOVER);
+    unique_ptr<LinkedList> list = make_unique<LinkedList>();
+
+    shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
+    shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, STAR_4);
+    shared_ptr<Tile> tile3 = make_shared<Tile>(YELLOW, DIAMOND);
+    shared_ptr<Tile> tile4 = make_shared<Tile>(GREEN, SQUARE);
+    shared_ptr<Tile> tile5 = make_shared<Tile>(BLUE, STAR_6);
+    shared_ptr<Tile> tile6 = make_shared<Tile>(PURPLE, CLOVER);
 
     cout << "adding tiles to linkedlist..." << endl;
     list->addFront(tile1);
@@ -44,8 +51,8 @@ void testLinkedList() {
     cout << "at(size() - 1) - " << *list->at(list->size() - 1) << endl;
     cout << *list << endl;
 
-    Tile* tile7 = new Tile(RED, STAR_4);
-    Tile* tile8 = new Tile(ORANGE, DIAMOND);
+    shared_ptr<Tile> tile7 = make_shared<Tile>(RED, STAR_4);
+    shared_ptr<Tile> tile8 = make_shared<Tile>(ORANGE, DIAMOND);
 
     cout << "inserting item at index..." << endl;
     list->insert(tile7, 0, false);
@@ -55,13 +62,11 @@ void testLinkedList() {
     list->insert(tile8, 4, true);
     cout << *list << endl;
 
-    delete tile1;
-    delete tile2;
-    delete tile3;
-    delete tile4;
-    delete tile5;
-    delete tile6;
-    delete tile7;
-    delete tile8;
-    delete list;
+    std::cout << "removing tiles by value..." << endl;
+    list->remove(tile1);
+    cout << *list << endl;
+
+    std::cout << "removing tiles at index..." << endl;
+    list->remove(2);
+    cout << *list << endl;
 }

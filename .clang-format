@@ -12,3 +12,4 @@ AlignEscapedNewlines: false
 AlignOperands: false
 AlignTrailingComments: false
 BreakBeforeBinaryOperators: None
+SortUsingDeclarations: false

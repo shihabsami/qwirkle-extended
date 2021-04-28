@@ -3,7 +3,7 @@
 
 Tile::Tile(Colour colour, Shape shape) : colour(colour), shape(shape) {}
 
-bool Tile::operator==(const Tile& other) {
+bool Tile::operator==(const Tile& other) const {
     return colour == other.colour && shape == other.shape;
 }
 
