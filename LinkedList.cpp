@@ -6,6 +6,19 @@
 
 LinkedList::LinkedList() : head(nullptr), tail(nullptr), length(0) {}
 
+LinkedList::~LinkedList() {
+    shared_ptr<Node> current(head);
+    shared_ptr<Node> toDelete;
+
+    while (current != nullptr) {
+        toDelete = current;
+        current = current->next;
+
+        toDelete->~Node();
+        toDelete.reset();
+    }
+}
+
 void LinkedList::addFront(shared_ptr<Tile>& tile) {
     shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
     if (length == 0) {

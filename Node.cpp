@@ -7,6 +7,12 @@ Node::Node(const shared_ptr<Tile>& tile) {
     this->previous = nullptr;
 }
 
+Node::~Node() {
+    this->tile.reset();
+    this->next.reset();
+    this->previous.reset();
+}
+
 Node::Node(const shared_ptr<Tile>& tile, const shared_ptr<Node>& next,
     const shared_ptr<Node>& previous) {
     this->tile = tile;

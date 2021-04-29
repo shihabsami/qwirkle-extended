@@ -11,6 +11,7 @@ using std::make_shared;
 class Node {
 public:
     explicit Node(const shared_ptr<Tile>& tile);
+    ~Node();
     Node(const shared_ptr<Tile>& tile, const shared_ptr<Node>& next,
         const shared_ptr<Node>& previous);
     Node(const Node& other);

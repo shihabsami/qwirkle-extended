@@ -14,6 +14,7 @@ using std::make_shared;
 class LinkedList {
 public:
     LinkedList();
+    ~LinkedList();
 
     void addFront(shared_ptr<Tile>& tile);
     void addBack(const shared_ptr<Tile>& tile);
