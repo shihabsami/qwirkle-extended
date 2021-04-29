@@ -33,40 +33,40 @@ void testLinkedList() {
 
     cout << "adding tiles to linkedlist..." << endl;
     list->addFront(tile1);
-    list->addBack(tile2);
+//    list->addBack(tile2);
     list->addFront(tile3);
-    list->addBack(tile4);
-    list->addFront(tile5);
-    list->addBack(tile6);
-    cout << *list << endl;
-
-    std::cout << "removing tiles to linkedlist..." << endl;
-    list->removeFront();
-    list->removeBack();
-    cout << *list << endl;
-
-    cout << "testing size() and at()" << endl;
-    cout << "size() - " << list->size() << endl;
-    cout << "at(1) - " << *list->at(1) << endl;
-    cout << "at(size() - 1) - " << *list->at(list->size() - 1) << endl;
-    cout << *list << endl;
-
-    shared_ptr<Tile> tile7 = make_shared<Tile>(RED, STAR_4);
-    shared_ptr<Tile> tile8 = make_shared<Tile>(ORANGE, DIAMOND);
-
-    cout << "inserting item at index..." << endl;
-    list->insert(tile7, 0, false);
-    cout << *list << endl;
-
-    cout << "inserting and replacing item at index..." << endl;
-    list->insert(tile8, 4, true);
-    cout << *list << endl;
-
-    std::cout << "removing tiles by value..." << endl;
-    list->remove(tile1);
-    cout << *list << endl;
-
-    std::cout << "removing tiles at index..." << endl;
-    list->remove(2);
-    cout << *list << endl;
+//    list->addBack(tile4);
+//    list->addFront(tile5);
+//    list->addBack(tile6);
+//    cout << *list << endl;
+//
+//    std::cout << "removing tiles to linkedlist..." << endl;
+//    list->removeFront();
+//    list->removeBack();
+//    cout << *list << endl;
+//
+//    cout << "testing size() and at()" << endl;
+//    cout << "size() - " << list->size() << endl;
+//    cout << "at(1) - " << *list->at(1) << endl;
+//    cout << "at(size() - 1) - " << *list->at(list->size() - 1) << endl;
+//    cout << *list << endl;
+//
+//    shared_ptr<Tile> tile7 = make_shared<Tile>(RED, STAR_4);
+//    shared_ptr<Tile> tile8 = make_shared<Tile>(ORANGE, DIAMOND);
+//
+//    cout << "inserting item at index..." << endl;
+//    list->insert(tile7, 0, false);
+//    cout << *list << endl;
+//
+//    cout << "inserting and replacing item at index..." << endl;
+//    list->insert(tile8, 4, true);
+//    cout << *list << endl;
+//
+//    std::cout << "removing tiles by value..." << endl;
+//    list->remove(tile1);
+//    cout << *list << endl;
+//
+//    std::cout << "removing tiles at index..." << endl;
+//    list->remove(2);
+//    cout << *list << endl;
 }

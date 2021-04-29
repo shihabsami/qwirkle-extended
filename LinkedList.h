@@ -15,7 +15,7 @@ class LinkedList {
 public:
     LinkedList();
 
-    void addFront(const shared_ptr<Tile>& tile);
+    void addFront(shared_ptr<Tile>& tile);
     void addBack(const shared_ptr<Tile>& tile);
     void removeFront();
     void removeBack();
