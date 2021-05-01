@@ -6,27 +6,31 @@
 
 #include <ostream>
 
+using std::ostream;
+using std::out_of_range;
+using std::shared_ptr;
+using std::make_shared;
+
 class LinkedList {
 public:
     LinkedList();
     ~LinkedList();
-    void addFront(Tile* tile);
-    void addBack(Tile* tile);
+
+    void addFront(shared_ptr<Tile>& tile);
+    void addBack(const shared_ptr<Tile>& tile);
     void removeFront();
     void removeBack();
-    void insert(Node* node, unsigned int index);
-    void remove(Node* node);
+    void insert(const shared_ptr<Tile>& tile, unsigned int index, bool replace);
+    void remove(const shared_ptr<Tile>& tile);
     void remove(unsigned int index);
-    Tile* LinkedList::at(unsigned int index);
-    Tile* operator[](unsigned int index);
-    friend std::ostream& operator<<(std::ostream& os, const LinkedList& list);
+    unsigned int size() const;
+    shared_ptr<Tile> at(unsigned int index);
+    friend ostream& operator<<(ostream& os, const LinkedList& list);
 
 private:
-    Node* head;
-    Node* tail;
-
-    // TODO can use std::size_t from <cstring>
     unsigned int length;
+    shared_ptr<Node> head;
+    shared_ptr<Node> tail;
 };
 
 #endif // ASSIGN2_LINKEDLIST_H

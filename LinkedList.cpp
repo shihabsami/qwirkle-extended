@@ -1,24 +1,23 @@
 
 #include "LinkedList.h"
 
-#include <exception>
-#include <iostream>
-
-LinkedList::LinkedList() : head(nullptr), tail(nullptr), length(0) {}
+LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
 LinkedList::~LinkedList() {
-    Node* current = head;
-    Node* toBeDeleted = current;
+    shared_ptr<Node> current = head;
+    shared_ptr<Node> toDelete;
 
-    for (unsigned int i = 0; i < length; ++i) {
-        toBeDeleted = toBeDeleted->next;
-        delete current;
-        current = toBeDeleted;
+    while (current != nullptr) {
+        toDelete = current;
+        current = current->next;
+
+        toDelete->~Node();
+        toDelete.reset();
     }
 }
 
-void LinkedList::addFront(Tile* tile) {
-    Node* toBeAdded = new Node(tile, nullptr, nullptr);
+void LinkedList::addFront(shared_ptr<Tile>& tile) {
+    shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
     if (length == 0) {
         head = toBeAdded;
         tail = toBeAdded;
@@ -27,89 +26,155 @@ void LinkedList::addFront(Tile* tile) {
         toBeAdded->next = head;
         head = toBeAdded;
     }
+
     ++length;
 }
 
-void LinkedList::addBack(Tile* tile) {
-    Node* toBeAdded = new Node(tile, nullptr, nullptr);
+void LinkedList::addBack(const shared_ptr<Tile>& tile) {
+    shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
     if (length == 0) {
         head = toBeAdded;
         tail = toBeAdded;
     } else {
         tail->next = toBeAdded;
         toBeAdded->previous = tail;
+        tail.reset();
         tail = toBeAdded;
     }
+
     ++length;
 }
 
 void LinkedList::removeFront() {
-    if (length == 0) {
-        delete head;
-        tail = nullptr;
+    if (length == 1) {
+        head.reset();
+        tail.reset();
     } else {
-        Node* toBeDeleted = head;
         head = head->next;
-        delete toBeDeleted;
+        head->previous.reset();
     }
+
     --length;
 }
 
 void LinkedList::removeBack() {
-    if (length == 0) {
-        delete head;
-        tail = nullptr;
+    if (length == 1) {
+        head.reset();
+        tail.reset();
     } else {
-        Node* toBeDeleted = tail;
         tail = tail->previous;
-        delete toBeDeleted;
+        tail->next.reset();
     }
+
     --length;
 }
 
-void LinkedList::insert(Node* node, unsigned int index) {
+void LinkedList::insert(
+    const shared_ptr<Tile>& tile, unsigned int index, bool replace) {
     if (index >= length)
-        throw std::out_of_range("invalid index for LinkedList::insert");
+        throw out_of_range("invalid index for LinkedList::insert");
 
-    Node* current = head;
+    shared_ptr<Node> toBeInserted = make_shared<Node>(tile);
+    shared_ptr<Node> nodeAtIndex = head;
     for (unsigned int i = 0; i < index; ++i)
-        current = current->next;
+        nodeAtIndex = nodeAtIndex->next;
 
-    current->previous->next = node;
-    current->previous = node;
+    if (replace) {
+        /*
+        when replacing, update new node's references to point to current node's
+        next and previous nodes, also update the next and previous nodes'
+        references to point to the new node
+        */
+        toBeInserted->next = nodeAtIndex->next;
+        toBeInserted->previous = nodeAtIndex->previous;
+
+        // if replacing head or tail, update references of head and tail
+        if (index == 0) {
+            nodeAtIndex->next->previous = toBeInserted;
+            head = toBeInserted;
+        } else if (index == length - 1) {
+            nodeAtIndex->previous->next = toBeInserted;
+            tail = toBeInserted;
+        } else {
+            nodeAtIndex->next->previous = toBeInserted;
+            nodeAtIndex->previous->next = toBeInserted;
+        }
+
+        nodeAtIndex.reset();
+    } else {
+        if (index == 0) {
+            toBeInserted->next = nodeAtIndex;
+            nodeAtIndex->previous = toBeInserted;
+            head = toBeInserted;
+        } else if (index == length - 1) {
+            toBeInserted->previous = nodeAtIndex;
+            nodeAtIndex->next = toBeInserted;
+            tail = toBeInserted;
+        } else {
+            toBeInserted->next = nodeAtIndex;
+            toBeInserted->previous = nodeAtIndex->previous;
+            nodeAtIndex->previous->next = toBeInserted;
+            nodeAtIndex->previous = toBeInserted;
+        }
+
+        ++length;
+    }
 }
 
-void LinkedList::remove(Node* node) {
-    // TODO discuss whether this removes original Node* or Node with same value
+void LinkedList::remove(const shared_ptr<Tile>& tile) {
+    shared_ptr<Node> current = head;
+    bool removed = false;
+    unsigned int i = 0;
+    while (i < length && !removed) {
+        if (*current->tile == *tile) {
+            remove(i);
+            removed = true;
+        } else {
+            current = current->next;
+            ++i;
+        }
+    }
 }
 
 void LinkedList::remove(unsigned int index) {
     if (index >= length)
-        throw std::out_of_range("invalid index for LinkedList::remove");
+        throw out_of_range("invalid index for LinkedList::remove");
 
-    Node* toBeDeleted = head;
-    for (unsigned int i = 0; i < index; ++i)
-        toBeDeleted = toBeDeleted->next;
+    if (index == 0)
+        removeFront();
+    else if (index == length - 1)
+        removeBack();
+    else {
+        shared_ptr<Node> toBeDeleted = head;
+        for (unsigned int i = 0; i < index; ++i)
+            toBeDeleted = toBeDeleted->next;
 
-    delete toBeDeleted;
+        toBeDeleted->next->previous = toBeDeleted->previous;
+        toBeDeleted->previous->next = toBeDeleted->next;
+    }
+
+    --length;
 }
 
-Tile* LinkedList::at(unsigned int index) {
-    if (index >= length)
-        throw std::out_of_range("invalid index for LinkedList::at");
+unsigned int LinkedList::size() const { return length; }
 
-    Node* toReturn = head;
+shared_ptr<Tile> LinkedList::at(unsigned int index) {
+    if (index >= length)
+        throw out_of_range("invalid index for LinkedList::at");
+
+    shared_ptr<Node> toReturn = head;
     for (unsigned int i = 0; i < index; ++i)
         toReturn = toReturn->next;
 
     return toReturn->tile;
 }
 
-std::ostream& operator<<(std::ostream& os, const LinkedList& list) {
-    Node* current = list.head;
+ostream& operator<<(ostream& os, const LinkedList& list) {
+    shared_ptr<Node> current = list.head;
     for (unsigned int i = 0; i < list.length; ++i) {
         os << *current->tile << (i < list.length - 1 ? ", " : "");
         current = current->next;
     }
+
     return os;
 }

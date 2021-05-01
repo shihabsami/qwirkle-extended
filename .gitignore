@@ -8,6 +8,10 @@
 # debug symbols and object files
 *.dSYM
 *.o
+qwirkle
 
 # code history
 .history/
+
+# clion settings
+.idea
