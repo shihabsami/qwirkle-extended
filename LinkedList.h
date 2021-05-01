@@ -28,11 +28,9 @@ public:
     friend ostream& operator<<(ostream& os, const LinkedList& list);
 
 private:
+    unsigned int length;
     shared_ptr<Node> head;
     shared_ptr<Node> tail;
-
-    // TODO can use std::size_t from <cstring>
-    unsigned int length;
 };
 
 #endif // ASSIGN2_LINKEDLIST_H

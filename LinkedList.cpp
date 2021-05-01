@@ -2,12 +2,11 @@
 #include "LinkedList.h"
 
 #include <exception>
-#include <iostream>
 
-LinkedList::LinkedList() : head(nullptr), tail(nullptr), length(0) {}
+LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
 LinkedList::~LinkedList() {
-    shared_ptr<Node> current(head);
+    shared_ptr<Node> current = head;
     shared_ptr<Node> toDelete;
 
     while (current != nullptr) {
@@ -126,11 +125,16 @@ void LinkedList::insert(
 
 void LinkedList::remove(const shared_ptr<Tile>& tile) {
     shared_ptr<Node> current = head;
-    for (unsigned int i = 0; i < length; ++i) {
-        if (*current->tile == *tile)
+    bool removed = false;
+    unsigned int i = 0;
+    while (i < length && !removed) {
+        if (*current->tile == *tile) {
             remove(i);
-
-        current = current->next;
+            removed = true;
+        } else {
+            current = current->next;
+            ++i;
+        }
     }
 }
 
@@ -147,10 +151,11 @@ void LinkedList::remove(unsigned int index) {
         for (unsigned int i = 0; i < index; ++i)
             toBeDeleted = toBeDeleted->next;
 
-        toBeDeleted.reset();
-        toBeDeleted->next->previous.reset();
-        toBeDeleted->previous->next.reset();
+        toBeDeleted->next->previous = toBeDeleted->previous;
+        toBeDeleted->previous->next = toBeDeleted->next;
     }
+
+    --length;
 }
 
 unsigned int LinkedList::size() const { return length; }

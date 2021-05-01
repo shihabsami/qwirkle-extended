@@ -7,7 +7,7 @@ bool Tile::operator==(const Tile& other) const {
     return colour == other.colour && shape == other.shape;
 }
 
-std::ostream& operator<<(std::ostream& os, const Tile& tile) {
+ostream& operator<<(ostream& os, const Tile& tile) {
     os << tile.colour << tile.shape;
     return os;
 }

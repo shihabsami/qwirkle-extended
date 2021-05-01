@@ -3,6 +3,7 @@
 #define ASSIGN2_NODE_H
 
 #include "Tile.h"
+
 #include <memory>
 
 using std::shared_ptr;
@@ -12,9 +13,10 @@ class Node {
 public:
     explicit Node(const shared_ptr<Tile>& tile);
     ~Node();
-    Node(const shared_ptr<Tile>& tile, const shared_ptr<Node>& next,
+    Node(
+        const shared_ptr<Tile>& tile,
+        const shared_ptr<Node>& next,
         const shared_ptr<Node>& previous);
-    Node(const Node& other);
     friend bool operator==(const Node& node1, const Node& node2);
 
     // TODO move constructor if needed
