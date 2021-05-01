@@ -1,8 +1,6 @@
 
 #include "LinkedList.h"
 
-#include <exception>
-
 LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
 LinkedList::~LinkedList() {
@@ -33,7 +31,7 @@ void LinkedList::addFront(shared_ptr<Tile>& tile) {
 }
 
 void LinkedList::addBack(const shared_ptr<Tile>& tile) {
-    shared_ptr<Node> toBeAdded = make_shared<Node>(std::move(tile));
+    shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
     if (length == 0) {
         head = toBeAdded;
         tail = toBeAdded;
