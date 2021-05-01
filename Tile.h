@@ -4,6 +4,8 @@
 
 #include <ostream>
 
+using std::ostream;
+
 // Define a Colour type
 typedef char Colour;
 
@@ -13,8 +15,8 @@ typedef int Shape;
 class Tile {
 public:
     Tile(Colour color, Shape shape);
-    bool operator==(const Tile& other);
-    friend std::ostream& operator<<(std::ostream& os, const Tile& tile);
+    bool operator==(const Tile& other) const;
+    friend ostream& operator<<(ostream& os, const Tile& tile);
 
     Colour colour;
     Shape shape;
