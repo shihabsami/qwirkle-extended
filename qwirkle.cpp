@@ -1,5 +1,6 @@
 
 #include "LinkedList.h"
+#include "TileBag.h"
 #include "TileCodes.h"
 #include "GameBoard.h"
 
@@ -8,18 +9,22 @@
 
 using std::cout;
 using std::endl;
-using std::unique_ptr;
-using std::make_unique;
 using std::shared_ptr;
 using std::make_shared;
 
 // tests for LinkedList implementation
 void testLinkedList();
 
+// tests for TileBag implementation
+void testTileBag();
+
+// tests for GameBoard implementation
 void testGameBoard();
 
 int main() {
     // testLinkedList();
+
+    // testTileBag();
 
     testGameBoard();
 
@@ -27,7 +32,8 @@ int main() {
 }
 
 void testLinkedList() {
-    unique_ptr<LinkedList> list = make_unique<LinkedList>();
+    cout << "testing linkedlist..." << endl;
+    shared_ptr<LinkedList> list = make_shared<LinkedList>();
 
     shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
     shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, STAR_4);
@@ -75,6 +81,28 @@ void testLinkedList() {
     std::cout << "removing tiles at index..." << endl;
     list->remove(2);
     cout << *list << endl;
+}
+
+void testTileBag() {
+    cout << "testing tilebag..." << endl;
+    shared_ptr<TileBag> bag = make_shared<TileBag>();
+    cout << *bag << endl;
+
+    cout << "shuffling tilebag..." << endl;
+    bag->shuffle();
+    cout << *bag << endl;
+
+    cout << "getting hand of cards from tilebag..." << endl;
+    shared_ptr<LinkedList> hand = bag->getHand();
+    cout << "hand -" << *hand << endl;
+    cout << *bag << endl;
+
+    cout << "replacing a tile from tilebag..." << endl;
+    shared_ptr<Tile> tile = make_shared<Tile>(PURPLE, CLOVER);
+    cout << "tile " << *tile;
+    bag->replace(tile);
+    cout << " replaced with " << *tile << endl;
+    cout << *bag << endl;
 }
 
 void testGameBoard() {

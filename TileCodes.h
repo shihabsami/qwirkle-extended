@@ -18,4 +18,8 @@
 #define STAR_6 5
 #define CLOVER 6
 
+// TODO discuss whether #define can be replaced by a collection globally
+// Colour array[]{ RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE };
+// Shape shapes[]{ CIRCLE, STAR_4, DIAMOND, SQUARE, STAR_6, CLOVER };
+
 #endif // ASSIGN1_TILECODES_H
