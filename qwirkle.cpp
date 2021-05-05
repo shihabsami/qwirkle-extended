@@ -107,12 +107,20 @@ void testPlayerHand() {
     shared_ptr<TileBag> bag = make_shared<TileBag>();
     bag->shuffle();
 
+    cout << "Player Hand Test **********************************" << endl;
     shared_ptr<PlayerHand> hand = make_shared<PlayerHand>(bag->getHand());
-    cout << hand << endl;
+    cout << "Hand = " << *hand << endl;
 
+    cout << "New Tile" << endl;
     shared_ptr<Tile> newT = make_shared<Tile>(PURPLE, CLOVER);
+    cout << "Adding New Tile" << endl;
     hand->addTile(newT);
+    cout << "New Tile Has Been Added" << endl;
+    cout << "Replacing Tile" << endl;
     hand->replaceTile(*(hand->getTile(*newT)), *bag);
-
-    cout << hand << endl;
+    cout << "Tile has been replaced" << endl;
+    cout << "Playing Tile" << endl;
+    hand->playTile(*newT);
+    cout << "Tile has been played" << endl;
+    cout << *hand << endl;
 }

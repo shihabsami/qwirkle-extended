@@ -6,21 +6,10 @@
 class PlayerHand {
 public:
     PlayerHand();
-    /**
-     * @brief Construct a new Player Hand 
-     * 
-     * @param Converts inputted list into unique_ptr for class
-     */
-    PlayerHand(LinkedList* tileList);
+    
+    PlayerHand(LinkedList& tileList);
     PlayerHand(std::shared_ptr<LinkedList> tileList);
-    /**
-     * @brief Constructs a new player hand
-     * 
-     * @param Takes a linked list of tiles. ~WARNING~ This 
-     * constructor moves the inserted pointer to the unique_ptr inside.
-     * Old unique_ptr will be pointing to dead memory
-     */
-    PlayerHand(std::unique_ptr<LinkedList> tileList);
+
     ~PlayerHand();
 
     void addTile(std::shared_ptr<Tile> tile);
@@ -42,7 +31,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const PlayerHand& hand);
 
 private:
-    std::unique_ptr<LinkedList> tiles;
+    std::shared_ptr<LinkedList> tiles;
 };
 
 #endif

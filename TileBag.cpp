@@ -49,11 +49,10 @@ shared_ptr<LinkedList> TileBag::getHand() {
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     int randomIndex = getRandomIndex();
 
-    shared_ptr<Tile> tileCopy = make_shared<Tile>(*tile);
-    tile = list->at(randomIndex);
-    list->addBack(tileCopy);
+    shared_ptr<Tile> newTile = list->at(randomIndex);; 
     list->remove(randomIndex);
-    return tile;
+    list->addBack(tile);
+    return newTile;
 }
 
 int TileBag::getRandomIndex() {

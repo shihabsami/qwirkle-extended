@@ -1,11 +1,9 @@
 #include "PlayerHand.h"
+#include <iostream>
+PlayerHand::PlayerHand() { tiles = std::make_shared<LinkedList>(); }
 
-PlayerHand::PlayerHand() { tiles = std::make_unique<LinkedList>(new LinkedList()); }
-
-PlayerHand::PlayerHand(LinkedList* tileList) { tiles = std::make_unique<LinkedList>(tileList); }
-PlayerHand::PlayerHand(std::shared_ptr<LinkedList> tileList) { tiles = std::make_unique<LinkedList>(tileList); }
-PlayerHand::PlayerHand(std::unique_ptr<LinkedList> tileList) : tiles(std::move(tileList)) 
-{}
+PlayerHand::PlayerHand(LinkedList& tileList) { tiles = std::make_shared<LinkedList>(tileList); }
+PlayerHand::PlayerHand(std::shared_ptr<LinkedList> tileList) : tiles(tileList) {}
 
 PlayerHand::~PlayerHand() { tiles.reset(); }
 
@@ -55,11 +53,13 @@ std::shared_ptr<Tile> PlayerHand::getTile(Tile& tile) {
     std::shared_ptr<Tile> currentTile = nullptr;
     std::shared_ptr<Tile> toReturn = nullptr;
 
-    for (int i = 0; i < tiles->size(); i++) {
-        currentTile = tiles->at(i);
+    std::cout << "Tiles " << *tiles << std::endl;
 
+    for (unsigned int i = 0; i < tiles->size(); i++) {
+        currentTile = tiles->at(i);
+        std::cout << "Iteration " << i << " size " << tiles->size() << " " << tile << " | " << *currentTile << std::endl;
         if (tile == *currentTile && !found) {
-            toReturn = nullptr; 
+            toReturn = currentTile; 
             found = true;
         }
             
