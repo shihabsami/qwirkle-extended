@@ -18,7 +18,7 @@ public:
     ~TileBag();
     void shuffle();
     shared_ptr<LinkedList> getHand();
-    void replace(shared_ptr<Tile>& tile);
+    shared_ptr<Tile> replace(shared_ptr<Tile>& tile);
     int getRandomIndex();
     friend ostream& operator<<(ostream& os, const TileBag& bag);
 

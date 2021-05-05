@@ -46,13 +46,14 @@ shared_ptr<LinkedList> TileBag::getHand() {
 
 // TODO although game logic does not allow same tile more than twice
 // TODO should check if tile exists more than twice?
-void TileBag::replace(shared_ptr<Tile>& tile) {
+shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     int randomIndex = getRandomIndex();
 
     shared_ptr<Tile> tileCopy = make_shared<Tile>(*tile);
     tile = list->at(randomIndex);
     list->addBack(tileCopy);
     list->remove(randomIndex);
+    return tile;
 }
 
 int TileBag::getRandomIndex() {

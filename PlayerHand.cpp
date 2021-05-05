@@ -1,21 +1,24 @@
 #include "PlayerHand.h"
 
-PlayerHand::PlayerHand() { tiles = new LinkedList(); }
+PlayerHand::PlayerHand() { tiles = std::make_unique<LinkedList>(new LinkedList()); }
 
-PlayerHand::PlayerHand(LinkedList* hand) { tiles = hand; }
+PlayerHand::PlayerHand(LinkedList* tileList) { tiles = std::make_unique<LinkedList>(tileList); }
+PlayerHand::PlayerHand(std::shared_ptr<LinkedList> tileList) { tiles = std::make_unique<LinkedList>(tileList); }
+PlayerHand::PlayerHand(std::unique_ptr<LinkedList> tileList) : tiles(std::move(tileList)) 
+{}
 
-PlayerHand::~PlayerHand() { delete tiles; }
+PlayerHand::~PlayerHand() { tiles.reset(); }
 
-void PlayerHand::addTile(Tile* tile) { tiles->addBack(tile); }
+void PlayerHand::addTile(std::shared_ptr<Tile> tile) { tiles->addBack(tile); }
 
-Tile* PlayerHand::playTile(Colour& colour, Shape& shape) {
+std::shared_ptr<Tile> PlayerHand::playTile(Colour& colour, Shape& shape) {
     Tile temp(colour, shape);
     return playTile(temp);
 }
 
 // returns nullptr if fails to play tile
-Tile* PlayerHand::playTile(Tile& tile) {
-    Tile* toPlay = getTile(tile);
+std::shared_ptr<Tile> PlayerHand::playTile(Tile& tile) {
+    std::shared_ptr<Tile> toPlay = getTile(tile);
 
     if (toPlay != nullptr) {
         tiles->remove(toPlay);
@@ -24,36 +27,42 @@ Tile* PlayerHand::playTile(Tile& tile) {
     return toPlay;
 }
 
-Tile* PlayerHand::replaceTile(Colour& colour, Shape& shape, TileBag& bag) {
+std::shared_ptr<Tile> PlayerHand::replaceTile(Colour& colour, Shape& shape, TileBag& bag) {
     Tile temp(colour, shape);
     return replaceTile(temp, bag);
 }
 
-Tile* PlayerHand::replaceTile(Tile& toReplace, TileBag& bag) {
-    Tile* newTile = nullptr;
-    Tile* replace = getTile(toReplace);
+std::shared_ptr<Tile> PlayerHand::replaceTile(Tile& toReplace, TileBag& bag) {
+    std::shared_ptr<Tile> newTile = nullptr;
+    std::shared_ptr<Tile> replace = getTile(toReplace);
 
     if (replace != nullptr) {
         newTile = bag.replace(replace);
+        tiles->remove(replace);
+        tiles->addBack(newTile);
     }
 
     return newTile;
 }
 
-Tile* PlayerHand::getTile(Colour& colour, Shape& shape) {
+std::shared_ptr<Tile> PlayerHand::getTile(Colour& colour, Shape& shape) {
     Tile temp(colour, shape);
     return getTile(temp);
 }
 
-Tile* PlayerHand::getTile(Tile& tile) {
-    Tile* currentTile = nullptr;
-    Tile* toReturn = nullptr;
+std::shared_ptr<Tile> PlayerHand::getTile(Tile& tile) {
+    bool found = false;
+    std::shared_ptr<Tile> currentTile = nullptr;
+    std::shared_ptr<Tile> toReturn = nullptr;
 
     for (int i = 0; i < tiles->size(); i++) {
         currentTile = tiles->at(i);
 
-        if (tile == *currentTile)
-            toReturn = nullptr;
+        if (tile == *currentTile && !found) {
+            toReturn = nullptr; 
+            found = true;
+        }
+            
     }
 
     return toReturn;
@@ -69,6 +78,6 @@ bool PlayerHand::isHoldingTile(Tile& tile) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PlayerHand& hand) {
-    os << hand.tiles;
+    os << *(hand.tiles.get());
     return os;
 }

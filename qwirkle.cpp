@@ -2,6 +2,7 @@
 #include "LinkedList.h"
 #include "TileBag.h"
 #include "TileCodes.h"
+#include "PlayerHand.h"
 
 #include <iostream>
 #include <random>
@@ -17,11 +18,13 @@ void testLinkedList();
 
 // tests for TileBag implementation
 void testTileBag();
+void testPlayerHand();
 
 int main(void) {
     // testLinkedList();
 
     testTileBag();
+    testPlayerHand();
 
     return EXIT_SUCCESS;
 }
@@ -98,4 +101,18 @@ void testTileBag() {
     bag->replace(tile);
     cout << " replaced with " << *tile << endl;
     cout << *bag << endl;
+}
+
+void testPlayerHand() {
+    shared_ptr<TileBag> bag = make_shared<TileBag>();
+    bag->shuffle();
+
+    shared_ptr<PlayerHand> hand = make_shared<PlayerHand>(bag->getHand());
+    cout << hand << endl;
+
+    shared_ptr<Tile> newT = make_shared<Tile>(PURPLE, CLOVER);
+    hand->addTile(newT);
+    hand->replaceTile(*(hand->getTile(*newT)), *bag);
+
+    cout << hand << endl;
 }
