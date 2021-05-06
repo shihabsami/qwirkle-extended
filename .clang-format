@@ -6,9 +6,9 @@ DerivePointerAlignment: false
 PointerAlignment: Left
 ColumnLimit: 80
 AlignAfterOpenBracket: DontAlign
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
-AlignEscapedNewlines: false
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignEscapedNewlines: DontAlign
 AlignOperands: false
 AlignTrailingComments: false
 BreakBeforeBinaryOperators: None
