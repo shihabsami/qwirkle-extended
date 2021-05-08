@@ -4,12 +4,6 @@
 
 #include "LinkedList.h"
 
-#include <memory>
-
-using std::ostream;
-using std::shared_ptr;
-using std::make_shared;
-
 class Tile;
 
 class TileBag {
