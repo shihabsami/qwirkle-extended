@@ -10,16 +10,20 @@ using std::cout;
 using std::endl;
 
 void menu();
+void printStart();
 void selection();
 void newGame();
 bool StringCheck(std::string name);
 void credits();
 void loadGame();
+bool checkTile(std::string tile);
 void prompt();
+void Test();
 int quit();
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) { Test(); }
 
+void printStart() {
     cout << "Welcome to Qwirkle!" << endl;
     cout << "-------------------" << endl;
     cout << " " << endl;
@@ -36,9 +40,7 @@ void menu() {
 }
 
 void selection() {
-
     menu();
-
     bool flag = true;
     while (!std::cin.eof() && flag) {
         int option = 0;
@@ -250,9 +252,57 @@ bool StringCheck(std::string name) {
     return state;
 }
 
+bool checkTile(std::string tile) {
+    try {
+        std::string appended;
+        bool condition = false;
+        if (tile.size() == 2) {
+            char num1 = tile.at(1);
+            appended.append(1, num1);
+            stoi(appended);
+            cout << "WORKS" << endl;
+
+            condition = true;
+
+        } else if (tile.size() == 3) {
+            // get the position
+            char num1 = tile.at(1);
+            char num2 = tile.at(2);
+            // append the 2 chars into string
+            appended.append(1, num1);
+            appended.append(1, num2);
+            // convert string into int
+            int combinedNumber = stoi(appended);
+            if (combinedNumber > 25) {
+                //
+                cout << "f" << endl;
+                condition = false;
+            } else {
+                cout << "t" << endl;
+                condition = true;
+            }
+        } else {
+            cout << "Invalid tile" << endl;
+            condition = false;
+        }
+        return condition;
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "The error is " << e.what() << endl;
+        return false;
+    }
+}
+
 void prompt() { cout << "> "; }
 
 int quit() {
     cout << "Goodbye" << endl;
     return EXIT_SUCCESS;
+}
+
+void Test() {
+    // checkTile("DA");
+    checkTile("A");
+    // checkTile("D1A1");
+    // checkTile("Dasd");
+    // checkTile("DDD");
 }
