@@ -6,8 +6,6 @@
 #include "PlayerHand.h"
 
 #include <iostream>
-#include <random>
-#include <memory>
 
 using std::cout;
 using std::endl;
@@ -18,20 +16,17 @@ void testLinkedList();
 // tests for TileBag implementation
 void testTileBag();
 
-// tests for GameBoard implementation
-void testGameBoard();
-
 // tests for PlayerHand implementation
 void testPlayerHand();
 
+// tests for GameBoard implementation
+void testGameBoard();
+
 int main(void) {
     // testLinkedList();
-
     // testTileBag();
-
-    testGameBoard();
-
-    testPlayerHand();
+    // testPlayerHand();
+    // testGameBoard();
 
     return EXIT_SUCCESS;
 }
@@ -98,7 +93,7 @@ void testTileBag() {
     cout << *bag << endl;
 
     cout << "getting hand of cards from tilebag..." << endl;
-    shared_ptr<LinkedList> hand = bag->getHand();
+    shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "hand -" << *hand << endl;
     cout << *bag << endl;
 
@@ -115,7 +110,7 @@ void testPlayerHand() {
     bag->shuffle();
 
     cout << "testing playerhand..." << endl;
-    shared_ptr<PlayerHand> hand = make_shared<PlayerHand>(bag->getHand());
+    shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "getting a hand of tiles..." << endl;
     cout << *hand << endl;
 

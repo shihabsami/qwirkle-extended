@@ -6,27 +6,23 @@
 #include "TileBag.h"
 #include "Player.h"
 
-#include <string>
-
-using std::string;
-
 class GameManager {
-    GameManager();
-    void beginGame(const shared_ptr<Player>& player1, const shared_ptr<Player>& player2);
+    static void beginGame(const string& player1Name, const string& player2Name);
 
-    // TODO figure out communication between this and input handler
-    void placeTile(string tileCode, string gridLocation);
+    static void placeTile(string tileCode, string gridLocation);
 
-    void replaceTile(string tileCode);
+    static void replaceTile(string tileCode);
 
-    void switchPlayer();
+    static void switchPlayer();
 
-private:
-    shared_ptr<GameBoard> board;
-    shared_ptr<TileBag> bag;
-    shared_ptr<Player> player1;
-    shared_ptr<Player> player2;
-    shared_ptr<Player> currentPlayer;
+    // TODO method signature takes player? returns score?
+    static unsigned int calculateScore(const Tile& playedTile);
+
+    static shared_ptr<GameBoard> board;
+    static shared_ptr<TileBag> bag;
+    static shared_ptr<Player> player1;
+    static shared_ptr<Player> player2;
+    static shared_ptr<Player> currentPlayer;
 };
 
 #endif // !GAME_MANAGER_H

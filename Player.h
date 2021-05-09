@@ -9,15 +9,17 @@
 using std::string;
 
 class Player {
-    Player(const string& name);
+public:
+    Player(const string& name, shared_ptr<PlayerHand> hand);
     string getName();
-    int getScore();
+    unsigned int getScore();
     shared_ptr<PlayerHand> getHand();
+
     friend bool operator==(const Player& player1, const Player& player2);
 
 private:
     string name;
-    int score;
+    unsigned int score;
     shared_ptr<PlayerHand> hand;
 };
 

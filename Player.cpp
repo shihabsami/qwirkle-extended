@@ -1,11 +1,12 @@
 
 #include "Player.h"
 
-Player::Player(const string& name) : name(name) {}
+Player::Player(const string& name, shared_ptr<PlayerHand> hand)
+    : name(name), hand(hand) {}
 
 string Player::getName() { return name; }
 
-int Player::getScore() { return score; }
+unsigned int Player::getScore() { return score; }
 
 shared_ptr<PlayerHand> Player::getHand() { return hand; }
 
