@@ -5,63 +5,64 @@
 
 #include <random>
 
-TileBag::TileBag()
-    : list(make_shared<LinkedList>()) {
-    Colour colours[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
-    Shape shapes[]{CIRCLE, STAR_4, DIAMOND, SQUARE, STAR_6, CLOVER};
+using std::length_error;
+using std::random_device;
+using std::uniform_int_distribution;
+
+TileBag::TileBag() : tiles(make_shared<LinkedList>()) {
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 6; ++j) {
-            list->addBack(make_shared<Tile>(colours[i], shapes[j]));
-            list->addBack(make_shared<Tile>(colours[i], shapes[j]));
+            tiles->addBack(make_shared<Tile>(colours[i], shapes[j]));
+            tiles->addBack(make_shared<Tile>(colours[i], shapes[j]));
         }
     }
 }
 
-TileBag::~TileBag() { list.reset(); }
+TileBag::~TileBag() { tiles.reset(); }
 
 void TileBag::shuffle() {
-    for (unsigned int i = 0; i < list->size(); ++i) {
+    for (unsigned int i = 0; i < tiles->size(); ++i) {
         int randomIndex = getRandomIndex();
 
-        shared_ptr<Tile> toBeReplaced = list->at(i);
-        shared_ptr<Tile> randomTile = list->at(randomIndex);
-        shared_ptr<Tile> temp = toBeReplaced;
+        shared_ptr<Tile> toBeReplaced = tiles->at(i);
+        shared_ptr<Tile> randomTile = tiles->at(randomIndex);
+        shared_ptr<Tile> replaced = toBeReplaced;
 
-        list->insert(randomTile, i, true);
-        list->insert(temp, randomIndex, true);
+        tiles->insert(randomTile, i, true);
+        tiles->insert(replaced, randomIndex, true);
     }
 }
 
-// TODO assumes bag has 6 tiles
-// TODO ordered list?
 shared_ptr<LinkedList> TileBag::getHand() {
+    if (tiles->size() < HAND_SIZE)
+        throw length_error("insufficient number of tiles for TileBag::getHand");
+
     shared_ptr<LinkedList> hand = make_shared<LinkedList>();
     for (int i = 0; i < HAND_SIZE; ++i) {
-        hand->addBack(list->at(list->size() - 1));
-        list->removeBack();
+        hand->addBack(tiles->at(tiles->size() - 1));
+        tiles->removeBack();
     }
 
     return hand;
 }
 
-// TODO although game logic does not allow same tile more than twice
-// TODO should check if tile exists more than twice?
+// TODO think of an efficient way to check if tile exists more than twice
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     int randomIndex = getRandomIndex();
+    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
+    tiles->remove(randomIndex);
+    tiles->addBack(tile);
 
-    shared_ptr<Tile> newTile = list->at(randomIndex);; 
-    list->remove(randomIndex);
-    list->addBack(tile);
-    return newTile;
+    return randomTile;
 }
 
 int TileBag::getRandomIndex() {
-    std::random_device engine;
-    std::uniform_int_distribution<int> distribution(0, list->size() - 1);
+    random_device engine;
+    uniform_int_distribution<int> distribution(0, tiles->size() - 1);
     return distribution(engine);
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {
-    os << *bag.list;
+    os << *bag.tiles;
     return os;
 }

@@ -4,12 +4,6 @@
 
 #include "LinkedList.h"
 
-#include <memory>
-
-using std::ostream;
-using std::shared_ptr;
-using std::make_shared;
-
 class Tile;
 
 class TileBag {
@@ -23,7 +17,7 @@ public:
     friend ostream& operator<<(ostream& os, const TileBag& bag);
 
 private:
-    shared_ptr<LinkedList> list;
+    shared_ptr<LinkedList> tiles;
 };
 
 #endif // !TILE_BAG_H

@@ -1,83 +1,61 @@
-#include "PlayerHand.h"
-#include <iostream>
-PlayerHand::PlayerHand() { tiles = std::make_shared<LinkedList>(); }
 
-PlayerHand::PlayerHand(LinkedList& tileList) { tiles = std::make_shared<LinkedList>(tileList); }
-PlayerHand::PlayerHand(std::shared_ptr<LinkedList> tileList) : tiles(tileList) {}
+#include "PlayerHand.h"
+
+using std::invalid_argument;
+
+PlayerHand::PlayerHand() : tiles(make_shared<LinkedList>()) {}
+
+PlayerHand::PlayerHand(shared_ptr<LinkedList> tiles) : tiles(tiles) {}
 
 PlayerHand::~PlayerHand() { tiles.reset(); }
 
-void PlayerHand::addTile(std::shared_ptr<Tile> tile) { tiles->addBack(tile); }
+// TODO think of an efficient way to check if tile exists more than twice
+void PlayerHand::addTile(shared_ptr<Tile> tile) { tiles->addBack(tile); }
 
-std::shared_ptr<Tile> PlayerHand::playTile(Colour& colour, Shape& shape) {
-    Tile temp(colour, shape);
-    return playTile(temp);
-}
+shared_ptr<Tile> PlayerHand::playTile(const Tile& tile) {
+    shared_ptr<Tile> toPlay = nullptr;
 
-// returns nullptr if fails to play tile
-std::shared_ptr<Tile> PlayerHand::playTile(Tile& tile) {
-    std::shared_ptr<Tile> toPlay = getTile(tile);
-
-    if (toPlay != nullptr) {
+    try {
+        toPlay = getTile(tile);
         tiles->remove(toPlay);
+    } catch (invalid_argument& exception) {
+        throw invalid_argument("invalid tile for PlayerHand::playTile");
     }
 
     return toPlay;
 }
 
-std::shared_ptr<Tile> PlayerHand::replaceTile(Colour& colour, Shape& shape, TileBag& bag) {
-    Tile temp(colour, shape);
-    return replaceTile(temp, bag);
-}
-
-std::shared_ptr<Tile> PlayerHand::replaceTile(Tile& toReplace, TileBag& bag) {
-    std::shared_ptr<Tile> newTile = nullptr;
-    std::shared_ptr<Tile> replace = getTile(toReplace);
-
-    if (replace != nullptr) {
-        newTile = bag.replace(replace);
-        tiles->remove(replace);
-        tiles->addBack(newTile);
+void PlayerHand::replaceTile(const Tile& tile, TileBag& bag) {
+    try {
+        shared_ptr<Tile> fromHand = getTile(tile);
+        shared_ptr<Tile> fromBag = bag.replace(fromHand);
+        tiles->remove(fromHand);
+        tiles->addBack(fromBag);
+    } catch (invalid_argument& exception) {
+        throw invalid_argument("invalid tile for PlayerHand::replaceTile");
     }
-
-    return newTile;
 }
 
-std::shared_ptr<Tile> PlayerHand::getTile(Colour& colour, Shape& shape) {
-    Tile temp(colour, shape);
-    return getTile(temp);
-}
-
-std::shared_ptr<Tile> PlayerHand::getTile(Tile& tile) {
+shared_ptr<Tile> PlayerHand::getTile(const Tile& tile) {
     bool found = false;
-    std::shared_ptr<Tile> currentTile = nullptr;
-    std::shared_ptr<Tile> toReturn = nullptr;
+    shared_ptr<Tile> currentTile = nullptr;
+    shared_ptr<Tile> toReturn = nullptr;
 
-    std::cout << "Tiles " << *tiles << std::endl;
-
-    for (unsigned int i = 0; i < tiles->size(); i++) {
+    for (unsigned int i = 0; i < tiles->size() && !found; ++i) {
         currentTile = tiles->at(i);
-        std::cout << "Iteration " << i << " size " << tiles->size() << " " << tile << " | " << *currentTile << std::endl;
-        if (tile == *currentTile && !found) {
-            toReturn = currentTile; 
+        if (tile == *currentTile) {
+            toReturn = currentTile;
             found = true;
         }
-            
     }
+
+    if (!found)
+        throw invalid_argument("invalid tile for PlayerHand::getTile");
 
     return toReturn;
 }
 
-bool PlayerHand::isHoldingTile(Colour& colour, Shape& shape) {
-    Tile temp(colour, shape);
-    return isHoldingTile(temp);
-}
-
-bool PlayerHand::isHoldingTile(Tile& tile) {
-    return (getTile(tile) != nullptr) ? true : false;
-}
-
-std::ostream& operator<<(std::ostream& os, const PlayerHand& hand) {
-    os << *(hand.tiles.get());
+ostream& operator<<(ostream& os, const PlayerHand& hand) {
+    os << *hand.tiles;
     return os;
 }
