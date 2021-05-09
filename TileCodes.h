@@ -18,8 +18,11 @@
 #define STAR_6 5
 #define CLOVER 6
 
-// TODO discuss whether #define can be replaced by a collection globally
-// Colour array[]{ RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE };
-// Shape shapes[]{ CIRCLE, STAR_4, DIAMOND, SQUARE, STAR_6, CLOVER };
+/*
+ * @NOTE
+ * global variable made static, as well as const according to the style guide
+ */
+static const Colour colours[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
+static const Shape shapes[]{CIRCLE, STAR_4, DIAMOND, SQUARE, STAR_6, CLOVER};
 
 #endif // ASSIGN1_TILECODES_H

@@ -3,14 +3,14 @@
 #include "TileBag.h"
 #include "TileCodes.h"
 #include "GameBoard.h"
+#include "PlayerHand.h"
 
 #include <iostream>
+#include <random>
 #include <memory>
 
 using std::cout;
 using std::endl;
-using std::shared_ptr;
-using std::make_shared;
 
 // tests for LinkedList implementation
 void testLinkedList();
@@ -21,12 +21,17 @@ void testTileBag();
 // tests for GameBoard implementation
 void testGameBoard();
 
-int main() {
+// tests for PlayerHand implementation
+void testPlayerHand();
+
+int main(void) {
     // testLinkedList();
 
     // testTileBag();
 
     testGameBoard();
+
+    testPlayerHand();
 
     return EXIT_SUCCESS;
 }
@@ -100,9 +105,34 @@ void testTileBag() {
     cout << "replacing a tile from tilebag..." << endl;
     shared_ptr<Tile> tile = make_shared<Tile>(PURPLE, CLOVER);
     cout << "tile " << *tile;
-    bag->replace(tile);
+    tile = bag->replace(tile);
     cout << " replaced with " << *tile << endl;
     cout << *bag << endl;
+}
+
+void testPlayerHand() {
+    shared_ptr<TileBag> bag = make_shared<TileBag>();
+    bag->shuffle();
+
+    cout << "testing playerhand..." << endl;
+    shared_ptr<PlayerHand> hand = make_shared<PlayerHand>(bag->getHand());
+    cout << "getting a hand of tiles..." << endl;
+    cout << *hand << endl;
+
+    cout << "adding two new tiles to the hand..." << endl;
+    shared_ptr<Tile> tile1 = make_shared<Tile>(RED, STAR_4);
+    shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, DIAMOND);
+    hand->addTile(tile1);
+    hand->addTile(tile2);
+    cout << *hand << endl;
+
+    cout << "playing a tile from the hand..." << endl;
+    hand->playTile(*tile1);
+    cout << *hand << endl;
+
+    cout << "replacing a tile from the hand..." << endl;
+    hand->replaceTile(*tile2, *bag);
+    cout << *hand << endl;
 }
 
 void testGameBoard() {
