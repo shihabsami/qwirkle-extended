@@ -1,6 +1,7 @@
 
 #include "TileBag.h"
 #include "TileCodes.h"
+#include "PlayerHand.h"
 #include "Constants.h"
 
 #include <random>
@@ -33,13 +34,13 @@ void TileBag::shuffle() {
     }
 }
 
-shared_ptr<LinkedList> TileBag::getHand() {
+shared_ptr<PlayerHand> TileBag::getHand() {
     if (tiles->size() < HAND_SIZE)
         throw length_error("insufficient number of tiles for TileBag::getHand");
 
-    shared_ptr<LinkedList> hand = make_shared<LinkedList>();
+    shared_ptr<PlayerHand> hand = make_shared<PlayerHand>();
     for (int i = 0; i < HAND_SIZE; ++i) {
-        hand->addBack(tiles->at(tiles->size() - 1));
+        hand->addTile(tiles->at(tiles->size() - 1));
         tiles->removeBack();
     }
 
