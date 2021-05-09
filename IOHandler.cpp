@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -16,8 +17,10 @@ void newGame();
 bool StringCheck(std::string name);
 void credits();
 void loadGame();
+bool checkTilePosition(std::string tilePosition);
 bool checkTile(std::string tile);
 void prompt();
+void gameStart();
 void Test();
 int quit();
 
@@ -119,7 +122,58 @@ void newGame() {
         }
     }
     cout << "Let's Play!" << endl;
-    // method for actual game
+    gameStart();
+}
+
+void gameStart() {
+
+    // print player info
+    // print grid
+    // print player A' hand
+
+    // place D2 at C4
+
+    //outter while loop only ends when endgame is called
+    //inner while loop only ends when input and logic is gucci 
+    std::string operation, tile, keywordAT, pos;
+    cin >> operation >> tile >> keywordAT >> pos;
+    transform(operation.begin(), operation.end(), operation.begin(), ::tolower);
+    transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
+    transform(keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
+    transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
+
+    if (operation.compare("place") == 0) {
+        placeTile(tile, pos);
+        
+    }
+    else if (operation.compare("replace") == 0){
+        replaceTile(tile);
+    }
+    else {
+        cout << "not a valid command" << endl;
+    }
+    //help command  can be added here
+
+
+
+    // simpleif (toLower(operation) ==)
+
+    // place -> placeTile()
+    // repalce -> replaceTile()
+}
+
+void placeTile(std::string tile, std::string pos) {
+    if ( checkTile(tile) == true && checkTilePosition(pos) == true){
+        //->tile && ->pos 
+        //give to sam
+    }
+}
+
+void replaceTile(std::string tile) {
+    if ( checkTile(tile) == true){
+        //->tile
+        //give to sam 
+    }
 }
 
 // to load game copy path of t1.save
@@ -180,7 +234,8 @@ void loadGame() {
                     int number = std::stoi(substr);
                     if (!(number >= 0) || (number > 26)) {
                         throw std::invalid_argument(
-                            "The grid should be more than 0 and less that 26");
+                            "The grid should be more than 0 and less that "
+                            "26");
                     }
                 }
                 count++;
@@ -236,6 +291,7 @@ void credits() {
     selection();
 }
 
+// Player Names have to be CAPITALIZED
 bool StringCheck(std::string name) {
 
     bool state = false;
@@ -252,42 +308,80 @@ bool StringCheck(std::string name) {
     return state;
 }
 
-bool checkTile(std::string tile) {
+// Tile position checker
+bool checkTilePosition(std::string tilePosition) {
     try {
         std::string appended;
         bool condition = false;
-        if (tile.size() == 2) {
-            char num1 = tile.at(1);
+        if (tilePosition.size() == 2) {
+            char num1 = tilePosition.at(1);
             appended.append(1, num1);
             stoi(appended);
-            cout << "WORKS" << endl;
-
             condition = true;
 
-        } else if (tile.size() == 3) {
+        } else if (tilePosition.size() == 3) {
             // get the position
-            char num1 = tile.at(1);
-            char num2 = tile.at(2);
+            char num1 = tilePosition.at(1);
+            char num2 = tilePosition.at(2);
             // append the 2 chars into string
             appended.append(1, num1);
             appended.append(1, num2);
             // convert string into int
             int combinedNumber = stoi(appended);
             if (combinedNumber > 25) {
-                //
-                cout << "f" << endl;
                 condition = false;
             } else {
-                cout << "t" << endl;
                 condition = true;
             }
         } else {
-            cout << "Invalid tile" << endl;
+            cout << "Invalid tile position" << endl;
             condition = false;
         }
         return condition;
     } catch (const std::invalid_argument& e) {
         std::cerr << "The error is " << e.what() << endl;
+        return false;
+    }
+}
+
+bool checkTile(std::string tile) {
+    try {
+        bool condition = false;
+        bool boolchar = false;
+        bool boolnum = false;
+        std::string appended;
+        if (tile.size() == 2) {
+            char letter = tile.at(0);
+            char num1 = tile.at(1);
+
+            appended.append(1, num1);
+            // convert string into int
+            int combinedNumber = stoi(appended);
+
+            if (letter == 'R' || letter == 'O' || letter == 'Y' ||
+                letter == 'G' || letter == 'B' || letter == 'B' ||
+                letter == 'P') {
+                boolchar = true;
+            } else {
+                boolchar = false;
+            }
+
+            if (combinedNumber > 7 && combinedNumber < 0) {
+                boolnum = false;
+            } else {
+                boolnum = true;
+            }
+        } else {
+            boolchar = false;
+            boolnum = false;
+        }
+        if (boolchar == true && boolnum == true) {
+            condition = true;
+        } else {
+            condition = false;
+        }
+        return condition;
+    } catch (const std::invalid_argument& e) {
         return false;
     }
 }
@@ -299,10 +393,4 @@ int quit() {
     return EXIT_SUCCESS;
 }
 
-void Test() {
-    // checkTile("DA");
-    checkTile("A");
-    // checkTile("D1A1");
-    // checkTile("Dasd");
-    // checkTile("DDD");
-}
+void Test() { gameStart(); }
