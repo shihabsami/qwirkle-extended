@@ -4,11 +4,10 @@
 
 #include "Tile.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 using std::vector;
-using std::ostream;
 using std::shared_ptr;
 using std::make_shared;
 
@@ -16,8 +15,8 @@ class GameBoard {
 public:
     GameBoard();
     ~GameBoard();
-    void placeTile(const shared_ptr<Tile>& tile, unsigned int row, unsigned int column);
-
+    void placeTile(
+        const shared_ptr<Tile>& tile, unsigned int row, unsigned int column);
     friend ostream& operator<<(ostream& os, const GameBoard& board);
 
 private:
