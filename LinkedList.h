@@ -4,8 +4,6 @@
 
 #include "Node.h"
 
-using std::out_of_range;
-
 class LinkedList {
 public:
     LinkedList();
