@@ -1,6 +1,8 @@
 
 #include "LinkedList.h"
 
+using std::out_of_range;
+
 LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
 LinkedList::~LinkedList() {
@@ -151,9 +153,8 @@ void LinkedList::remove(unsigned int index) {
 
         toBeDeleted->next->previous = toBeDeleted->previous;
         toBeDeleted->previous->next = toBeDeleted->next;
+        --length;
     }
-
-    --length;
 }
 
 unsigned int LinkedList::size() const { return length; }

@@ -4,14 +4,9 @@
 #include "GameBoard.h"
 
 #include <iostream>
-#include <memory>
 
 using std::cout;
 using std::endl;
-using std::unique_ptr;
-using std::make_unique;
-using std::shared_ptr;
-using std::make_shared;
 
 // tests for LinkedList implementation
 void testLinkedList();
@@ -27,7 +22,7 @@ int main() {
 }
 
 void testLinkedList() {
-    unique_ptr<LinkedList> list = make_unique<LinkedList>();
+    shared_ptr<LinkedList> list = make_shared<LinkedList>();
 
     shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
     shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, STAR_4);
