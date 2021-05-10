@@ -20,6 +20,8 @@ void loadGame();
 bool checkTilePosition(std::string tilePosition);
 bool checkTile(std::string tile);
 void prompt();
+void placeTile(std::string tile, std::string pos);
+void replaceTile(std::string tile);
 void gameStart();
 void Test();
 int quit();
@@ -133,8 +135,8 @@ void gameStart() {
 
     // place D2 at C4
 
-    //outter while loop only ends when endgame is called
-    //inner while loop only ends when input and logic is gucci 
+    // outter while loop only ends when endgame is called
+    // inner while loop only ends when input and logic is gucci
     std::string operation, tile, keywordAT, pos;
     cin >> operation >> tile >> keywordAT >> pos;
     transform(operation.begin(), operation.end(), operation.begin(), ::tolower);
@@ -144,17 +146,13 @@ void gameStart() {
 
     if (operation.compare("place") == 0) {
         placeTile(tile, pos);
-        
-    }
-    else if (operation.compare("replace") == 0){
+
+    } else if (operation.compare("replace") == 0) {
         replaceTile(tile);
-    }
-    else {
+    } else {
         cout << "not a valid command" << endl;
     }
-    //help command  can be added here
-
-
+    // help command  can be added here
 
     // simpleif (toLower(operation) ==)
 
@@ -163,16 +161,16 @@ void gameStart() {
 }
 
 void placeTile(std::string tile, std::string pos) {
-    if ( checkTile(tile) == true && checkTilePosition(pos) == true){
-        //->tile && ->pos 
-        //give to sam
+    if (checkTile(tile) == true && checkTilePosition(pos) == true) {
+        //->tile && ->pos
+        // give to sam
     }
 }
 
 void replaceTile(std::string tile) {
-    if ( checkTile(tile) == true){
+    if (checkTile(tile) == true) {
         //->tile
-        //give to sam 
+        // give to sam
     }
 }
 
@@ -313,33 +311,59 @@ bool checkTilePosition(std::string tilePosition) {
     try {
         std::string appended;
         bool condition = false;
+        bool boolLetter = false;
+        bool boolNum = false;
         if (tilePosition.size() == 2) {
+            char letter = tilePosition.at(0);
             char num1 = tilePosition.at(1);
+            int asciiLetter = int(letter);
+            if (asciiLetter >= 65 && asciiLetter <= 90) {
+                boolLetter = true;
+            } else {
+                boolLetter = false;
+            }
             appended.append(1, num1);
             stoi(appended);
-            condition = true;
-
+            if (stoi(appended) >= 0 && stoi(appended) <= 9){
+                boolNum = true;
+            } else {
+                boolNum = false;
+            }
         } else if (tilePosition.size() == 3) {
             // get the position
+            char letter = tilePosition.at(0);
             char num1 = tilePosition.at(1);
             char num2 = tilePosition.at(2);
+
+            int asciiLetter = int(letter);
+            if (asciiLetter >= 65 && asciiLetter <= 90) {
+                boolLetter = true;
+            } else {
+                boolLetter = false;
+            }
             // append the 2 chars into string
             appended.append(1, num1);
             appended.append(1, num2);
             // convert string into int
             int combinedNumber = stoi(appended);
             if (combinedNumber > 25) {
-                condition = false;
+                boolNum = false;
             } else {
-                condition = true;
+                boolNum = true;
             }
         } else {
-            cout << "Invalid tile position" << endl;
+            boolLetter = false;
+            boolNum = false;
+        }
+        if (boolNum && boolLetter){
+            condition = true;
+        } else {
             condition = false;
         }
+        std::cout << condition;
         return condition;
     } catch (const std::invalid_argument& e) {
-        std::cerr << "The error is " << e.what() << endl;
+        std::cerr << "The error is " << e.what() << std::endl;
         return false;
     }
 }
@@ -359,8 +383,7 @@ bool checkTile(std::string tile) {
             int combinedNumber = stoi(appended);
 
             if (letter == 'R' || letter == 'O' || letter == 'Y' ||
-                letter == 'G' || letter == 'B' || letter == 'B' ||
-                letter == 'P') {
+                letter == 'G' || letter == 'B' || letter == 'P') {
                 boolchar = true;
             } else {
                 boolchar = false;
@@ -393,4 +416,4 @@ int quit() {
     return EXIT_SUCCESS;
 }
 
-void Test() { gameStart(); }
+void Test() { checkTilePosition("32"); }
