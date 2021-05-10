@@ -18,6 +18,9 @@ public:
     bool operator==(const Tile& other) const;
     friend ostream& operator<<(ostream& os, const Tile& tile);
 
+    bool hasSameColour(const Tile& tile);
+    bool hasSameShape(const Tile& tile);
+
     Colour colour;
     Shape shape;
 };

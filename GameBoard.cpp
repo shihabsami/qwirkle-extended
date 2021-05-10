@@ -62,3 +62,7 @@ void GameBoard::placeTile(
 
     board.at(row).at(column) = tile;
 }
+
+const shared_ptr<Tile> GameBoard::at(int row, int column) {
+    return board.at(row).at(column);
+}

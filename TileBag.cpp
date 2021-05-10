@@ -13,8 +13,8 @@ using std::uniform_int_distribution;
 TileBag::TileBag() : tiles(make_shared<LinkedList>()) {
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 6; ++j) {
-            tiles->addBack(make_shared<Tile>(colours[i], shapes[j]));
-            tiles->addBack(make_shared<Tile>(colours[i], shapes[j]));
+            tiles->addBack(make_shared<Tile>(COLOURS[i], SHAPES[j]));
+            tiles->addBack(make_shared<Tile>(COLOURS[i], SHAPES[j]));
         }
     }
 }

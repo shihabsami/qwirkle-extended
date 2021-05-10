@@ -3,6 +3,7 @@
 #include "TileBag.h"
 #include "TileCodes.h"
 #include "GameBoard.h"
+#include "GameManager.h"
 #include "PlayerHand.h"
 
 #include <iostream>
@@ -22,11 +23,15 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
+// tests for score calculation 
+void testCalculateScore();
+
 int main(void) {
     // testLinkedList();
     // testTileBag();
     // testPlayerHand();
     // testGameBoard();
+    testCalculateScore();
 
     return EXIT_SUCCESS;
 }
@@ -146,4 +151,9 @@ void testGameBoard() {
     board->placeTile(tile4, 20, 10);
     cout << *board << endl;
 
+}
+
+void testCalculateScore() {
+    Tile tile(RED, SQUARE);
+    GameManager::calculateScore(tile, 4, 14);
 }

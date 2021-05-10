@@ -7,6 +7,7 @@
 #include "Player.h"
 
 class GameManager {
+public: 
     static void beginGame(const string& player1Name, const string& player2Name);
 
     static void placeTile(string tileCode, string gridLocation);
@@ -16,7 +17,7 @@ class GameManager {
     static void switchPlayer();
 
     // TODO method signature takes player? returns score?
-    static unsigned int calculateScore(const Tile& playedTile);
+    static unsigned int calculateScore(const Tile& playedTile, int row, int column);
 
     static shared_ptr<GameBoard> board;
     static shared_ptr<TileBag> bag;

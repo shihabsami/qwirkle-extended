@@ -30,3 +30,11 @@ ostream& operator<<(ostream& os, const Tile& tile) {
     os << tile.colour << tile.shape;
     return os;
 }
+
+    bool Tile::hasSameColour(const Tile& tile) {
+        return this->colour == tile.colour;
+    }
+
+    bool Tile::hasSameShape(const Tile& tile) {
+        return this->shape == tile.shape;
+    }
