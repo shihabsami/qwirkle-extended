@@ -20,8 +20,8 @@ void loadGame();
 bool checkTilePosition(std::string tilePosition);
 bool checkTile(std::string tile);
 void prompt();
-void placeTile(std::string tile, std::string pos);
-void replaceTile(std::string tile);
+bool placeTile(std::string tile, std::string pos);
+bool replaceTile(std::string tile);
 void gameStart();
 void Test();
 int quit();
@@ -133,41 +133,95 @@ void gameStart() {
     // print grid
     // print player A' hand
 
-    // place D2 at C4
+    bool gameStarted = true;
+    // sam method for game ended or not?
+    //
+    while (gameStarted) {
+        // cout << //sams ( current player ) "its your turn"
+        cout << " Score for /*sams ( current player )*/ :" /*sam method for
+                                                              score*/
+             << endl;
+        cout << " Score for /*sams ( current player )*/ :" /*sam method for
+                                                              score*/
+             << endl;
 
-    // outter while loop only ends when endgame is called
-    // inner while loop only ends when input and logic is gucci
-    std::string operation, tile, keywordAT, pos;
-    cin >> operation >> tile >> keywordAT >> pos;
-    transform(operation.begin(), operation.end(), operation.begin(), ::tolower);
-    transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
-    transform(keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
-    transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
+        // sam method for the current grid
 
-    if (operation.compare("place") == 0) {
-        placeTile(tile, pos);
+        cout << "Your hand is " << endl;
+        // sam hand method
 
-    } else if (operation.compare("replace") == 0) {
-        replaceTile(tile);
-    } else {
-        cout << "not a valid command" << endl;
+        bool errorChecking = true;
+        while (errorChecking) {
+            // place D2 at C4
+
+            // outter while loop only ends when endgame is called
+            // inner while loop only ends when input and logic is gucci
+            prompt();
+            std::string operation, tile, keywordAT, pos; // D5
+            cin >> operation >> tile >> keywordAT >> pos;
+            std::string gameFileName = tile;
+
+            transform(operation.begin(), operation.end(), operation.begin(),
+                      ::tolower);
+            transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
+            transform(keywordAT.begin(), keywordAT.end(), keywordAT.begin(),
+                      ::tolower);
+            transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
+
+            if (operation.compare("place") == 0) {
+                if (placeTile(tile, pos) == true) {
+                    errorChecking = false;
+                } else {
+                    cout << "Invalid Tile or Tile Position" << endl;
+                }
+
+            } else if (operation.compare("replace") == 0) {
+                if (replaceTile(tile) == true) {
+                    errorChecking = false;
+                } else {
+                    cout << "Invalid Tile" << endl;
+                }
+
+            } else if (operation.compare("save") == 0) {
+                gameFileName = gameFileName + ".save";
+                std::ofstream file(gameFileName);
+                file << "/*player1 name from sam*/";
+                file << "/*player1 score from sam*/";
+                file << "/*player1 tile from sam*/";
+                file << "/*player2 name from sam*/";
+                file << "/*player2 score from sam*/";
+                file << "/*player2 tile from sam*/";
+                file << "/*board state from sam*/";
+                file << "/*tiles played* from sam/";
+                file << "/*tiles left in bag* from sam/";
+                file << "/*current player* from sam/";
+                file.close();
+            } else {
+                cout << "not a valid command" << endl;
+            }
+
+            // help command  can be added here
+
+            // place -> placeTile()
+            // repalce -> replaceTile()
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        // sam method checking for if the game has ended or note
     }
-    // help command  can be added here
-
-    // simpleif (toLower(operation) ==)
-
-    // place -> placeTile()
-    // repalce -> replaceTile()
 }
 
-void placeTile(std::string tile, std::string pos) {
+// what is the return type
+bool placeTile(std::string tile, std::string pos) {
     if (checkTile(tile) == true && checkTilePosition(pos) == true) {
+        // can do or cannot do
         //->tile && ->pos
         // give to sam
     }
 }
 
-void replaceTile(std::string tile) {
+bool replaceTile(std::string tile) {
     if (checkTile(tile) == true) {
         //->tile
         // give to sam
@@ -324,7 +378,7 @@ bool checkTilePosition(std::string tilePosition) {
             }
             appended.append(1, num1);
             stoi(appended);
-            if (stoi(appended) >= 0 && stoi(appended) <= 9){
+            if (stoi(appended) >= 0 && stoi(appended) <= 9) {
                 boolNum = true;
             } else {
                 boolNum = false;
@@ -355,7 +409,7 @@ bool checkTilePosition(std::string tilePosition) {
             boolLetter = false;
             boolNum = false;
         }
-        if (boolNum && boolLetter){
+        if (boolNum && boolLetter) {
             condition = true;
         } else {
             condition = false;
