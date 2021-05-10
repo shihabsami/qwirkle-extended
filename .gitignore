@@ -13,5 +13,8 @@ qwirkle
 # code history
 .history/
 
+# other ide files
+.idea
+
 # clion settings
 .idea
