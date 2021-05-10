@@ -11,6 +11,7 @@ enum State {
 };
 
 class GameManager {
+    public:
     static void beginGame(const string& player1Name, const string& player2Name);
 
     static void placeTile(Colour colour, Shape shape, int row, int column);
@@ -42,4 +43,4 @@ class GameManager {
     static shared_ptr<Player> currentPlayer;
 };
 
-#endif // !GAME_MANAGER_H
+#endif // GAME_MANAGER_H

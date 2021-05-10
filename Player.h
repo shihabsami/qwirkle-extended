@@ -23,4 +23,4 @@ private:
     shared_ptr<PlayerHand> hand;
 };
 
-#endif // !PLAYER_H
+#endif // PLAYER_H

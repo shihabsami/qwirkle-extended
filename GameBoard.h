@@ -23,4 +23,4 @@ private:
     vector<vector<shared_ptr<Tile>>> board;
 };
 
-#endif // !GAME_BOARD_H
+#endif //GAME_BOARD_H

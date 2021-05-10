@@ -6,36 +6,22 @@
 #include <sstream>
 #include <string>
 
+#include "IOHandler.h"
+#include "TileCodes.h"
+#include "GameManager.h"
+
 using std::cin;
 using std::cout;
 using std::endl;
 
-void menu();
-void printStart();
-void selection();
-void newGame();
-bool StringCheck(std::string name);
-void credits();
-void loadGame();
-bool checkTilePosition(std::string tilePosition);
-bool checkTile(std::string tile);
-void prompt();
-bool placeTile(std::string tile, std::string pos);
-bool replaceTile(std::string tile);
-void gameStart();
-void Test();
-int quit();
-
-int main(int argc, char** argv) { Test(); }
-
-void printStart() {
+void IOHandler::printStart() {
     cout << "Welcome to Qwirkle!" << endl;
     cout << "-------------------" << endl;
     cout << " " << endl;
     selection();
 }
 
-void menu() {
+void IOHandler::menu() {
     cout << "Menu" << endl;
     cout << "----" << endl;
     cout << "1. New Game" << endl;
@@ -44,7 +30,8 @@ void menu() {
     cout << "4. Quit" << endl;
 }
 
-void selection() {
+void IOHandler::selection() {
+
     menu();
     bool flag = true;
     while (!std::cin.eof() && flag) {
@@ -80,7 +67,7 @@ void selection() {
     }
 }
 
-void newGame() {
+void IOHandler::newGame() {
     std::string player1Name;
     std::string player2Name;
 
@@ -127,7 +114,7 @@ void newGame() {
     gameStart();
 }
 
-void gameStart() {
+void IOHandler::gameStart() {
 
     // print player info
     // print grid
@@ -170,7 +157,9 @@ void gameStart() {
 
             if (operation.compare("place") == 0) {
                 if (placeTile(tile, pos) == true) {
+                    
                     errorChecking = false;
+
                 } else {
                     cout << "Invalid Tile or Tile Position" << endl;
                 }
@@ -185,16 +174,16 @@ void gameStart() {
             } else if (operation.compare("save") == 0) {
                 gameFileName = gameFileName + ".save";
                 std::ofstream file(gameFileName);
-                file << "/*player1 name from sam*/";
+                file << GameManager::player1;
                 file << "/*player1 score from sam*/";
                 file << "/*player1 tile from sam*/";
-                file << "/*player2 name from sam*/";
+                file << GameManager::player2;
                 file << "/*player2 score from sam*/";
                 file << "/*player2 tile from sam*/";
-                file << "/*board state from sam*/";
+                file << GameManager::board;
                 file << "/*tiles played* from sam/";
-                file << "/*tiles left in bag* from sam/";
-                file << "/*current player* from sam/";
+                file << GameManager::bag;
+                file << GameManager::currentPlayer;
                 file.close();
             } else {
                 cout << "not a valid command" << endl;
@@ -208,28 +197,61 @@ void gameStart() {
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
-        // sam method checking for if the game has ended or note
+        // sam method checking for if the game has ended or not
     }
 }
 
 // what is the return type
-bool placeTile(std::string tile, std::string pos) {
+bool IOHandler::placeTile(std::string tile, std::string pos) {
     if (checkTile(tile) == true && checkTilePosition(pos) == true) {
-        // can do or cannot do
-        //->tile && ->pos
-        // give to sam
+        std::string appended;
+        char colour = tile.at(0);
+        char shape = tile.at(1);
+        int row = 0;
+        int col = 0;
+        
+    try{
+        if(pos.size() == 2){
+            char asciiLetter = pos.at(0);
+            int rowi = int(asciiLetter);
+            row = rowi - 65;
+            //blame jon if it doesn't work
+            char coli = pos.at(1);
+            appended.append(1, coli);
+            col = stoi(appended);
+
+        } else if (pos.size() == 3){
+            char asciiLetter = pos.at(0);
+            char num1 = pos.at(1);
+            char num2 = pos.at(2);
+            int rowi = int(asciiLetter);
+            row = rowi - 65;
+            appended.append(1,num1);
+            appended.append(1,num2);
+            col = stoi(appended);
+            cout << colour << endl;
+            cout << shape << endl;
+            cout << row << endl;
+            cout << col << endl;
+        }
+        //GameManager::placeTile(colour, shape, row, col);
+    }catch (const std::invalid_argument& e){
+        std::cerr << "The error is " << e.what() << std::endl;
     }
+    }
+    return true;
 }
 
-bool replaceTile(std::string tile) {
+bool IOHandler::replaceTile(std::string tile) {
     if (checkTile(tile) == true) {
         //->tile
         // give to sam
     }
+    return true;
 }
 
 // to load game copy path of t1.save
-void loadGame() {
+void IOHandler::loadGame() {
     std::string filename;
     cout << "Enter the filename from which load a game" << endl;
     prompt();
@@ -316,7 +338,7 @@ void loadGame() {
     }
 }
 
-void credits() {
+void IOHandler::credits() {
     cout << "----------------------------------" << endl;
     cout << "Name : Shihab Sami" << endl;
     cout << "Student ID : S3823710" << endl;
@@ -344,7 +366,7 @@ void credits() {
 }
 
 // Player Names have to be CAPITALIZED
-bool StringCheck(std::string name) {
+bool IOHandler::StringCheck(std::string name) {
 
     bool state = false;
     int counter = 0;
@@ -361,7 +383,7 @@ bool StringCheck(std::string name) {
 }
 
 // Tile position checker
-bool checkTilePosition(std::string tilePosition) {
+bool IOHandler::checkTilePosition(std::string tilePosition) {
     try {
         std::string appended;
         bool condition = false;
@@ -414,7 +436,6 @@ bool checkTilePosition(std::string tilePosition) {
         } else {
             condition = false;
         }
-        std::cout << condition;
         return condition;
     } catch (const std::invalid_argument& e) {
         std::cerr << "The error is " << e.what() << std::endl;
@@ -422,7 +443,7 @@ bool checkTilePosition(std::string tilePosition) {
     }
 }
 
-bool checkTile(std::string tile) {
+bool IOHandler::checkTile(std::string tile) {
     try {
         bool condition = false;
         bool boolchar = false;
@@ -431,23 +452,20 @@ bool checkTile(std::string tile) {
         if (tile.size() == 2) {
             char letter = tile.at(0);
             char num1 = tile.at(1);
-
+        
             appended.append(1, num1);
             // convert string into int
             int combinedNumber = stoi(appended);
-
-            if (letter == 'R' || letter == 'O' || letter == 'Y' ||
-                letter == 'G' || letter == 'B' || letter == 'P') {
-                boolchar = true;
-            } else {
-                boolchar = false;
+            for(unsigned int  i = 0; i < COLOURS.size(); i++){
+                if(letter == COLOURS[i]){
+                    boolchar = true;
+                }
             }
-
-            if (combinedNumber > 7 && combinedNumber < 0) {
-                boolnum = false;
-            } else {
-                boolnum = true;
-            }
+            for(unsigned int i = 0; i < SHAPES.size(); i++){
+                if(combinedNumber == SHAPES[i]){
+                    boolnum = true;
+                }
+            } 
         } else {
             boolchar = false;
             boolnum = false;
@@ -463,11 +481,15 @@ bool checkTile(std::string tile) {
     }
 }
 
-void prompt() { cout << "> "; }
+void IOHandler::prompt() { cout << "> "; }
 
-int quit() {
+int IOHandler::quit() {
     cout << "Goodbye" << endl;
     return EXIT_SUCCESS;
 }
 
-void Test() { checkTilePosition("32"); }
+void IOHandler::Test() { checkTilePosition("32"); }
+
+int main(){
+    IOHandler::placeTile("R1", "R12");
+}
