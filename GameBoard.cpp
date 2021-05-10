@@ -52,13 +52,6 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
 }
 
 void GameBoard::placeTile(
-    // TODO check if tile is present > twice
     const shared_ptr<Tile>& tile, unsigned int row, unsigned int column) {
-    if (row > BOARD_LENGTH || column > BOARD_LENGTH)
-        throw out_of_range("invalid grid location for GameBoard::placeTile");
-    else if (board.at(row).at(column) != nullptr)
-        throw invalid_argument(
-            "grid location is not empty for GameBoard::placeTile");
-
     board.at(row).at(column) = tile;
 }

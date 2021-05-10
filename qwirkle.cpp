@@ -28,6 +28,12 @@ int main(void) {
     // testPlayerHand();
     // testGameBoard();
 
+    bool gameRunning = true;
+
+    while (gameRunning) {
+        IOHandler::beginGame();
+    }
+
     return EXIT_SUCCESS;
 }
 
