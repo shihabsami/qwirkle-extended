@@ -33,6 +33,12 @@ int main(void) {
     // testGameBoard();
     testCalculateScore();
 
+    bool gameRunning = true;
+
+    while (gameRunning) {
+        IOHandler::beginGame();
+    }
+
     return EXIT_SUCCESS;
 }
 
