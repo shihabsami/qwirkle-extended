@@ -2,6 +2,10 @@
 #ifndef ASSIGN1_TILECODES_H
 #define ASSIGN1_TILECODES_H
 
+#include <array>
+
+using std::array;
+
 // Colours
 #define RED 'R'
 #define ORANGE 'O'
@@ -17,5 +21,14 @@
 #define SQUARE 4
 #define STAR_6 5
 #define CLOVER 6
+
+/*
+ * @Note
+ * Global variable made static, as well as const according to the style guide.
+ */
+static const array<Colour, 6> COLOURS{
+    RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
+static const array<Shape, 6> SHAPES{
+    CIRCLE, STAR_4, DIAMOND, SQUARE, STAR_6, CLOVER};
 
 #endif // ASSIGN1_TILECODES_H

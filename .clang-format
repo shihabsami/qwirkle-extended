@@ -1,6 +1,15 @@
 IndentWidth: 4
+ContinuationIndentWidth: 4
 AccessModifierOffset: -4
 Language: Cpp
 DerivePointerAlignment: false
 PointerAlignment: Left
 ColumnLimit: 80
+AlignAfterOpenBracket: DontAlign
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignEscapedNewlines: DontAlign
+AlignOperands: false
+AlignTrailingComments: false
+BreakBeforeBinaryOperators: None
+SortUsingDeclarations: false

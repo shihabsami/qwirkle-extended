@@ -45,7 +45,7 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "ctime": "cpp"
+        "cinttypes": "cpp"
     },
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true
