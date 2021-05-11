@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include "GameManager.h"
 
 
 class IOHandler{
@@ -20,9 +21,14 @@ class IOHandler{
     static void prompt();
     static bool placeTile(std::string tile, std::string pos);
     static bool replaceTile(std::string tile);
+    static void notify(std::string message, State state);
     static void gameStart();
     static void Test();
+    static bool gameHasEnded();
     static int quit();
+
+    private:
+    static bool gameEnded;
 
 };
 

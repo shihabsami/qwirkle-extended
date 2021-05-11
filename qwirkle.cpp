@@ -1,4 +1,3 @@
-
 #include "LinkedList.h"
 #include "TileBag.h"
 #include "TileCodes.h"
@@ -8,6 +7,7 @@
 
 #include <iostream>
 
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -23,19 +23,42 @@ using std::endl;
 // tests for GameBoard implementation
 //void testGameBoard();
 
+
+
+
 int main(void) {
     // testLinkedList();
     // testTileBag();
     // testPlayerHand();
     // testGameBoard();
-    bool gameRunning = true;
-    while (gameRunning) {
+    bool gameStarted = true;
+
+    IOHandler::printStart();
+
+        while (gameStarted) {
+            cout << GameManager::currentPlayer << ", it's your turn " << endl;
+            cout << "Score for" << GameManager::player1 << ": " << GameManager::player1->getScore() << endl;
+            cout << "Score for" << GameManager::player2 << ": " << GameManager::player2->getScore() << endl;
+            cout << endl;
+            cout << GameManager::board << endl;
+            cout << endl;
+            cout << "Your hand is " << endl;
+            cout << GameManager::currentPlayer->getHand() << endl;
+            
+            IOHandler::gameStart();
+            if(IOHandler::gameHasEnded() == false){
+                gameStarted = false;
+            }
+        }
+
         //IOHandler::beginGame();
         //IOHandler::menu();
-    }
+    
 
     return EXIT_SUCCESS;
 }
+
+
 
 // void testLinkedList() {
 //     cout << "testing linkedlist..." << endl;

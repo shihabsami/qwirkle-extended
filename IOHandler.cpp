@@ -10,6 +10,7 @@
 #include "TileCodes.h"
 #include "GameManager.h"
 
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -111,33 +112,13 @@ void IOHandler::newGame() {
         }
     }
     cout << "Let's Play!" << endl;
-    gameStart();
 }
 
 void IOHandler::gameStart() {
 
-    // print player info
-    // print grid
-    // print player A' hand
-
-    bool gameStarted = true;
-    // sam method for game ended or not?
-    //
-    while (gameStarted) {
-        // cout << //sams ( current player ) "its your turn"
-        cout << " Score for /*sams ( current player )*/ :" /*sam method for
-                                                              score*/
-             << endl;
-        cout << " Score for /*sams ( current player )*/ :" /*sam method for
-                                                              score*/
-             << endl;
-
-        // sam method for the current grid
-
-        cout << "Your hand is " << endl;
-        // sam hand method
 
         bool errorChecking = true;
+        gameEnded = true;
         while (errorChecking) {
             // place D2 at C4
 
@@ -157,6 +138,7 @@ void IOHandler::gameStart() {
 
             if (operation.compare("place") == 0) {
                 if (placeTile(tile, pos) == true) {
+                    //right here
                     
                     errorChecking = false;
 
@@ -175,10 +157,10 @@ void IOHandler::gameStart() {
                 gameFileName = gameFileName + ".save";
                 std::ofstream file(gameFileName);
                 file << GameManager::player1;
-                file << "/*player1 score from sam*/";
+                file << GameManager::player1->getScore();
                 file << "/*player1 tile from sam*/";
                 file << GameManager::player2;
-                file << "/*player2 score from sam*/";
+                file << GameManager::player2->getScore();
                 file << "/*player2 tile from sam*/";
                 file << GameManager::board;
                 file << "/*tiles played* from sam/";
@@ -188,16 +170,8 @@ void IOHandler::gameStart() {
             } else {
                 cout << "not a valid command" << endl;
             }
-
-            // help command  can be added here
-
-            // place -> placeTile()
-            // repalce -> replaceTile()
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-
-        // sam method checking for if the game has ended or not
     }
 }
 
@@ -229,14 +203,13 @@ bool IOHandler::placeTile(std::string tile, std::string pos) {
             appended.append(1,num1);
             appended.append(1,num2);
             col = stoi(appended);
-            cout << colour << endl;
-            cout << shape << endl;
-            cout << row << endl;
-            cout << col << endl;
         }
         //GameManager::placeTile(colour, shape, row, col);
+
+
     }catch (const std::invalid_argument& e){
         std::cerr << "The error is " << e.what() << std::endl;
+        return false;
     }
     }
     return true;
@@ -489,6 +462,45 @@ int IOHandler::quit() {
 }
 
 void IOHandler::Test() { checkTilePosition("32"); }
+
+void IOHandler::notify(std::string message, State state){
+    if(state == PLACE_SUCCESS){
+        cout << message << endl;
+
+    } else if (state == PLACE_FAILURE){
+        cout << message << endl;
+        gameStart();
+        
+    } else if (state == REPLACE_SUCCESS){
+        cout << message << endl;
+
+    } else if (state == REPLACE_FAILURE){
+        cout << message << endl;
+        gameStart();
+    } else if(state == QWIRKLE){
+        cout << message << endl;
+    } else{
+        cout << message << endl;
+        cout << "Game Over" << endl;
+        cout << "Score for " << GameManager::player1 << " : " << GameManager::player1->getScore() << endl;
+        cout << "Score for " << GameManager::player2 << " : " << GameManager::player2->getScore() << endl;
+        if(GameManager::player1->getScore() > GameManager::player2->getScore()){
+            cout << "Player " << GameManager::player1 << " won!" << endl;
+        } else {
+            cout << "Player " << GameManager::player2 << " won!" << endl;
+        }
+        cout << "GoodBye" << endl;
+        gameEnded = false;
+        GameManager::reset();
+
+    }
+}
+
+bool IOHandler::gameHasEnded(){
+    return gameEnded;
+}
+
+
 
 int main(){
     IOHandler::placeTile("R1", "R12");
