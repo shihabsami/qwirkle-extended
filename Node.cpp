@@ -20,6 +20,5 @@ Node::Node(
 }
 
 bool operator==(const Node& node1, const Node& node2) {
-    return node1.tile->colour == node2.tile->colour &&
-        node1.tile->shape == node2.tile->shape;
+    return *node1.tile == *node2.tile;
 }

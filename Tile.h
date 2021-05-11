@@ -14,8 +14,19 @@ typedef int Shape;
 
 class Tile {
 public:
+    /**
+     * Construct a tile with provided colour (char) and shape (int).
+     */
     Tile(Colour color, Shape shape);
+
+    /**
+     * Check for equality of two tiles based on colour and shape.
+     */
     bool operator==(const Tile& other) const;
+
+    /**
+     * Overloaded output stream operator for easy printing.
+     */
     friend ostream& operator<<(ostream& os, const Tile& tile);
 
     Colour colour;
