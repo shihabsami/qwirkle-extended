@@ -18,7 +18,7 @@ LinkedList::~LinkedList() {
     }
 }
 
-void LinkedList::addFront(shared_ptr<Tile>& tile) {
+void LinkedList::addFront(const shared_ptr<Tile>& tile) {
     shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
     if (length == 0) {
         head = toBeAdded;
@@ -159,7 +159,7 @@ void LinkedList::remove(unsigned int index) {
 
 unsigned int LinkedList::size() const { return length; }
 
-shared_ptr<Tile> LinkedList::at(unsigned int index) {
+shared_ptr<Tile> LinkedList::at(unsigned int index) const {
     if (index >= length)
         throw out_of_range("invalid index for LinkedList::at");
 
@@ -178,4 +178,19 @@ ostream& operator<<(ostream& os, const LinkedList& list) {
     }
 
     return os;
+}
+bool LinkedList::contains(const Tile& tile) const {
+    shared_ptr<Node> current = head;
+    bool found = false;
+    unsigned int i = 0;
+    while (i < length && !found) {
+        if (*current->tile == tile) {
+            found = true;
+        } else {
+            current = current->next;
+            ++i;
+        }
+    }
+
+    return found;
 }

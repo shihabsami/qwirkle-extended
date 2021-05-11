@@ -11,10 +11,11 @@ using std::random_device;
 using std::uniform_int_distribution;
 
 TileBag::TileBag() : tiles(make_shared<LinkedList>()) {
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 6; ++j) {
-            tiles->addBack(make_shared<Tile>(COLOURS[i], SHAPES[j]));
-            tiles->addBack(make_shared<Tile>(COLOURS[i], SHAPES[j]));
+    for (unsigned int i = 0; i < COLOURS.size(); ++i) {
+        for (unsigned int j = 0; j < SHAPES.size(); ++j) {
+            // two of each colour and shape combination
+            tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
+            tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
         }
     }
 }
@@ -47,7 +48,6 @@ shared_ptr<PlayerHand> TileBag::getHand() {
     return hand;
 }
 
-// TODO think of an efficient way to check if tile exists more than twice
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     int randomIndex = getRandomIndex();
     shared_ptr<Tile> randomTile = tiles->at(randomIndex);
@@ -60,6 +60,7 @@ shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
 int TileBag::getRandomIndex() {
     random_device engine;
     uniform_int_distribution<int> distribution(0, tiles->size() - 1);
+
     return distribution(engine);
 }
 

@@ -11,15 +11,28 @@ using std::make_shared;
 
 class Node {
 public:
+    /**
+     * Construct a node holding a pointer to a tile.
+     */
     explicit Node(const shared_ptr<Tile>& tile);
-    ~Node();
+
+    /**
+     * Construct with reference to next and previous nodes besides the tile.
+     */
     Node(
         const shared_ptr<Tile>& tile,
         const shared_ptr<Node>& next,
         const shared_ptr<Node>& previous);
-    friend bool operator==(const Node& node1, const Node& node2);
 
-    // TODO move constructor if needed
+    /**
+     * Destructor.
+     */
+    ~Node();
+
+    /**
+     * Check for equality of two nodes based on the underlying tiles.
+     */
+    friend bool operator==(const Node& node1, const Node& node2);
 
     shared_ptr<Tile> tile;
     shared_ptr<Node> next;
