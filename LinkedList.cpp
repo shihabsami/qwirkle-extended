@@ -194,3 +194,5 @@ bool LinkedList::contains(const Tile& tile) const {
 
     return found;
 }
+
+bool LinkedList::isEmpty() { return length == 0; }
