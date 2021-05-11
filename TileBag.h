@@ -13,11 +13,13 @@ public:
     ~TileBag();
     void shuffle();
     shared_ptr<PlayerHand> getHand();
+    shared_ptr<LinkedList> getTiles();
     shared_ptr<Tile> replace(shared_ptr<Tile>& tile);
-    int getRandomIndex();
     friend ostream& operator<<(ostream& os, const TileBag& bag);
 
 private:
+    unsigned int getRandomIndex();
+
     shared_ptr<LinkedList> tiles;
 };
 

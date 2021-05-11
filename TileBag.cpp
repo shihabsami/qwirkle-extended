@@ -48,6 +48,8 @@ shared_ptr<PlayerHand> TileBag::getHand() {
     return hand;
 }
 
+shared_ptr<LinkedList> TileBag::getTiles() { return tiles; }
+
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     int randomIndex = getRandomIndex();
     shared_ptr<Tile> randomTile = tiles->at(randomIndex);
@@ -57,9 +59,9 @@ shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
     return randomTile;
 }
 
-int TileBag::getRandomIndex() {
+unsigned int TileBag::getRandomIndex() {
     random_device engine;
-    uniform_int_distribution<int> distribution(0, tiles->size() - 1);
+    uniform_int_distribution<unsigned int> distribution(0, tiles->size() - 1);
 
     return distribution(engine);
 }
