@@ -14,6 +14,7 @@ public:
     static void newGame();
     static bool validateName(const string& name);
     static void playRound();
+    static bool testingPurpose(string operation, string tile, string keywordAT, string pos);
     static void credits();
     static void loadGame();
     static bool checkTile(const string& tile);
@@ -22,6 +23,8 @@ public:
     static bool replaceTile(const string& tile);
     static void notify(const string& message, State state);
     static int quit();
+    static void Test();
+
 
     static bool gameRunning;
 };

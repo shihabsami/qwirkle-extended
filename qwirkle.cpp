@@ -26,25 +26,14 @@ int main(void) {
     // testGameBoard();
     // testCalculateScore();
     // testTileValidOnLine();
-
+    //IOHandler::Test();
     IOHandler::beginGame();
-
-    while (IOHandler::gameRunning) {
-        cout << endl;
-        cout << GameManager::currentPlayer->getName() << ", it's your turn "
-             << endl;
-        cout << "Score for " << GameManager::player1->getName() << ": "
-             << GameManager::player1->getScore() << endl;
-        cout << "Score for " << GameManager::player2->getName() << ": "
-             << GameManager::player2->getScore() << endl;
-        cout << endl;
-        cout << *GameManager::board << endl;
-        cout << "Your hand is " << endl;
-        cout << *GameManager::currentPlayer->getHand() << endl;
-
+    while (!std::cin.eof() && IOHandler::gameRunning) {
         IOHandler::playRound();
+        if (std::cin.eof()) {
+            IOHandler::quit();
+        }
     }
-
     return EXIT_SUCCESS;
 }
 

@@ -9,5 +9,15 @@
 #define ASCII_ALPHABET_BEGIN    65
 #define ASCII_NUMERICAL_BEGIN   48
 #define ASCII_ALPHABET_END      90
+#define FIRST_POSITION          0
+#define SECOND_POSITION         1
+#define THIRD_POSITION          2
+#define STRING_SIZE_2           2
+#define STRING_SIZE_3           3
+#define MAX_BOARD_INDEX         25
+#define MIN_TILE_RANGE          0
+#define MAX_TILE_RANGE          9
+
+
 
 #endif // CONSTANTS_H

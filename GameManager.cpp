@@ -62,7 +62,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 }
 
 void GameManager::replaceTile(Colour colour, Shape shape) {
-    string message = "Tile placed successfully.";
+    string message = "Tile replaced successfully.";
     State state = REPLACE_SUCCESS;
 
     try {
@@ -72,7 +72,7 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             throw invalid_argument("");
         }
 
-        player1->getHand()->replaceTile({colour, shape}, *bag);
+        currentPlayer->getHand()->replaceTile({colour, shape}, *bag);
         GameManager::switchPlayer();
     } catch (...) {
         state = REPLACE_FAILURE;

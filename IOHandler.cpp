@@ -102,19 +102,18 @@ void IOHandler::newGame() {
                     "contain numbers or symbols");
             }
             int compare = player1Name.compare(player2Name);
-
             if (compare == 0) {
                 throw std::invalid_argument(
                     "Player Names should not be the same");
             }
-
             condition = false;
         } catch (const std::invalid_argument& e) {
             cerr << e.what() << endl;
             cout << endl;
         }
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
-
     cout << "Let's Play!" << endl;
     GameManager::beginGame(player1Name, player2Name);
     gameRunning = true;
@@ -138,57 +137,90 @@ bool IOHandler::validateName(const string& name) {
 }
 
 void IOHandler::playRound() {
+    cout << endl;
+    cout << GameManager::currentPlayer->getName() << ", it's your turn "
+         << endl;
+    cout << "Score for " << GameManager::player1->getName() << ": "
+         << GameManager::player1->getScore() << endl;
+    cout << "Score for " << GameManager::player2->getName() << ": "
+         << GameManager::player2->getScore() << endl;
+    cout << endl;
+    cout << *GameManager::board << endl;
+    cout << "Your hand is " << endl;
+    cout << *GameManager::currentPlayer->getHand() << endl;
+
     bool errorChecking = true;
-    while (errorChecking) {
-        // place D2 at C4
-
-        // outer while loop only ends when endgame is called
-        // inner while loop only ends when input and logic is gucci
+    while (!cin.eof() && errorChecking) {
         prompt();
-        string operation, tile, keywordAT, pos; // D5
-        cin >> operation >> tile >> keywordAT >> pos;
-        string gameFileName = tile;
+        string temp, operation, tile, keywordAT, pos; // D5
+        getline(cin, temp);
+        std::istringstream command(temp);
+        command >> operation >> tile >> keywordAT >> pos;
 
-        transform(
-            operation.begin(), operation.end(), operation.begin(), ::tolower);
-        transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
-        transform(
-            keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
-        transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
-
-        if (operation.compare("place") == 0) {
-            if (placeTile(tile, pos)) {
-                // right here
-
-                errorChecking = false;
-
+        if (operation == "place") {
+            if (tile.empty() || keywordAT.empty() || pos.empty()) {
+                cout << "Invalid Command" << endl;
             } else {
-                cout << "Invalid Tile or Tile Position" << endl;
+                testingPurpose(operation, tile, keywordAT, pos);
+                errorChecking = false;
             }
-
-        } else if (operation.compare("replace") == 0) {
-            errorChecking = false;
-
-        } else if (operation.compare("save") == 0) {
-            gameFileName = gameFileName + ".save";
-            std::ofstream file(gameFileName);
-            file << GameManager::player1;
-            file << GameManager::player1->getScore();
-            file << "/*player1 tile from sam*/";
-            file << GameManager::player2;
-            file << GameManager::player2->getScore();
-            file << "/*player2 tile from sam*/";
-            file << GameManager::board;
-            file << "/*tiles played* from sam/";
-            file << GameManager::bag;
-            file << GameManager::currentPlayer;
-            file.close();
-        } else {
-            cout << "not a valid command" << endl;
+        } else if (operation == "replace") {
+            if (tile.empty()) {
+                cout << "Invalid Command" << endl;
+            } else {
+                testingPurpose(operation, tile, keywordAT, pos);
+                errorChecking = false;
+            }
+        }
+        else{
+            cout << "Invalid Command" << endl;
         }
         cin.clear();
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
+}
+
+
+bool IOHandler::testingPurpose(
+    string operation, string tile, string keywordAT, string pos) {
+    string gameFileName = tile;
+    bool errorChecking = true;
+    cout << operation << tile << keywordAT << pos;
+    transform(operation.begin(), operation.end(), operation.begin(), ::tolower);
+    transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
+    transform(keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
+    transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
+
+    if (operation == "place" && keywordAT == "at") {
+        if (placeTile(tile, pos)) {
+            errorChecking = false;
+        } else {
+            cout << "Invalid Tile or Tile Position" << endl;
+        }
+    } else if (operation.compare("replace") == 0) {
+        if (replaceTile(tile)) {
+            errorChecking = false;
+        } else {
+        }
+
+    } else if (operation.compare("save") == 0) {
+        gameFileName = gameFileName + ".save";
+        std::ofstream file(gameFileName);
+        file << GameManager::player1;
+        file << GameManager::player1->getScore();
+        file << "/*player1 tile from sam*/";
+        file << GameManager::player2;
+        file << GameManager::player2->getScore();
+        file << "/*player2 tile from sam*/";
+        file << GameManager::board;
+        file << "/*tiles played* from sam/";
+        file << GameManager::bag;
+        file << GameManager::currentPlayer;
+        file.close();
+    } else {
+        cout << "Not A Valid Command" << endl;
+    }
+    return errorChecking;
 }
 
 void IOHandler::credits() {
@@ -250,7 +282,7 @@ void IOHandler::loadGame() {
                 count++;
             } else if (count == 1 || count == 4) {
                 // Check Interger
-                int number = std::stoi(text);
+                int number = stoi(text);
                 if (number < 0) {
                     throw std::invalid_argument(
                         "The number should be positive");
@@ -310,31 +342,27 @@ void IOHandler::loadGame() {
 bool IOHandler::checkTile(const string& tile) {
     try {
         bool condition = false;
-        bool boolchar = false;
-        bool boolnum = false;
+        bool boolLetter = false;
+        bool boolNumber = false;
         string appended;
         if (tile.size() == 2) {
             char letter = tile.at(0);
             char num1 = tile.at(1);
 
             appended.append(1, num1);
-            // convert string into int
             int combinedNumber = stoi(appended);
             for (unsigned int i = 0; i < COLOURS.size(); i++) {
                 if (letter == COLOURS[i]) {
-                    boolchar = true;
+                    boolLetter = true;
                 }
             }
             for (unsigned int i = 0; i < SHAPES.size(); i++) {
                 if (combinedNumber == SHAPES[i]) {
-                    boolnum = true;
+                    boolNumber = true;
                 }
             }
-        } else {
-            boolchar = false;
-            boolnum = false;
         }
-        if (boolchar && boolnum) {
+        if (boolLetter && boolNumber) {
             condition = true;
         } else {
             condition = false;
@@ -351,29 +379,29 @@ bool IOHandler::checkTilePosition(const string& position) {
         string appended = "";
         bool condition = false;
         bool boolLetter = false;
-        bool boolNum = false;
+        bool boolNumber = false;
 
-        if (position.size() == 2) {
-            char letter = position.at(0);
-            char num1 = position.at(1);
+        if (position.size() == STRING_SIZE_2) {
+            char letter = position.at(FIRST_POSITION);
+            char num1 = position.at(SECOND_POSITION);
             int asciiLetter = int(letter);
-            if (asciiLetter >= 65 && asciiLetter <= 90) {
+            if (asciiLetter >= ASCII_ALPHABET_BEGIN &&
+                asciiLetter <= ASCII_ALPHABET_END) {
                 boolLetter = true;
             } else {
                 boolLetter = false;
             }
             appended.append(1, num1);
-            stoi(appended);
-            if (stoi(appended) >= 0 && stoi(appended) <= 9) {
-                boolNum = true;
+            if (stoi(appended) <= MAX_TILE_RANGE) {
+                boolNumber = true;
             } else {
-                boolNum = false;
+                boolNumber = false;
             }
         } else if (position.size() == 3) {
             // get the position
-            char letter = position.at(0);
-            char num1 = position.at(1);
-            char num2 = position.at(2);
+            char letter = position.at(FIRST_POSITION);
+            char num1 = position.at(SECOND_POSITION);
+            char num2 = position.at(THIRD_POSITION);
 
             int asciiLetter = int(letter);
             if (asciiLetter >= ASCII_ALPHABET_BEGIN &&
@@ -382,21 +410,20 @@ bool IOHandler::checkTilePosition(const string& position) {
             } else {
                 boolLetter = false;
             }
-            // append the 2 chars into string
             appended.append(1, num1);
             appended.append(1, num2);
-            // convert string into int
             int combinedNumber = stoi(appended);
-            if (combinedNumber > 25) {
-                boolNum = false;
+            if (combinedNumber > MAX_BOARD_INDEX ||
+                combinedNumber < MIN_TILE_RANGE) {
+                boolNumber = false;
             } else {
-                boolNum = true;
+                boolNumber = true;
             }
         } else {
             boolLetter = false;
             boolNum = false;
         }
-        if (boolNum && boolLetter) {
+        if (boolNumber && boolLetter) {
             condition = true;
         } else {
             condition = false;
@@ -418,26 +445,24 @@ bool IOHandler::placeTile(const string& tile, const string& position) {
         int col = 0;
 
         try {
-            if (position.size() == 2) {
-                char asciiLetter = position.at(0);
+            if (position.size() == STRING_SIZE_2) {
+                char asciiLetter = position.at(FIRST_POSITION);
                 int rowi = int(asciiLetter);
-                row = rowi - 65;
-                // blame jon if it doesn't work
-                char coli = position.at(1);
+                row = rowi - ASCII_ALPHABET_BEGIN;
+                char coli = position.at(SECOND_POSITION);
                 appended.append(1, coli);
                 col = stoi(appended);
 
-            } else if (position.size() == 3) {
-                char asciiLetter = position.at(0);
-                char num1 = position.at(1);
-                char num2 = position.at(2);
+            } else if (position.size() == STRING_SIZE_3) {
+                char asciiLetter = position.at(FIRST_POSITION);
+                char num1 = position.at(SECOND_POSITION);
+                char num2 = position.at(THIRD_POSITION);
                 int rowi = int(asciiLetter);
-                row = rowi - 65;
+                row = rowi - ASCII_ALPHABET_BEGIN;
                 appended.append(1, num1);
                 appended.append(1, num2);
                 col = stoi(appended);
             }
-
             GameManager::placeTile(colour, shape, row, col);
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
@@ -449,8 +474,11 @@ bool IOHandler::placeTile(const string& tile, const string& position) {
 
 bool IOHandler::replaceTile(const string& tile) {
     if (checkTile(tile)) {
-        //->tile
-        // give to sam
+        Colour colour = tile.at(0);
+        Shape shape = static_cast<int>(tile.at(1)) - ASCII_NUMERICAL_BEGIN;
+        cout << colour;
+        cout << shape;
+        GameManager::replaceTile(colour, shape);
     }
     return true;
 }
@@ -463,7 +491,6 @@ void IOHandler::notify(const string& message, State state) {
         cout << message << endl;
     } else if (state == REPLACE_SUCCESS) {
         cout << message << endl;
-
     } else if (state == REPLACE_FAILURE) {
         cout << message << endl;
         playRound();
@@ -491,4 +518,71 @@ void IOHandler::notify(const string& message, State state) {
 int IOHandler::quit() {
     cout << "Goodbye" << endl;
     return EXIT_SUCCESS;
+}
+
+void IOHandler::Test() {
+    //    cout << checkTile("H4") << endl;
+    //    cout << checkTile("4H") << endl;
+    //    cout << checkTile("44") << endl;
+    //    cout << checkTile("H44") << endl;
+    //    cout << checkTile("~H44") << endl;
+    //    cout << checkTile("$H44") << endl;
+    //    cout << checkTile("asdasdH44") << endl;
+    //    cout << checkTile("R32") << endl;
+    //    cout << checkTile("G56") << endl;
+    //    cout << checkTile("^4") << endl;
+    //    cout << checkTile("-4") << endl;
+    //    cout << checkTile("Y644") << endl;
+    //    cout << checkTile("P344") << endl;
+
+    //    cout << checkTile("G7") << endl;
+    //
+    //    cout << checkTile("R1") << endl;
+    //    cout << checkTile("O2") << endl;
+    //    cout << checkTile("Y3") << endl;
+    //    cout << checkTile("G4") << endl;
+    //    cout << checkTile("B5") << endl;
+    //    cout << checkTile("P6") << endl;
+
+    //    cout << checkTilePosition("A0") << endl;
+    //    cout << checkTilePosition("d3") << endl;
+    //    cout << checkTilePosition("--3") << endl;
+    //    cout << checkTilePosition("+A3") << endl;
+    //    cout << checkTilePosition("DD3") << endl;
+    //    cout << checkTilePosition("0A3") << endl;
+    //    cout << checkTilePosition("d333") << endl;
+    //    cout << checkTilePosition("B-p8") << endl;
+    //    cout << checkTilePosition("G*(") << endl;
+    //    cout << checkTilePosition("D`") << endl;
+    //    cout << checkTilePosition("111") << endl;
+    //    cout << checkTilePosition("jkh") << endl;
+    //    cout << checkTilePosition("gh") << endl;
+    //    cout << checkTilePosition("sddda") << endl;
+
+    //   cout << checkTilePosition("111") << endl;
+    //    cout << checkTilePosition("D`") << endl;
+    //    cout << checkTilePosition("D4");
+    //    cout << checkTilePosition("E5");
+    //    cout << checkTilePosition("F6");
+    //    cout << checkTilePosition("G7");
+    //    cout << checkTilePosition("H8");
+    //    cout << checkTilePosition("I9");
+    //    cout << checkTilePosition("J10");
+    //    cout << checkTilePosition("K11");
+    //    cout << checkTilePosition("L12");
+    //    cout << checkTilePosition("M13");
+    //    cout << checkTilePosition("N14");
+    //    cout << checkTilePosition("O15");
+    //    cout << checkTilePosition("P16");
+    //    cout << checkTilePosition("Q17");
+    //    cout << checkTilePosition("R18");
+    //    cout << checkTilePosition("S19");
+    //    cout << checkTilePosition("T20");
+    //    cout << checkTilePosition("U21");
+    //    cout << checkTilePosition("V22");
+    //    cout << checkTilePosition("W23");
+    //    cout << checkTilePosition("X24");
+    //    cout << checkTilePosition("Y25");
+    //    cout << checkTilePosition("Z25");
+    // playRound();
 }
