@@ -5,11 +5,13 @@ using std::invalid_argument;
 
 PlayerHand::PlayerHand() : tiles(make_shared<LinkedList>()) {}
 
-PlayerHand::PlayerHand(shared_ptr<LinkedList> tiles) : tiles(tiles) {}
+PlayerHand::PlayerHand(const shared_ptr<LinkedList>& tiles) : tiles(tiles) {}
+
+PlayerHand::PlayerHand(const PlayerHand& hand)
+    : tiles(hand.tiles) {}
 
 PlayerHand::~PlayerHand() { tiles.reset(); }
 
-// TODO think of an efficient way to check if tile exists more than twice
 void PlayerHand::addTile(shared_ptr<Tile> tile) { tiles->addBack(tile); }
 
 shared_ptr<Tile> PlayerHand::playTile(const Tile& tile) {
@@ -54,6 +56,8 @@ shared_ptr<Tile> PlayerHand::getTile(const Tile& tile) {
 
     return toReturn;
 }
+
+shared_ptr<LinkedList> PlayerHand::getTiles() { return tiles; }
 
 ostream& operator<<(ostream& os, const PlayerHand& hand) {
     os << *hand.tiles;

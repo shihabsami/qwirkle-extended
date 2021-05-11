@@ -95,7 +95,7 @@ void testTileBag() {
     cout << *bag << endl;
 
     cout << "getting hand of cards from tilebag..." << endl;
-    shared_ptr<LinkedList> hand = bag->getHand();
+    shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "hand -" << *hand << endl;
     cout << *bag << endl;
 
@@ -112,9 +112,9 @@ void testPlayerHand() {
     bag->shuffle();
 
     cout << "testing playerhand..." << endl;
-    shared_ptr<PlayerHand> hand = make_shared<PlayerHand>(bag->getHand());
+    shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "getting a hand of tiles..." << endl;
-    cout << *hand << endl;
+    cout << *hand->getTiles() << endl;
 
     cout << "adding two new tiles to the hand..." << endl;
     shared_ptr<Tile> tile1 = make_shared<Tile>(RED, STAR_4);
