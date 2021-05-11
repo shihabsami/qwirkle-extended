@@ -8,4 +8,4 @@
 #define BOARD_LENGTH    26
 #define ASCII_BEGIN     65
 
-#endif // !CONSTANTS_H
+#endif // CONSTANTS_H

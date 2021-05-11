@@ -23,4 +23,4 @@ private:
     shared_ptr<LinkedList> tiles;
 };
 
-#endif // !PLAYER_HAND_H
+#endif // PLAYER_HAND_H

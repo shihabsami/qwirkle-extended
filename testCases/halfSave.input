@@ -1,0 +1,17 @@
+1
+A
+B
+place R5 at G4
+place B5 at H4
+place O5 at F4
+place B6 at H5
+place O6 at F5
+replace O5
+place O1 at F6
+place O3 at F7
+place R6 at G3
+replace Y1
+place R3 at G2
+place Y6 at I5
+save halfSave
+quit

@@ -23,4 +23,4 @@ private:
     shared_ptr<LinkedList> tiles;
 };
 
-#endif // !TILE_BAG_H
+#endif //TILE_BAG_H

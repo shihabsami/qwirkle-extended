@@ -2,6 +2,8 @@
 #ifndef ASSIGN1_TILECODES_H
 #define ASSIGN1_TILECODES_H
 
+#include "Tile.h"
+
 #include <array>
 
 using std::array;
@@ -16,11 +18,12 @@ using std::array;
 
 // Shapes
 #define CIRCLE 1
-#define STAR_4 2
+#define STAR_4 2 
 #define DIAMOND 3
 #define SQUARE 4
 #define STAR_6 5
 #define CLOVER 6
+
 
 /*
  * @Note
