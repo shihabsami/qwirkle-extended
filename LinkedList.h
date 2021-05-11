@@ -19,6 +19,7 @@ public:
     unsigned int size() const;
     shared_ptr<Tile> at(unsigned int index) const;
     bool contains(const Tile& tile) const;
+    bool isEmpty();
     friend ostream& operator<<(ostream& os, const LinkedList& list);
 
 private:
