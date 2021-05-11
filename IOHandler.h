@@ -1,37 +1,29 @@
-#ifndef ASSIGN2_IOHANDLER
-#define ASSIGN2_IOHANDLER
+#ifndef IO_HANDLER
+#define IO_HANDLER
 
 #include <iostream>
-#include <string>
 
 #include "GameManager.h"
 
-
-class IOHandler{
-    public:
+class IOHandler {
+public:
+    static void beginGame();
     static void menu();
-    static void printStart();
+    static void prompt();
     static void selection();
     static void newGame();
-    static bool StringCheck(std::string name);
+    static bool validateName(const string& name);
+    static void playRound();
     static void credits();
     static void loadGame();
-    static bool checkTilePosition(std::string tilePosition);
-    static bool checkTile(std::string tile);
-    static void prompt();
-    static bool placeTile(std::string tile, std::string pos);
-    static bool replaceTile(std::string tile);
-    static void notify(std::string message, State state);
-    static void gameStart();
-    static void Test();
-    static bool gameHasEnded();
+    static bool checkTile(const string& tile);
+    static bool checkTilePosition(const string& position);
+    static bool placeTile(const string& tile, const string& position);
+    static bool replaceTile(const string& tile);
+    static void notify(const string& message, State state);
     static int quit();
 
-    private:
-    static bool gameEnded;
-
+    static bool gameRunning;
 };
 
-
-
-#endif // ASSIGN2_IOHANDLER
+#endif // !IO_HANDLER

@@ -1,23 +1,29 @@
 #include "GameManager.h"
 #include "Constants.h"
+#include "IOHandler.h"
+
 #include <iostream>
 #include <string>
+
+using std::invalid_argument;
+using std::out_of_range;
 
 shared_ptr<GameBoard> GameManager::board = nullptr;
 shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<Player> GameManager::player1 = nullptr;
 shared_ptr<Player> GameManager::player2 = nullptr;
 shared_ptr<Player> GameManager::currentPlayer = nullptr;
-
-using std::invalid_argument;
+unsigned int GameManager::roundsPlayed = 0;
 
 void GameManager::beginGame(
     const string& player1Name, const string& player2Name) {
     bag = make_shared<TileBag>();
-    board = make_shared<GameBoard>();
+    bag->shuffle();
     player1 = make_shared<Player>(player1Name, bag->getHand());
     player2 = make_shared<Player>(player2Name, bag->getHand());
     currentPlayer = player1;
+    board = make_shared<GameBoard>();
+    roundsPlayed = 0;
 }
 
 void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
@@ -26,38 +32,53 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
     try {
         shared_ptr<Tile> tile = make_shared<Tile>(colour, shape);
-        if (!isGridLocationEmpty(row, column)) {
-            message =
-                "A tile is already present in the provided grid location.";
-            throw invalid_argument("grid location is not empty");
-        } else if (!isTileInHand(*tile)) {
+        if (!isTileInHand(*tile)) {
             message = "Tile is not present in hand.";
-            throw invalid_argument("tile absent from player hand");
-        } else if (!tileValidOnLine(*tile, row, column)) {
-            message = "Tile violates line rules.";
-            throw invalid_argument("tile violates line rules");
-        } else if (/* TODO has game finished */) {
+            throw invalid_argument("");
+        } else if (!isGridLocationEmpty(row, column)) {
+            message ="A tile is already present in the provided grid location.";
+            throw invalid_argument("");
+        } else if (roundsPlayed > 0 && !hasAdjacentTile(*tile, row, column)) {
+            message = "No adjacent tile to form line.";
+            throw invalid_argument("");
         }
+
+//  else if (!tileValidOnLine(*tile, row, column)) {
+//            message = "Tile violates line rules.";
+//            throw invalid_argument("");
+//        }
 
         board->placeTile(tile, row, column);
         GameManager::switchPlayer();
+        ++roundsPlayed;
+        // std::cout << "roundsPlayed - " << roundsPlayed << ", currentPlayer - " << currentPlayer->getName() << std::endl;
     } catch (...) {
         state = PLACE_FAILURE;
     }
 
     IOHandler::notify(message, state);
+
+    if (hasGameEnded()) IOHandler::notify("", GAME_OVER);
 }
 
 void GameManager::replaceTile(Colour colour, Shape shape) {
-    try {
-        player1->getHand()->replaceTile({tileCode.at(0), tileCode.at(1)}, *bag);
+    string message = "Tile placed successfully.";
+    State state = REPLACE_SUCCESS;
 
+    try {
+        shared_ptr<Tile> tile = make_shared<Tile>(colour, shape);
+        if (!isTileInHand(*tile)) {
+            message = "Tile is not present in hand.";
+            throw invalid_argument("");
+        }
+
+        player1->getHand()->replaceTile({colour, shape}, *bag);
         GameManager::switchPlayer();
     } catch (...) {
-        // TODO notify input/printer class of invalid location(/tileCode?)
+        state = REPLACE_FAILURE;
     }
 
-    IOHandler::notify(message, State);
+    IOHandler::notify(message, state);
 }
 
 void GameManager::switchPlayer() {
@@ -127,9 +148,79 @@ unsigned int GameManager::calculateScore(
         }
     }
     if (qwirkle)
-        score += 6;
+        score += SCORE_BONUS;
 
     return score;
+}
+
+bool GameManager::isGridLocationEmpty(int row, int column) {
+    return board->at(row, column) == nullptr;
+}
+
+bool GameManager::isTileInHand(const Tile& tile) {
+    return currentPlayer->getHand()->getTiles()->contains(tile);
+}
+
+bool GameManager::isTileSimilar(const Tile& tile, int row, int column) {
+    // TODO
+    return false;
+}
+
+bool GameManager::tileValidOnLine(const Tile& tile, int row, int column) {
+    bool tileUnique = true;
+
+    int currentRow = row;
+    int currentColumn = column;
+    int currentDirection = UP;
+    bool allDirectionTraversed = false;
+
+    int horizontalLineCount = 0;
+    int verticalLineCount = 0;
+
+    while (tileUnique && !allDirectionTraversed) {
+        if (currentDirection == UP) {
+            --currentRow;
+        } else if (currentDirection == DOWN) {
+            ++currentRow;
+        } else if (currentDirection == LEFT) {
+            --currentColumn;
+        } else if (currentDirection == RIGHT) {
+            ++currentColumn;
+        } else {
+            allDirectionTraversed = true;
+        }
+
+        try {
+            if (board->at(currentRow, currentColumn) == nullptr) {
+                currentRow = row;
+                currentColumn = column;
+                ++currentDirection;
+            } else if (*board->at(currentRow, currentColumn) == tile) {
+                tileUnique = false;
+            } else {
+                if (currentDirection == UP || currentDirection == DOWN)
+                    ++verticalLineCount;
+                else
+                    ++horizontalLineCount;
+            }
+        } catch (out_of_range& exception) {
+            currentRow = row;
+            currentColumn = column;
+            ++currentDirection;
+        }
+    }
+
+    std::cout << "hc " << horizontalLineCount << " vc " << verticalLineCount
+              << std::endl;
+
+    return tileUnique && horizontalLineCount < MAX_LINE_SIZE &&
+        verticalLineCount < MAX_LINE_SIZE;
+}
+
+bool GameManager::hasGameEnded() {
+    return (player1->getHand()->getTiles()->isEmpty() ||
+               player2->getHand()->getTiles()->isEmpty()) &&
+        bag->getTiles()->isEmpty();
 }
 
 void GameManager::reset() {
@@ -139,64 +230,30 @@ void GameManager::reset() {
     player2.reset();
     currentPlayer.reset();
 }
-
-bool GameManager::isGridLocationEmpty(int row, int column) {
-    return board->at(row, column) == nullptr;
-}
-
-bool GameManager::isTileInHand(const Tile& tile) {
-    return player1->getHand()->getTiles()->contains(tile);
-}
-
-bool GameManager::isTileSimilar(const Tile& tile, int row, int column) {
-    // TODO
-}
-
-bool GameManager::tileValidOnLine(const Tile& tile, int row, int column) {
-    bool tileUnique = true;
+bool GameManager::hasAdjacentTile(const Tile& tile, int row, int column) {
+    bool hasAdjacent = false;
 
     int currentRow = row;
     int currentColumn = column;
-    int currentDirection = LINE_UP;
-    bool allDirectionTraversed = false;
-
-    int horizontalLineCount = 0;
-    int verticalLineCount = 0;
-
-    while (tileUnique && !allDirectionTraversed) {
-        if (currentDirection == LINE_UP) {
-            --currentColumn;
-        } else if (currentDirection == LINE_DOWN) {
-            ++currentColumn;
-        } else if (currentDirection == LINE_LEFT) {
+    int currentDirection = 0;
+    while (currentDirection < 4 && !hasAdjacent) {
+        if (currentDirection == UP)
             --currentRow;
-        } else if (currentDirection == LINE_RIGHT) {
+        else if (currentDirection == DOWN)
             ++currentRow;
-        } else {
-            allDirectionTraversed = true;
-        }
+        else if (currentDirection == LEFT)
+            --currentColumn;
+        else if (currentDirection == RIGHT)
+            ++currentColumn;
 
-        if (board->at(currentRow, currentColumn) == nullptr) {
-            currentRow = row;
-            currentColumn = column;
-            ++currentDirection;
-        } else if (*board->at(currentRow, currentColumn) == tile) {
-            tileUnique = false;
-        } else {
-            if (currentDirection == LINE_UP || currentDirection == LINE_DOWN)
-                ++horizontalLineCount;
-            else
-                ++verticalLineCount;
-        }
+        try {
+            hasAdjacent = board->at(currentRow, currentColumn) != nullptr;
+        } catch (out_of_range& exception) {}
+
+        currentRow = row;
+        currentColumn = column;
+        ++currentDirection;
     }
 
-    return tileUnique
-        && horizontalLineCount < MAX_LINE_SIZE
-        && verticalLineCount < MAX_LINE_SIZE;
-}
-
-bool GameManager::hasGameEnded() {
-    return (player1->getHand()->getTiles()->size() == 0
-        || player2->getHand()->getTiles()->size() == 0)
-        && bag->getTiles()->size() == 0);
+    return hasAdjacent;
 }

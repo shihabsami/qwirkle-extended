@@ -20,8 +20,6 @@ public:
     shared_ptr<Tile> at(unsigned int row, unsigned int column);
     friend ostream& operator<<(ostream& os, const GameBoard& board);
 
-    const shared_ptr<Tile> at(int row, int column);
-
 private:
     vector<vector<shared_ptr<Tile>>> board;
 };

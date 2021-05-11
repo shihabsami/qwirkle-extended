@@ -1,10 +1,6 @@
 
-#include "LinkedList.h"
-#include "TileBag.h"
 #include "TileCodes.h"
-#include "GameBoard.h"
-#include "GameManager.h"
-#include "PlayerHand.h"
+#include "IOHandler.h"
 
 #include <iostream>
 
@@ -23,20 +19,30 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
-// tests for score calculation 
-void testCalculateScore();
-
 int main(void) {
     // testLinkedList();
     // testTileBag();
     // testPlayerHand();
     // testGameBoard();
-    testCalculateScore();
+    // testCalculateScore();
+    // testTileValidOnLine();
 
-    bool gameRunning = true;
+    IOHandler::beginGame();
 
-    while (gameRunning) {
-        IOHandler::beginGame();
+    while (IOHandler::gameRunning) {
+        cout << endl;
+        cout << GameManager::currentPlayer->getName() << ", it's your turn "
+             << endl;
+        cout << "Score for " << GameManager::player1->getName() << ": "
+             << GameManager::player1->getScore() << endl;
+        cout << "Score for " << GameManager::player2->getName() << ": "
+             << GameManager::player2->getScore() << endl;
+        cout << endl;
+        cout << *GameManager::board << endl;
+        cout << "Your hand is " << endl;
+        cout << *GameManager::currentPlayer->getHand() << endl;
+
+        IOHandler::playRound();
     }
 
     return EXIT_SUCCESS;
@@ -94,8 +100,10 @@ void testLinkedList() {
     cout << *list << endl;
 
     cout << "testing if linkedlist contains tile..." << endl;
-    cout << "contains " << *tile7 << " - " << (list->contains(*tile7) ? "true" : "false") << endl;
-    cout << "contains " << *tile4 << " - " << (list->contains(*tile4) ? "true" : "false") << endl;
+    cout << "contains " << *tile7 << " - "
+         << (list->contains(*tile7) ? "true" : "false") << endl;
+    cout << "contains " << *tile4 << " - "
+         << (list->contains(*tile4) ? "true" : "false") << endl;
 }
 
 void testTileBag() {
@@ -160,10 +168,4 @@ void testGameBoard() {
     board->placeTile(tile3, 15, 20);
     board->placeTile(tile4, 20, 10);
     cout << *board << endl;
-
-}
-
-void testCalculateScore() {
-    Tile tile(RED, SQUARE);
-    GameManager::calculateScore(tile, 4, 14);
 }
