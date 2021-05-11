@@ -20,6 +20,16 @@ public:
     Tile(Colour color, Shape shape);
 
     /**
+     * Check if other has same colour as this.
+     */
+    bool hasSameColour(const Tile& other) const;
+
+    /**
+     * Check if other has same shape as this.
+     */
+    bool hasSameShape(const Tile& other) const;
+
+    /**
      * Check for equality of two tiles based on colour and shape.
      */
     bool operator==(const Tile& other) const;

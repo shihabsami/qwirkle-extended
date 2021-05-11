@@ -5,8 +5,16 @@ using std::invalid_argument;
 
 Tile::Tile(Colour colour, Shape shape) : colour(colour), shape(shape) {}
 
+bool Tile::hasSameColour(const Tile& other) const {
+    return colour == other.colour;
+}
+
+bool Tile::hasSameShape(const Tile& other) const {
+    return shape == other.shape;
+}
+
 bool Tile::operator==(const Tile& other) const {
-    return colour == other.colour && shape == other.shape;
+    return hasSameColour(other) && hasSameShape(other);
 }
 
 ostream& operator<<(ostream& os, const Tile& tile) {
