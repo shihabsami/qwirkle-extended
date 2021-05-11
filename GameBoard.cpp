@@ -24,14 +24,13 @@ GameBoard::~GameBoard() {
 }
 
 ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
-    // TODO top tier formatting
     os << left << setw(3) << " ";
     for (int i = 0; i < BOARD_LENGTH; ++i)
         os << setw(3) << i;
     os << endl;
 
-    os << setw(3) << " ";
-    for (int i = 0; i < BOARD_LENGTH * 3 - 1; ++i)
+    os << setw(2) << " ";
+    for (int i = 0; i < BOARD_LENGTH * 3 + 1; ++i)
         os << "-";
     os << endl;
 
@@ -53,9 +52,15 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
 
 void GameBoard::placeTile(
     const shared_ptr<Tile>& tile, unsigned int row, unsigned int column) {
+    if (row > BOARD_LENGTH || column > BOARD_LENGTH)
+        throw out_of_range("invalid grid location for GameBoard::placeTile");
+
     board.at(row).at(column) = tile;
 }
 
-const shared_ptr<Tile> GameBoard::at(int row, int column) {
+shared_ptr<Tile> GameBoard::at(unsigned int row, unsigned int column) {
+    if (row > BOARD_LENGTH || column > BOARD_LENGTH)
+        throw out_of_range("invalid grid location for GameBoard::at");
+
     return board.at(row).at(column);
 }
