@@ -2,6 +2,11 @@
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
 
+#define LINE_UP 0
+#define LINE_DOWN 1
+#define LINE_LEFT 2
+#define LINE_RIGHT 3
+
 #include "GameBoard.h"
 #include "TileBag.h"
 #include "Player.h"
@@ -20,19 +25,17 @@ public:
 
     static void switchPlayer();
 
-    // TODO method signature takes player? returns score?
     static unsigned int calculateScore(const Tile& playedTile, int row, int column);
+
     static void reset();
 
     static bool isGridLocationEmpty(int row, int column);
 
     static bool isTileInHand(const Tile& tile);
 
-    static bool isTileSimilar(const Tile& tile);
+    static bool isTileSimilar(const Tile& tile, int row, int column);
 
-    static bool tileUniqueOnLine(const Tile& tile);
-
-    static bool doesLineExceedSix(int row, int column);
+    static bool tileValidOnLine(const Tile& tile, int row, int column);
 
     static bool hasGameEnded();
 
