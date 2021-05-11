@@ -1,6 +1,8 @@
 
 #include "Tile.h"
 
+using std::invalid_argument;
+
 Tile::Tile(Colour colour, Shape shape) : colour(colour), shape(shape) {}
 
 bool Tile::operator==(const Tile& other) const {

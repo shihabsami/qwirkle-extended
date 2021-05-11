@@ -9,7 +9,7 @@ public:
     LinkedList();
     ~LinkedList();
 
-    void addFront(shared_ptr<Tile>& tile);
+    void addFront(const shared_ptr<Tile>& tile);
     void addBack(const shared_ptr<Tile>& tile);
     void removeFront();
     void removeBack();
@@ -17,7 +17,8 @@ public:
     void remove(const shared_ptr<Tile>& tile);
     void remove(unsigned int index);
     unsigned int size() const;
-    shared_ptr<Tile> at(unsigned int index);
+    shared_ptr<Tile> at(unsigned int index) const;
+    bool contains(const Tile& tile) const;
     friend ostream& operator<<(ostream& os, const LinkedList& list);
 
 private:

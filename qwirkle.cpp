@@ -50,7 +50,7 @@ void testLinkedList() {
     list->addBack(tile6);
     cout << *list << endl;
 
-    std::cout << "removing tiles to linkedlist..." << endl;
+    cout << "removing tiles to linkedlist..." << endl;
     list->removeFront();
     list->removeBack();
     cout << *list << endl;
@@ -72,13 +72,17 @@ void testLinkedList() {
     list->insert(tile8, 4, true);
     cout << *list << endl;
 
-    std::cout << "removing tiles by value..." << endl;
+    cout << "removing tiles by value..." << endl;
     list->remove(tile1);
     cout << *list << endl;
 
-    std::cout << "removing tiles at index..." << endl;
+    cout << "removing tiles at index..." << endl;
     list->remove(2);
     cout << *list << endl;
+
+    cout << "testing if linkedlist contains tile..." << endl;
+    cout << "contains " << *tile7 << " - " << (list->contains(*tile7) ? "true" : "false") << endl;
+    cout << "contains " << *tile4 << " - " << (list->contains(*tile4) ? "true" : "false") << endl;
 }
 
 void testTileBag() {
