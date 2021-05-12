@@ -12,6 +12,7 @@ public:
     TileBag();
     ~TileBag();
     void shuffle();
+    shared_ptr<Tile> getRandomTile();
     shared_ptr<PlayerHand> getHand();
     shared_ptr<LinkedList> getTiles();
     shared_ptr<Tile> replace(shared_ptr<Tile>& tile);
@@ -23,4 +24,4 @@ private:
     shared_ptr<LinkedList> tiles;
 };
 
-#endif //TILE_BAG_H
+#endif // !TILE_BAG_H
