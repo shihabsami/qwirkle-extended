@@ -155,8 +155,8 @@ void IOHandler::playRound() {
         string temp, operation, tile, keywordAT, pos; // D5
         getline(cin, temp);
         std::istringstream command(temp);
-        command >> operation >> tile >> keywordAT >> pos;
 
+        command >> operation >> tile >> keywordAT >> pos;
         if (operation == "place") {
             if (tile.empty() || keywordAT.empty() || pos.empty()) {
                 cout << "Invalid Command" << endl;
@@ -176,7 +176,7 @@ void IOHandler::playRound() {
             cout << "Invalid Command" << endl;
         }
         cin.clear();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
@@ -185,7 +185,6 @@ bool IOHandler::testingPurpose(
     string operation, string tile, string keywordAT, string pos) {
     string gameFileName = tile;
     bool errorChecking = true;
-    cout << operation << tile << keywordAT << pos;
     transform(operation.begin(), operation.end(), operation.begin(), ::tolower);
     transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
     transform(keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
@@ -345,7 +344,7 @@ bool IOHandler::checkTile(const string& tile) {
         bool boolLetter = false;
         bool boolNumber = false;
         string appended;
-        if (tile.size() == 2) {
+        if (tile.size() == STRING_SIZE_2) {
             char letter = tile.at(0);
             char num1 = tile.at(1);
 
@@ -365,10 +364,12 @@ bool IOHandler::checkTile(const string& tile) {
         if (boolLetter && boolNumber) {
             condition = true;
         } else {
-            condition = false;
+            cout << "Tile Not Valid" << endl;
         }
+
         return condition;
     } catch (const std::invalid_argument& e) {
+        cout << "Tile Not Valid" << endl;
         return false;
     }
 }
@@ -397,7 +398,7 @@ bool IOHandler::checkTilePosition(const string& position) {
             } else {
                 boolNumber = false;
             }
-        } else if (position.size() == 3) {
+        } else if (position.size() == STRING_SIZE_3) {
             // get the position
             char letter = position.at(FIRST_POSITION);
             char num1 = position.at(SECOND_POSITION);
@@ -419,18 +420,15 @@ bool IOHandler::checkTilePosition(const string& position) {
             } else {
                 boolNumber = true;
             }
-        } else {
-            boolLetter = false;
-            boolNum = false;
         }
         if (boolNumber && boolLetter) {
             condition = true;
         } else {
-            condition = false;
+            cout << "Not A Valid Position" << endl;
         }
         return condition;
     } catch (const std::invalid_argument& e) {
-        cerr << "The error is " << e.what() << endl;
+        cout << "Not A Valid Position" << endl;
         return false;
     }
 }
@@ -476,8 +474,6 @@ bool IOHandler::replaceTile(const string& tile) {
     if (checkTile(tile)) {
         Colour colour = tile.at(0);
         Shape shape = static_cast<int>(tile.at(1)) - ASCII_NUMERICAL_BEGIN;
-        cout << colour;
-        cout << shape;
         GameManager::replaceTile(colour, shape);
     }
     return true;
@@ -486,7 +482,6 @@ bool IOHandler::replaceTile(const string& tile) {
 void IOHandler::notify(const string& message, State state) {
     if (state == PLACE_SUCCESS) {
         cout << message << endl;
-
     } else if (state == PLACE_FAILURE) {
         cout << message << endl;
     } else if (state == REPLACE_SUCCESS) {
