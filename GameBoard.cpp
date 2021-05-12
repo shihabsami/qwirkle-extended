@@ -35,7 +35,7 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
     os << endl;
 
     for (int i = 0; i < BOARD_LENGTH; ++i) {
-        os << (char)(i + ASCII_ALPHABET_BEGIN) << " |";
+        os << (char)(i + ASCII_BEGIN) << " |";
         for (int j = 0; j < BOARD_LENGTH; ++j) {
             if (gameBoard.board.at(i).at(j))
                 os << *gameBoard.board.at(i).at(j);
