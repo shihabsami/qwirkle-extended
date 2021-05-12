@@ -19,14 +19,13 @@ public:
     static void loadGame();
     static bool checkTile(const string& tile);
     static bool checkTilePosition(const string& position);
-    static bool placeTile(const string& tile, const string& position);
-    static bool replaceTile(const string& tile);
+    static void placeTile(const string& tile, const string& position);
+    static void replaceTile(const string& tile);
     static void notify(const string& message, State state);
-    static int quit();
-    static void Test();
-
+    static void quit();
 
     static bool gameRunning;
+    static bool errorChecking;
 };
 
 #endif // !IO_HANDLER
