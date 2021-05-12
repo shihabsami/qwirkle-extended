@@ -38,7 +38,7 @@ public:
 
     static void reset();
 
-    static unsigned int roundsPlayed;
+    static bool gameBegan;
     static shared_ptr<TileBag> bag;
     static shared_ptr<Player> player1;
     static shared_ptr<Player> player2;

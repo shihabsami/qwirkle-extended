@@ -19,6 +19,10 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
+// tests for GameManager implementation
+
+void testGameManager();
+
 int main(void) {
     // testLinkedList();
     // testTileBag();
@@ -27,6 +31,7 @@ int main(void) {
     // testCalculateScore();
     // testTileValidOnLine();
     //IOHandler::Test();
+
     IOHandler::beginGame();
     while (!std::cin.eof() && IOHandler::gameRunning) {
         IOHandler::playRound();
@@ -34,8 +39,29 @@ int main(void) {
             IOHandler::quit();
         }
     }
+
+    // testGameManager();
+
     return EXIT_SUCCESS;
 }
+
+void testGameManager() {
+    GameManager::beginGame("A", "B");
+
+    shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
+    shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, CIRCLE);
+    shared_ptr<Tile> tile3 = make_shared<Tile>(RED, CIRCLE);
+
+    GameManager::placeTile(tile1->colour, tile1->shape, 4, 4);
+    cout << *GameManager::board << endl;
+
+    GameManager::placeTile(tile2->colour, tile2->shape, 4, 5);
+    cout << *GameManager::board << endl;
+
+    GameManager::placeTile(tile3->colour, tile3->shape, 4, 6);
+    cout << *GameManager::board << endl;
+}
+
 
 void testLinkedList() {
     cout << "testing linkedlist..." << endl;

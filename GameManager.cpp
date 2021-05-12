@@ -5,7 +5,7 @@
 using std::invalid_argument;
 using std::out_of_range;
 
-unsigned int GameManager::roundsPlayed = 0;
+bool GameManager::gameBegan = false;
 shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<Player> GameManager::player1 = nullptr;
 shared_ptr<Player> GameManager::player2 = nullptr;
@@ -20,7 +20,7 @@ void GameManager::beginGame(
     player2 = make_shared<Player>(player2Name, bag->getHand());
     currentPlayer = player1;
     board = make_shared<GameBoard>();
-    roundsPlayed = 0;
+    gameBegan = false;
 }
 
 /**
@@ -35,6 +35,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
     try {
         Tile tile(colour, shape);
+
         if (!isTileInHand(tile)) {
             message = "The specified tile is not present in hand.";
             throw invalid_argument("");
@@ -42,19 +43,21 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
             message =
                 "A tile is already present in the provided grid location.";
             throw invalid_argument("");
-        } else if (roundsPlayed > 0 && !hasAdjacentTile(tile, row, column)) {
+        } else if (gameBegan && !hasAdjacentTile(tile, row, column)) {
             message = "No adjacent tile to form line.";
             throw invalid_argument("");
-        } else if (!isTileValidOnLine(tile, row, column)) {
+        } else
+        if (!isTileValidOnLine(tile, row, column)) {
             message = "Tile violates line rules.";
             throw invalid_argument("");
         }
 
         board->placeTile(currentPlayer->getHand()->playTile(tile), row, column);
         currentPlayer->getHand()->addTile(bag->getRandomTile());
-        currentPlayer->setScore(currentPlayer->getScore() + calculateScore(tile, row, column));
+        currentPlayer->setScore(
+            currentPlayer->getScore() + calculateScore(tile, row, column));
         GameManager::switchPlayer();
-        ++roundsPlayed;
+        gameBegan = true;
     } catch (...) {
         state = PLACE_FAILURE;
     }
@@ -78,11 +81,13 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
         if (!isTileInHand(tile)) {
             message = "The specified tile is not present in hand.";
             throw invalid_argument("");
+        } else if (!gameBegan) {
+            message = "Must place a tile on the first move.";
+            throw invalid_argument("");
         }
 
         currentPlayer->getHand()->replaceTile(tile, *bag);
         GameManager::switchPlayer();
-        ++roundsPlayed;
     } catch (...) {
         state = REPLACE_FAILURE;
     }
@@ -98,12 +103,11 @@ void GameManager::switchPlayer() {
 }
 
 /**
- * @brief Calculate score of placed tile
- * 
- * @param playedTile: reference to tile
- * @param row: row of placed tile
- * @param column: column of placed tile
- * @return unsigned int: score gained from tile placement
+ * Calculate score of placed tile.
+ *
+ * @param playedTile - the tile that is played
+ * @param row,column - the specified grid location
+ * @return unsigned int - score gained from tile placement
  */
 unsigned int GameManager::calculateScore(
     const Tile& playedTile, int row, int column) {
@@ -119,7 +123,7 @@ unsigned int GameManager::calculateScore(
     bool endReached = false;
     for (int i = row - 1; i >= 0; i--) {
         if (!endReached) {
-            if (board->at(i, column) != nullptr) { 
+            if (board->at(i, column) != nullptr) {
                 rowStart = i;
             } else {
                 endReached = true;
@@ -154,6 +158,7 @@ unsigned int GameManager::calculateScore(
     }
     if (qwirkle) {
         rowScore += SCORE_BONUS;
+        IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
 
     qwirkle = true;
@@ -170,11 +175,13 @@ unsigned int GameManager::calculateScore(
             }
         }
     }
-    if (qwirkle){
+    if (qwirkle) {
         columnScore += SCORE_BONUS;
+        IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
 
-    return (columnScore < 2 || rowScore < 2) ? rowScore + columnScore - 1 : rowScore + columnScore;
+    return (columnScore < 2 || rowScore < 2) ? rowScore + columnScore - 1
+                                             : rowScore + columnScore;
 }
 
 /**
@@ -269,8 +276,6 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
             --currentColumn;
         } else if (currentDirection == RIGHT) {
             ++currentColumn;
-        } else {
-            allDirectionTraversed = true;
         }
 
         try {
@@ -281,18 +286,17 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
              * direction, else if location is not empty and the tile present at
              * the location is the same then tile is no longer unique
              */
-            if (!other) {
-                currentRow = row;
-                currentColumn = column;
-                ++currentDirection;
-            } else if (*other == tile) {
-                tileUnique = false;
-            } else {
+            if (other != nullptr) {
+                if (*other == tile)
+                    tileUnique = false;
+
                 // keep track of traversed tiles for further operations
                 if (currentDirection == UP || currentDirection == DOWN)
                     verticalTiles.addBack(other);
                 else
                     horizontalTiles.addBack(other);
+            } else {
+                throw out_of_range("");
             }
         }
         // exception may be thrown by board if the coordinates are out of bounds
@@ -300,11 +304,12 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
             currentRow = row;
             currentColumn = column;
             ++currentDirection;
+            allDirectionTraversed = currentDirection > RIGHT;
         }
     }
 
     std::cout << "h(" << horizontalTiles.size() << ") - " << horizontalTiles
-              << " v(" << verticalTiles.size() << ") - " << verticalTiles
+              << ", v(" << verticalTiles.size() << ") - " << verticalTiles
               << std::endl;
 
     /*
@@ -325,6 +330,8 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
     }
 
     bool matchHorizontalLine = hasSameColourAsLine || hasSameShapeAsLine;
+    hasSameColourAsLine = true;
+    hasSameShapeAsLine = true;
 
     for (unsigned int i = 0;
          i < verticalTiles.size() && i < 2 && matchHorizontalLine; ++i) {
@@ -357,4 +364,5 @@ void GameManager::reset() {
     player1.reset();
     player2.reset();
     currentPlayer.reset();
+    gameBegan = false;
 }
