@@ -35,6 +35,17 @@ void TileBag::shuffle() {
     }
 }
 
+shared_ptr<Tile> TileBag::getRandomTile() {
+    if (tiles->isEmpty())
+        throw length_error("no remaining tiles for TileBag::getRandomTile");
+
+    int randomIndex = getRandomIndex();
+    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
+    tiles->remove(randomIndex);
+
+    return randomTile;
+}
+
 shared_ptr<PlayerHand> TileBag::getHand() {
     if (tiles->size() < HAND_SIZE)
         throw length_error("insufficient number of tiles for TileBag::getHand");

@@ -94,16 +94,20 @@ void testTileBag() {
     bag->shuffle();
     cout << *bag << endl;
 
-    cout << "getting hand of cards from tilebag..." << endl;
+    cout << "getting a random tile2 from tilebag..." << endl;
+    shared_ptr<Tile> tile1 = bag->getRandomTile();
+    cout << *tile1 << endl;
+
+    cout << "getting hand of tiles from tilebag..." << endl;
     shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "hand -" << *hand << endl;
     cout << *bag << endl;
 
-    cout << "replacing a tile from tilebag..." << endl;
-    shared_ptr<Tile> tile = make_shared<Tile>(PURPLE, CLOVER);
-    cout << "tile " << *tile;
-    tile = bag->replace(tile);
-    cout << " replaced with " << *tile << endl;
+    cout << "replacing a tile2 from tilebag..." << endl;
+    shared_ptr<Tile> tile2 = make_shared<Tile>(PURPLE, CLOVER);
+    cout << "tile2 " << *tile2;
+    tile2 = bag->replace(tile2);
+    cout << " replaced with " << *tile2 << endl;
     cout << *bag << endl;
 }
 
