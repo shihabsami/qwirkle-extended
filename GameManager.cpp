@@ -52,7 +52,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
         board->placeTile(currentPlayer->getHand()->playTile(tile), row, column);
         currentPlayer->getHand()->addTile(bag->getRandomTile());
-        currentPlayer->setScore(calculateScore(tile, row, column));
+        currentPlayer->setScore(currentPlayer->getScore() + calculateScore(tile, row, column));
         GameManager::switchPlayer();
         ++roundsPlayed;
     } catch (...) {
@@ -97,9 +97,19 @@ void GameManager::switchPlayer() {
     currentPlayer = (*currentPlayer == *player1) ? player2 : player1;
 }
 
+/**
+ * @brief Calculate score of placed tile
+ * 
+ * @param playedTile: reference to tile
+ * @param row: row of placed tile
+ * @param column: column of placed tile
+ * @return unsigned int: score gained from tile placement
+ */
 unsigned int GameManager::calculateScore(
     const Tile& playedTile, int row, int column) {
-    int score = 0;
+
+    int rowScore = 0;
+    int columnScore = 0;
     bool qwirkle = true;
 
     int rowStart = row;
@@ -107,9 +117,9 @@ unsigned int GameManager::calculateScore(
 
     // Finding start places for score counting
     bool endReached = false;
-    for (int i = row - 1; i <= 0; i--) {
+    for (int i = row - 1; i >= 0; i--) {
         if (!endReached) {
-            if (board->at(i, column) != nullptr) {
+            if (board->at(i, column) != nullptr) { 
                 rowStart = i;
             } else {
                 endReached = true;
@@ -118,7 +128,7 @@ unsigned int GameManager::calculateScore(
     }
 
     endReached = false;
-    for (int j = column - 1; j <= 0; j--) {
+    for (int j = column - 1; j >= 0; j--) {
         if (!endReached) {
             if (board->at(row, j) != nullptr) {
                 columnStart = j;
@@ -135,15 +145,16 @@ unsigned int GameManager::calculateScore(
             if (current != nullptr) {
                 if (current->hasSameColour(playedTile) ||
                     current->hasSameShape(playedTile)) {
-                    score++;
+                    rowScore++;
                 }
             } else {
                 qwirkle = false;
             }
         }
     }
-    if (qwirkle)
-        score += SCORE_BONUS;
+    if (qwirkle) {
+        rowScore += SCORE_BONUS;
+    }
 
     qwirkle = true;
     for (int j = columnStart; j < columnStart + 6; j++) {
@@ -152,17 +163,18 @@ unsigned int GameManager::calculateScore(
             if (current != nullptr) {
                 if (current->hasSameColour(playedTile) ||
                     current->hasSameShape(playedTile)) {
-                    score++;
+                    columnScore++;
                 }
             } else {
                 qwirkle = false;
             }
         }
     }
-    if (qwirkle)
-        score += SCORE_BONUS;
+    if (qwirkle){
+        columnScore += SCORE_BONUS;
+    }
 
-    return score;
+    return (columnScore < 2 || rowScore < 2) ? rowScore + columnScore - 1 : rowScore + columnScore;
 }
 
 /**
