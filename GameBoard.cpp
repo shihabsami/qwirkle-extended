@@ -52,14 +52,14 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
 
 void GameBoard::placeTile(
     const shared_ptr<Tile>& tile, unsigned int row, unsigned int column) {
-    if (row > BOARD_LENGTH || column > BOARD_LENGTH)
+    if (row >= BOARD_LENGTH || column >= BOARD_LENGTH)
         throw out_of_range("invalid grid location for GameBoard::placeTile");
 
     board.at(row).at(column) = tile;
 }
 
 shared_ptr<Tile> GameBoard::at(unsigned int row, unsigned int column) {
-    if (row > BOARD_LENGTH || column > BOARD_LENGTH)
+    if (row >= BOARD_LENGTH || column >= BOARD_LENGTH)
         throw out_of_range("invalid grid location for GameBoard::at");
 
     return board.at(row).at(column);
