@@ -222,13 +222,6 @@ void IOHandler::playRound() {
             }
 
         } else if (operation == "save") {
-            //Q
-//            for(unsigned int i =0; i<BOARD_LENGTH; i++){
-//                for(unsigned int j=0; j<BOARD_LENGTH; j++) {
-//                    cout << GameBoard::at(i,j);
-//                }
-//                cout << endl;
-//            }
             gameFileName = gameFileName + ".save";
             std::ofstream file(gameFileName);
             file << GameManager::player1->getName() << endl;
