@@ -8,6 +8,8 @@ string Player::getName() { return name; }
 
 unsigned int Player::getScore() { return score; }
 
+void Player::setScore(unsigned int score) { this->score = score; }
+
 shared_ptr<PlayerHand> Player::getHand() { return hand; }
 
 bool operator==(const Player& player1, const Player& player2) {

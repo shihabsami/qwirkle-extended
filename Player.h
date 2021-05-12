@@ -13,6 +13,7 @@ public:
     Player(const string& name, shared_ptr<PlayerHand> hand);
     string getName();
     unsigned int getScore();
+    void setScore(unsigned int score);
     shared_ptr<PlayerHand> getHand();
 
     friend bool operator==(const Player& player1, const Player& player2);
@@ -23,4 +24,4 @@ private:
     shared_ptr<PlayerHand> hand;
 };
 
-#endif // PLAYER_H
+#endif // !PLAYER_H

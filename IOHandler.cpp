@@ -421,7 +421,7 @@ bool IOHandler::checkTilePosition(const string& position) {
             }
         } else {
             boolLetter = false;
-            boolNum = false;
+            boolNumber = false;
         }
         if (boolNumber && boolLetter) {
             condition = true;

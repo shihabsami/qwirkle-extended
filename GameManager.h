@@ -26,16 +26,13 @@ public:
 
     static unsigned int calculateScore(const Tile& playedTile, int row, int column);
 
-
     static bool isGridLocationEmpty(int row, int column);
 
     static bool isTileInHand(const Tile& tile);
 
-    static bool isTileSimilar(const Tile& tile, int row, int column);
-
     static bool hasAdjacentTile(const Tile& tile, int row, int column);
 
-    static bool tileValidOnLine(const Tile& tile, int row, int column);
+    static bool isTileValidOnLine(const Tile& tile, int row, int column);
 
     static bool hasGameEnded();
 
