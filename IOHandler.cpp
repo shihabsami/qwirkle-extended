@@ -277,6 +277,11 @@ void IOHandler::playRound() {
         cin >> filename;
         std::ifstream file(filename);
 
+        shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
+        shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
+        shared_ptr<Player> p1 = make_shared<Player>();
+        shared_ptr<Player> p1 = make_shared<Player>();
+
         int count = 0;
         string text;
         try {
@@ -356,6 +361,8 @@ void IOHandler::playRound() {
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
         }
+
+
     }
 
     bool IOHandler::checkTile(const string& tile) {
