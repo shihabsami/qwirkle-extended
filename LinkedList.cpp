@@ -170,15 +170,6 @@ shared_ptr<Tile> LinkedList::at(unsigned int index) const {
     return toReturn->tile;
 }
 
-ostream& operator<<(ostream& os, const LinkedList& list) {
-    shared_ptr<Node> current = list.head;
-    for (unsigned int i = 0; i < list.length; ++i) {
-        os << *current->tile << (i < list.length - 1 ? ", " : "");
-        current = current->next;
-    }
-
-    return os;
-}
 bool LinkedList::contains(const Tile& tile) const {
     shared_ptr<Node> current = head;
     bool found = false;
@@ -195,4 +186,14 @@ bool LinkedList::contains(const Tile& tile) const {
     return found;
 }
 
-bool LinkedList::isEmpty() { return length == 0; }
+bool LinkedList::isEmpty() const { return length == 0; }
+
+ostream& operator<<(ostream& os, const LinkedList& list) {
+    shared_ptr<Node> current = list.head;
+    for (unsigned int i = 0; i < list.length; ++i) {
+        os << *current->tile << (i < list.length - 1 ? ", " : "");
+        current = current->next;
+    }
+
+    return os;
+}
