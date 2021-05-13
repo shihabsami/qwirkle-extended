@@ -277,10 +277,15 @@ void IOHandler::playRound() {
         cin >> filename;
         std::ifstream file(filename);
 
+        // Tiles add to back
         shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
         shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
-        shared_ptr<Player> p1 = make_shared<Player>();
-        shared_ptr<Player> p1 = make_shared<Player>();
+        shared_ptr<Player> p1 = make_shared<Player>("Player1", p1Hand);
+        shared_ptr<Player> p2 = make_shared<Player>("Player2", p2Hand);
+        // getTiles().Add()
+        shared_ptr<TileBag> tileBag = make_shared<TileBag>();
+        shared_ptr<GameBoard> board = make_shared<GameBoard>();
+        shared_ptr<Player> currentPlayer = nullptr;
 
         int count = 0;
         string text;
@@ -291,12 +296,25 @@ void IOHandler::playRound() {
                     // check name ASCII
                     int ascii = 0;
 
-                    for (size_t i = 0; i < text.length(); i++) {
+                    for (size_t i = 0; i < text.length() - 1; i++) {
                         ascii = text[i];
-                        if (ascii < ASCII_ALPHABET_BEGIN ||
-                            ascii > ASCII_ALPHABET_END) {
+                        
+                        if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
+                            ascii > ASCII_ALPHABET_END + 1) {
                             throw std::invalid_argument(
                                 "Name format is not part of ASCII text");
+                        }
+                    }
+
+                    if (count == 0) {
+                        p1->setName(text);
+                    } else if (count == 3) {
+                        p2->setName(text);
+                    } else {
+                        if (p1->getName() == text) {
+                            currentPlayer = p1;
+                        } else {
+                            currentPlayer = p2;
                         }
                     }
 
@@ -309,6 +327,13 @@ void IOHandler::playRound() {
                         throw std::invalid_argument(
                             "The number should be positive");
                     }
+
+                    if (count == 1) {
+                        p1->setScore(number);
+                    } else {
+                        p2->setScore(number);
+                    }
+
                     count++;
                     //checks if tiles are seperated by ','
                 } else if (count == 2 || count == 5 || count == 8) {
@@ -317,8 +342,27 @@ void IOHandler::playRound() {
                     while (ss.good()) {
                         string substr;
                         getline(ss, substr, ',');
-                        if (substr.length() != 2) {
-                            throw std::invalid_argument("Wrong Format");
+                        // removing new lines
+                        if (substr[0] != '\n' && substr[0] != '\r') { 
+                            if (substr.length() > 2)  {
+                                substr.erase(std::remove(substr.begin(), substr.end(), '\r'), substr.end());
+                                substr.erase(std::remove(substr.begin(), substr.end(), '\n'), substr.end());
+                            } 
+
+                            if (substr.length() != 2) {
+                                throw std::invalid_argument("Wrong Tile List Format");
+                            }
+
+                            // Player 1 hand
+                            if (count == 2) {
+                                p1Hand->addTile(make_shared<Tile>(substr[0], substr[1] - '0'));
+                            } // Player 2 hand
+                            else if (count == 5) {
+                                p2Hand->addTile(make_shared<Tile>(substr[0], substr[1] - '0'));
+                            } // Tile Bag Tiles 
+                            else {
+                                tileBag->getTiles()->addBack(make_shared<Tile>(substr[0], substr[1] - '0'));
+                            }
                         }
                     }
                     count++;
@@ -337,6 +381,7 @@ void IOHandler::playRound() {
                                 "26");
                         }
                     }
+                    // Board size does nothing at the moment, no loading
                     count++;
                 } else if (count == 7) {
                     // all tiles placed on board
@@ -345,19 +390,39 @@ void IOHandler::playRound() {
                         string substr;
                         getline(ss, substr, ' ');
                         const char at = '@';
+
                         if (substr[2] != at) {
                             throw std::invalid_argument(
                                 "The board should appear as a list of "
                                 "tile@postion");
                         }
+                        char tile[2] = { substr[0], substr[1] };
+                        char pos[3] = { substr[3], substr[4], substr[5] };
+
+                        int row = pos[0] - ASCII_ALPHABET_BEGIN;
+                        int column = (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n') 
+                        ? pos[1] - '0' 
+                        : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
+
+                        board->placeTile(make_shared<Tile>(tile[0], tile[1] - '0'), row, column);
                     }
                     count++;
                 }
             }
             cout << "Qwirkle game successfully loaded" << endl;
             file.close();
-            selection();
+            GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
+            // Testing prints
+            /*std::cout << GameManager::player1->getName() << std::endl;
+            std::cout << GameManager::player1->getScore() << std::endl;
+            std::cout << *GameManager::player1->getHand() << std::endl;
+            std::cout << GameManager::player2->getName() << std::endl;
+            std::cout << GameManager::player2->getScore() << std::endl;
+            std::cout << *GameManager::player2->getHand() << std::endl;
 
+            std::cout << *GameManager::bag << std::endl;
+            std::cout << GameManager::currentPlayer->getName() << std::endl;
+            std::cout << *GameManager::board << std::endl;*/
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
         }
