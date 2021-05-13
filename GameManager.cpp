@@ -23,6 +23,16 @@ void GameManager::beginGame(
     gameBegan = false;
 }
 
+void GameManager::loadGame(shared_ptr<Player> p1, shared_ptr<Player> p2, shared_ptr<TileBag> loadedBag, shared_ptr<GameBoard> loadedBoard, shared_ptr<Player> currentP) {
+    gameBegan = true;
+    
+    player1 = p1;
+    player2 = p2;
+    bag = loadedBag;
+    board = loadedBoard;
+    currentPlayer = currentP;
+}
+
 /**
  * Place a tile on to the board from the current player's hand.
  *
@@ -46,8 +56,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
         } else if (gameBegan && !hasAdjacentTile(tile, row, column)) {
             message = "No adjacent tile to form line.";
             throw invalid_argument("");
-        } else
-        if (!isTileValidOnLine(tile, row, column)) {
+        } else if (!isTileValidOnLine(tile, row, column)) {
             message = "Tile violates line rules.";
             throw invalid_argument("");
         }
@@ -107,7 +116,7 @@ void GameManager::switchPlayer() {
  *
  * @param playedTile - the tile that is played
  * @param row,column - the specified grid location
- * @return unsigned int - score gained from tile placement
+ * @return unsigned int indicating the score gained from tile placement
  */
 unsigned int GameManager::calculateScore(
     const Tile& playedTile, int row, int column) {
@@ -206,6 +215,7 @@ bool GameManager::isTileInHand(const Tile& tile) {
  *
  * @param tile - the tile to be checked
  * @param row,column - the specified grid location
+ * @return boolean indicating whether the tile has adjacent neighbors
  *
  * @note Off the top this method may seem very similar to the following
  * \b GameManager::isValidOnTile method, however this only traverses the next
@@ -308,16 +318,13 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
         }
     }
 
-    std::cout << "h(" << horizontalTiles.size() << ") - " << horizontalTiles
-              << ", v(" << verticalTiles.size() << ") - " << verticalTiles
-              << std::endl;
-
     /*
      * check whether tile shares similarity with the other tiles on both the
      * horizontal and vertical lines, is only traversed as long as one of the
      * similarities remain, if more than 2 comparisons are made and conditions
      * still hold then no further iteration is made as the tile cannot have
-     * dissimilarities any longer
+     * dissimilarities any longer, the large number of conditions are there to
+     * ensure that the algorithm is as efficient as could be
      */
     bool hasSameColourAsLine = true;
     bool hasSameShapeAsLine = true;
@@ -333,8 +340,10 @@ bool GameManager::isTileValidOnLine(const Tile& tile, int row, int column) {
     hasSameColourAsLine = true;
     hasSameShapeAsLine = true;
 
-    for (unsigned int i = 0;
-         i < verticalTiles.size() && i < 2 && matchHorizontalLine; ++i) {
+    // only iterate if the tile matched the horizontal line above
+    for (unsigned int i = 0; i < verticalTiles.size() && matchHorizontalLine &&
+         (hasSameColourAsLine || hasSameShapeAsLine) && i < 2;
+         ++i) {
         hasSameColourAsLine &= tile.hasSameColour(*verticalTiles.at(i));
         hasSameShapeAsLine &= tile.hasSameShape(*verticalTiles.at(i));
     }

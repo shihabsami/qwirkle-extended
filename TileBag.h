@@ -11,6 +11,7 @@ class TileBag {
 public:
     TileBag();
     ~TileBag();
+    void fill();
     void shuffle();
     shared_ptr<Tile> getRandomTile();
     shared_ptr<PlayerHand> getHand();
