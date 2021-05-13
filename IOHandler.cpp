@@ -226,17 +226,17 @@ bool IOHandler::testingPurpose(
         file << GameManager::player2->getName() << endl;
         file << GameManager::player2->getScore() << endl;
         file << *GameManager::player2->getHand()->getTiles() << endl;
-        file << BOARD_LENGTH << "," <<  BOARD_LENGTH << endl;
-            file << "/*tiles played* from sam/" << endl;
-            file << *GameManager::bag->getTiles() << endl;
-            file << GameManager::currentPlayer->getName() << endl;
-            file.close();
-            takingInput = true;
-        } else {
-            cout << "Not A Valid Command" << endl;
-        }
-        return takingInput;
+        file << BOARD_LENGTH << "," << BOARD_LENGTH << endl;
+        file << *GameManager::board << endl;
+        file << *GameManager::bag->getTiles() << endl;
+        file << GameManager::currentPlayer->getName() << endl;
+        file.close();
+        takingInput = true;
+    } else {
+        cout << "Not a valid command." << endl;
     }
+    return takingInput;
+}
 
 void IOHandler::credits() {
     cout << "----------------------------------" << endl;
