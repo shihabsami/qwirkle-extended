@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <vector>
+#include <fstream>
 
+using std::ofstream;
 using std::vector;
 using std::shared_ptr;
 using std::make_shared;
@@ -19,9 +21,10 @@ public:
         const shared_ptr<Tile>& tile, unsigned int row, unsigned int column);
     shared_ptr<Tile> at(unsigned int row, unsigned int column);
     friend ostream& operator<<(ostream& os, const GameBoard& board);
+    friend ostream& operator<<(ofstream& ofs, const GameBoard& board);
 
 private:
     vector<vector<shared_ptr<Tile>>> board;
 };
 
-#endif //GAME_BOARD_H
+#endif // !GAME_BOARD_H
