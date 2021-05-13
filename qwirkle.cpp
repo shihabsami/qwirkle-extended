@@ -91,5 +91,4 @@ void testGameBoard() {
     board->placeTile(tile3, 15, 20);
     board->placeTile(tile4, 20, 10);
     cout << *board << endl;
-
 }
