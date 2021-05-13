@@ -32,14 +32,17 @@ void GameManager::beginGame(
     gameBegan = false;
 }
 
-void GameManager::loadGame(shared_ptr<Player> p1, shared_ptr<Player> p2, shared_ptr<TileBag> loadedBag, shared_ptr<GameBoard> loadedBoard, shared_ptr<Player> currentP) {
+void GameManager::loadGame(const shared_ptr<Player>& player1, const shared_ptr<Player>& player2,
+    const shared_ptr<TileBag>& loadedBag, const shared_ptr<GameBoard>& loadedBoard,
+    const shared_ptr<Player>& currentPlayer) {
     gameBegan = true;
-    
-    player1 = p1;
-    player2 = p2;
+
     bag = loadedBag;
     board = loadedBoard;
-    currentPlayer = currentP;
+
+    GameManager::player1 = player1;
+    GameManager::player2 = player2;
+    GameManager::currentPlayer = currentPlayer;
 }
 
 /**

@@ -30,7 +30,10 @@ class GameManager {
 public:
     static void beginGame(const string& player1Name, const string& player2Name);
 
-    static void loadGame(shared_ptr<Player> p1, shared_ptr<Player> p2, shared_ptr<TileBag> loadedBag, shared_ptr<GameBoard> loadedBoard, shared_ptr<Player> currentP);
+    static void loadGame(const shared_ptr<Player>& player1,
+        const shared_ptr<Player>& player2, const shared_ptr<TileBag>& loadedBag,
+        const shared_ptr<GameBoard>& loadedBoard,
+        const shared_ptr<Player>& currentPlayer);
 
     static void placeTile(Colour colour, Shape shape, int row, int column);
 
