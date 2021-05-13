@@ -25,7 +25,7 @@ public:
     static void quit();
 
     static bool gameRunning;
-    static bool errorChecking;
+    static bool takingInput;
 };
 
 #endif // !IO_HANDLER

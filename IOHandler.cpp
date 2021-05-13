@@ -16,7 +16,7 @@ using std::cerr;
 using std::endl;
 
 bool IOHandler::gameRunning = false;
-bool IOHandler::errorChecking = false;
+bool IOHandler::takingInput = false;
 
 void IOHandler::beginGame() {
     cout << "Welcome to Qwirkle!" << endl;
@@ -156,8 +156,8 @@ void IOHandler::playRound() {
     cout << "Your hand is " << endl;
     cout << *GameManager::currentPlayer->getHand() << endl;
 
-    errorChecking = true;
-    while (errorChecking) {
+    takingInput = true;
+    while (takingInput) {
         prompt();
         string temp, operation, tile, keywordAT, pos; // D5
         getline(cin, temp);
@@ -179,21 +179,21 @@ void IOHandler::playRound() {
                 if (tile.empty() || keywordAT.empty() || pos.empty()) {
                     cout << "Invalid Command" << endl;
                 } else {
-                    errorChecking =
+                    takingInput =
                         testingPurpose(operation, tile, keywordAT, pos);
                 }
             } else if (operation == "replace") {
                 if (tile.empty()) {
                     cout << "Invalid Command" << endl;
                 } else {
-                    errorChecking =
+                    takingInput =
                         testingPurpose(operation, tile, keywordAT, pos);
                 }
             } else if ( operation == "save") {
                 if (tile.empty()) {
                     cout << "Invalid Command" << endl;
                 } else {
-                    errorChecking =
+                    takingInput =
                         testingPurpose(operation, tile, keywordAT, pos);
                 }
             } else {
@@ -211,14 +211,14 @@ void IOHandler::playRound() {
             if (checkTile(tile) && checkTilePosition(pos)) {
                 placeTile(tile, pos);
             } else {
-                errorChecking = true;
+                takingInput = true;
             }
 
         } else if (operation.compare("replace") == 0) {
             if (checkTile(tile)) {
                 replaceTile(tile);
             } else {
-                errorChecking = true;
+                takingInput = true;
             }
 
         } else if (operation == "save") {
@@ -235,11 +235,11 @@ void IOHandler::playRound() {
             file << BOARD_LENGTH << "," <<  BOARD_LENGTH << endl;
             file << GameManager::currentPlayer->getName() << endl;
             file.close();
-            errorChecking = true;
+            takingInput = true;
         } else {
             cout << "Not A Valid Command" << endl;
         }
-        return errorChecking;
+        return takingInput;
     }
 
     void IOHandler::credits() {
@@ -281,6 +281,7 @@ void IOHandler::playRound() {
         string text;
         try {
             while (getline(file, text)) {
+                // checks if name is correct
                 if (count == 0 || count == 3 || count == 9) {
                     // check name ASCII
                     int ascii = 0;
@@ -295,6 +296,7 @@ void IOHandler::playRound() {
                     }
 
                     count++;
+                    //checks if score is a number
                 } else if (count == 1 || count == 4) {
                     // Check Interger
                     int number = stoi(text);
@@ -303,6 +305,7 @@ void IOHandler::playRound() {
                             "The number should be positive");
                     }
                     count++;
+                    //checks if tiles are seperated by ','
                 } else if (count == 2 || count == 5 || count == 8) {
                     // seperated with comma
                     std::stringstream ss(text);
@@ -314,6 +317,7 @@ void IOHandler::playRound() {
                         }
                     }
                     count++;
+                    //checks if board size is seperated by ',' and not more than 26
                 } else if (count == 6) {
                     // height, width
                     std::stringstream ss(text);
@@ -486,17 +490,17 @@ void IOHandler::playRound() {
     void IOHandler::notify(const string& message, State state) {
         if (state == PLACE_SUCCESS) {
             cout << message << endl;
-            errorChecking = false;
+            takingInput = false;
         } else if (state == PLACE_FAILURE) {
             cout << message << endl;
         } else if (state == REPLACE_SUCCESS) {
             cout << message << endl;
-            errorChecking = false;
+            takingInput = false;
         } else if (state == REPLACE_FAILURE) {
             cout << message << endl;
         } else if (state == QWIRKLE) {
             cout << message << endl;
-            errorChecking = false;
+            takingInput = false;
         } else if (state == GAME_OVER) {
             cout << message << endl;
             cout << "Game Over" << endl;
@@ -511,7 +515,7 @@ void IOHandler::playRound() {
                 cout << "Player " << GameManager::player2 << " won!" << endl;
             }
             cout << "GoodBye" << endl;
-            errorChecking = false;
+            takingInput = false;
             gameRunning = false;
             GameManager::reset();
         }
