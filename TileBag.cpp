@@ -10,17 +10,23 @@ using std::length_error;
 using std::random_device;
 using std::uniform_int_distribution;
 
-TileBag::TileBag() : tiles(make_shared<LinkedList>()) {
-    for (unsigned int i = 0; i < COLOURS.size(); ++i) {
-        for (unsigned int j = 0; j < SHAPES.size(); ++j) {
-            // two of each colour and shape combination
-            tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
-            tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
-        }
-    }
-}
+TileBag::TileBag() : tiles(make_shared<LinkedList>()) {}
 
 TileBag::~TileBag() { tiles.reset(); }
+
+void TileBag::fill() {
+    if (tiles->isEmpty()) {
+        for (unsigned int i = 0; i < COLOURS.size(); ++i) {
+            for (unsigned int j = 0; j < SHAPES.size(); ++j) {
+                // two of each colour and shape combination
+                tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
+                tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
+            }
+        }
+    } else {
+        throw length_error("bag is not empty for TileBag::fill");
+    }
+}
 
 void TileBag::shuffle() {
     for (unsigned int i = 0; i < tiles->size(); ++i) {
