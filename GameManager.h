@@ -18,6 +18,8 @@ class GameManager {
 public:
     static void beginGame(const string& player1Name, const string& player2Name);
 
+    static void loadGame(shared_ptr<Player> p1, shared_ptr<Player> p2, shared_ptr<TileBag> loadedBag, shared_ptr<GameBoard> loadedBoard, shared_ptr<Player> currentP);
+
     static void placeTile(Colour colour, Shape shape, int row, int column);
 
     static void replaceTile(Colour colour, Shape shape);
