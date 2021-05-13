@@ -58,6 +58,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
     try {
         Tile tile(colour, shape);
+
         if (!isTileInHand(tile)) {
             message = "The specified tile is not present in hand.";
             throw invalid_argument("");

@@ -226,17 +226,17 @@ bool IOHandler::testingPurpose(
         file << GameManager::player2->getName() << endl;
         file << GameManager::player2->getScore() << endl;
         file << *GameManager::player2->getHand()->getTiles() << endl;
-        file << "/*tiles played* from sam/" << endl;
-        file << *GameManager::bag->getTiles() << endl;
-        file << BOARD_LENGTH << "," << BOARD_LENGTH << endl;
-        file << GameManager::currentPlayer->getName() << endl;
-        file.close();
-        takingInput = true;
-    } else {
-        cout << "Not a valid command." << endl;
+        file << BOARD_LENGTH << "," <<  BOARD_LENGTH << endl;
+            file << "/*tiles played* from sam/" << endl;
+            file << *GameManager::bag->getTiles() << endl;
+            file << GameManager::currentPlayer->getName() << endl;
+            file.close();
+            takingInput = true;
+        } else {
+            cout << "Not A Valid Command" << endl;
+        }
+        return takingInput;
     }
-    return takingInput;
-}
 
 void IOHandler::credits() {
     cout << "----------------------------------" << endl;
@@ -427,6 +427,10 @@ void IOHandler::loadGame() {
         std::cout << *GameManager::bag << std::endl;
         std::cout << GameManager::currentPlayer->getName() << std::endl;
         std::cout << *GameManager::board << std::endl;*/
+
+        gameRunning = true;
+        playRound();
+
     } catch (const std::invalid_argument& e) {
         cerr << "The error is " << e.what() << endl;
     }
