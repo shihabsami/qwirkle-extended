@@ -31,7 +31,6 @@ void LinkedList::addBack(const shared_ptr<Tile>& tile) {
     } else {
         tail->next = toBeAdded;
         toBeAdded->previous = tail;
-        tail.reset();
         tail = toBeAdded;
     }
 
