@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -63,7 +62,7 @@ void IOHandler::selection() {
                 cin.clear();
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 cout << " " << endl;
-                throw std::runtime_error("Invalid Input");
+                throw std::runtime_error("Invalid input.");
             }
         } catch (const std::runtime_error& e) {
             cerr << e.what() << endl;
@@ -78,49 +77,37 @@ void IOHandler::newGame() {
 
     cout << "Starting a New Game" << endl;
     cout << endl;
-    bool condition = true;
-
-    while (condition) {
-        try {
-            cout << "Enter a name for player 1 (uppercase characters only)"
-                 << endl;
-            prompt();
-            cin >> player1Name;
-            if (cin.eof()) {
-                quit();
-            }
-            if (validateName(player1Name)) {
-                cout << endl;
-                throw std::invalid_argument(
-                    "Must enter a name in CAPS for Player 1 and name must not "
-                    "contain numbers or symbols");
-            }
-            cout << "Enter a name for player 2 (uppercase characters only)"
-                 << endl;
-            prompt();
-            cin >> player2Name;
-            if (cin.eof()) {
-                quit();
-            }
-            if (validateName(player2Name)) {
-                cout << endl;
-                throw std::invalid_argument(
-                    "Must enter a name in CAPS for Player 2 and name must not "
-                    "contain numbers or symbols");
-            }
-            int compare = player1Name.compare(player2Name);
-            if (compare == 0) {
-                throw std::invalid_argument(
-                    "Player Names should not be the same");
-            }
-            condition = false;
-        } catch (const std::invalid_argument& e) {
-            cerr << e.what() << endl;
-            cout << endl;
+    bool nameCheck1 = true;
+    bool nameCheck2 = true;
+    string message = "Must enter a name in CAPS for Player and name must "
+                     "not contain numbers or symbols or duplicate names";
+    while (!cin.eof() && nameCheck1) {
+        cout << "Enter a name for player 1 (uppercase characters only)" << endl;
+        prompt();
+        cin >> player1Name;
+        if (validateName(player1Name)) {
+            cout << message << endl;
+        } else {
+            nameCheck1 = false;
         }
-        cin.clear();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
+    while (!cin.eof() && nameCheck2) {
+        cout << "Enter a name for player 2 (uppercase characters only)" << endl;
+        prompt();
+        cin >> player2Name;
+        if (validateName(player2Name) || player1Name == player2Name) {
+            cout << message << endl;
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        } else {
+            nameCheck2 = false;
+        }
+    }
+    if (cin.eof()) {
+        quit();
+    }
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cout << "Let's Play!" << endl;
     GameManager::beginGame(player1Name, player2Name);
     gameRunning = true;
@@ -131,8 +118,7 @@ bool IOHandler::validateName(const string& name) {
 
     bool state = false;
     int counter = 0;
-    for (std::size_t i = 0; i < name.length(); i++) {
-        char c = name[i];
+    for (char c : name) {
         if (isupper(c) < 1) {
             counter++;
         }
@@ -175,32 +161,12 @@ void IOHandler::playRound() {
             keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
         transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
 
-        if (operation == "place") {
-            if (tile.empty() || keywordAT.empty() || pos.empty()) {
-                cout << "Invalid command" << endl;
-            } else {
-                takingInput = testingPurpose(operation, tile, keywordAT, pos);
-            }
-        } else if (operation == "replace") {
-            if (tile.empty()) {
-                cout << "Invalid command" << endl;
-            } else {
-                takingInput = testingPurpose(operation, tile, keywordAT, pos);
-            }
-        } else if (operation == "save") {
-            if (tile.empty()) {
-                cout << "Invalid command" << endl;
-            } else {
-                takingInput = testingPurpose(operation, tile, keywordAT, pos);
-            }
-        } else {
-            cout << "Invalid command" << endl;
-        }
+        takingInput = logicHandler(operation, tile, keywordAT, pos);
     }
 }
 
-bool IOHandler::testingPurpose(
-    string operation, string tile, string keywordAT, string pos) {
+bool IOHandler::logicHandler(const string& operation, const string& tile,
+    const string& keywordAT, const string& pos) {
     string gameFileName = tile;
 
     if (operation == "place" && keywordAT == "at") {
@@ -210,7 +176,7 @@ bool IOHandler::testingPurpose(
             takingInput = true;
         }
 
-    } else if (operation.compare("replace") == 0) {
+    } else if (operation == "replace" && keywordAT.empty() && pos.empty()) {
         if (checkTile(tile)) {
             replaceTile(tile);
         } else {
@@ -230,6 +196,9 @@ bool IOHandler::testingPurpose(
         file << *GameManager::board << endl;
         file << *GameManager::bag->getTiles() << endl;
         file << GameManager::currentPlayer->getName() << endl;
+        cout << endl;
+        cout << "Game successfully saved" << endl;
+        cout << endl;
         file.close();
         takingInput = true;
     } else {
@@ -289,14 +258,14 @@ void IOHandler::loadGame() {
         while (getline(file, text)) {
             // checks if name is correct
             if (count == 0 || count == 3 || count == 9) {
-                for (size_t i = 0; i < text.length() - 1; i++) {
+                for (unsigned i = 0; i < text.length() - 1; i++) {
                     // check name ASCII
                     int ascii = text[i];
 
                     if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
                         ascii > ASCII_ALPHABET_END + 1) {
                         throw std::invalid_argument(
-                            "Name format is not part of ASCII text");
+                            "Name format is not part of ASCII text.");
                     }
                 }
 
@@ -319,7 +288,7 @@ void IOHandler::loadGame() {
                 int number = stoi(text);
                 if (number < 0) {
                     throw std::invalid_argument(
-                        "The number should be positive");
+                        "The number should be positive.");
                 }
 
                 if (count == 1) {
@@ -349,7 +318,7 @@ void IOHandler::loadGame() {
 
                         if (substr.length() != 2) {
                             throw std::invalid_argument(
-                                "Wrong tile list format");
+                                "Wrong tile list format.");
                         }
 
                         // Player 1 hand
@@ -380,7 +349,7 @@ void IOHandler::loadGame() {
                     if (number < 0 || (number > 26)) {
                         throw std::invalid_argument(
                             "The grid should be more than 0 and less that "
-                            "26");
+                            "26.");
                     }
                 }
                 // Board size does nothing at the moment, no loading
@@ -396,10 +365,11 @@ void IOHandler::loadGame() {
                     if (substr[2] != at) {
                         throw std::invalid_argument(
                             "The board should appear as a list of "
-                            "tile@postion");
+                            "tile@postion.");
                     }
+                    char last = substr.length() < 6 ? ',' : substr[5];
                     char tile[2] = {substr[0], substr[1]};
-                    char pos[3] = {substr[3], substr[4], substr[5]};
+                    char pos[3] = {substr[3], substr[4], last};
 
                     int row = pos[0] - ASCII_ALPHABET_BEGIN;
                     int column =
@@ -416,19 +386,8 @@ void IOHandler::loadGame() {
         cout << "Qwirkle game successfully loaded." << endl;
         file.close();
         GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
-        // Testing prints
-        /*std::cout << GameManager::player1->getName() << std::endl;
-        std::cout << GameManager::player1->getScore() << std::endl;
-        std::cout << *GameManager::player1->getHand() << std::endl;
-        std::cout << GameManager::player2->getName() << std::endl;
-        std::cout << GameManager::player2->getScore() << std::endl;
-        std::cout << *GameManager::player2->getHand() << std::endl;
-
-        std::cout << *GameManager::bag << std::endl;
-        std::cout << GameManager::currentPlayer->getName() << std::endl;
-        std::cout << *GameManager::board << std::endl;*/
-
         gameRunning = true;
+        cin.ignore();
         playRound();
 
     } catch (const std::invalid_argument& e) {
@@ -448,13 +407,13 @@ bool IOHandler::checkTile(const string& tile) {
 
             appended.append(1, num1);
             int combinedNumber = stoi(appended);
-            for (unsigned int i = 0; i < COLOURS.size(); i++) {
-                if (letter == COLOURS[i]) {
+            for (char i : COLOURS) {
+                if (letter == i) {
                     boolLetter = true;
                 }
             }
-            for (unsigned int i = 0; i < SHAPES.size(); i++) {
-                if (combinedNumber == SHAPES[i]) {
+            for (int i : SHAPES) {
+                if (combinedNumber == i) {
                     boolNumber = true;
                 }
             }
@@ -473,7 +432,7 @@ bool IOHandler::checkTile(const string& tile) {
 
 // Tile position checker
 bool IOHandler::checkTilePosition(const string& position) {
-    string appended = "";
+    string appended;
     bool condition = false;
     bool boolLetter = false;
     bool boolNumber = false;

@@ -14,7 +14,7 @@ public:
     static void newGame();
     static bool validateName(const string& name);
     static void playRound();
-    static bool testingPurpose(string operation, string tile, string keywordAT, string pos);
+    static bool logicHandler(const string& operation, const string& tile, const string& keywordAT, const string& pos);
     static void credits();
     static void loadGame();
     static bool checkTile(const string& tile);
