@@ -12,6 +12,7 @@ class Player {
 public:
     Player(const string& name, shared_ptr<PlayerHand> hand);
     string getName();
+    void setName(const string name);
     unsigned int getScore();
     void setScore(unsigned int score);
     shared_ptr<PlayerHand> getHand();

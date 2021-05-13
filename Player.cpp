@@ -5,6 +5,7 @@ Player::Player(const string& name, shared_ptr<PlayerHand> hand)
     : name(name), hand(hand) {}
 
 string Player::getName() { return name; }
+void Player::setName(const string name) { this->name = name; }
 
 unsigned int Player::getScore() { return score; }
 
