@@ -6,16 +6,7 @@ using std::out_of_range;
 LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
 LinkedList::~LinkedList() {
-    shared_ptr<Node> current = head;
-    shared_ptr<Node> toDelete;
-
-    while (current != nullptr) {
-        toDelete = current;
-        current = current->next;
-
-        toDelete->~Node();
-        toDelete.reset();
-    }
+    while (length != 0) removeFront();
 }
 
 void LinkedList::addFront(const shared_ptr<Tile>& tile) {
@@ -191,7 +182,7 @@ bool LinkedList::isEmpty() const { return length == 0; }
 ostream& operator<<(ostream& os, const LinkedList& list) {
     shared_ptr<Node> current = list.head;
     for (unsigned int i = 0; i < list.length; ++i) {
-        os << *current->tile << (i < list.length - 1 ? ", " : "");
+        os << *current->tile << (i < list.length - 1 ? "," : "");
         current = current->next;
     }
 
