@@ -423,6 +423,10 @@ void IOHandler::playRound() {
             std::cout << *GameManager::bag << std::endl;
             std::cout << GameManager::currentPlayer->getName() << std::endl;
             std::cout << *GameManager::board << std::endl;*/
+
+            gameRunning = true;
+            playRound();
+
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
         }
@@ -589,7 +593,7 @@ void IOHandler::playRound() {
             cout << "GoodBye" << endl;
             takingInput = false;
             gameRunning = false;
-            GameManager::reset();
+            GameManager::resetGame();
         }
     }
 
