@@ -88,6 +88,7 @@ void testLinkedList() {
 void testTileBag() {
     cout << "testing tilebag..." << endl;
     shared_ptr<TileBag> bag = make_shared<TileBag>();
+    bag->fill();
     cout << *bag << endl;
 
     cout << "shuffling tilebag..." << endl;
@@ -113,6 +114,7 @@ void testTileBag() {
 
 void testPlayerHand() {
     shared_ptr<TileBag> bag = make_shared<TileBag>();
+    bag->fill();
     bag->shuffle();
 
     cout << "testing playerhand..." << endl;
