@@ -162,11 +162,11 @@ void IOHandler::playRound() {
         string temp, operation, tile, keywordAT, pos; // D5
         getline(cin, temp);
         std::istringstream command(temp);
-            if (cin.eof()) {
-                quit();
-                cin.clear();
-            }
-            command >> operation >> tile >> keywordAT >> pos;
+        if (cin.eof()) {
+            quit();
+            cin.clear();
+        }
+        command >> operation >> tile >> keywordAT >> pos;
 
         transform(
             operation.begin(), operation.end(), operation.begin(), ::tolower);
@@ -221,16 +221,16 @@ void IOHandler::playRound() {
                 takingInput = true;
             }
 
-        } else if (operation == "save") {
-            gameFileName = gameFileName + ".save";
-            std::ofstream file(gameFileName);
-            file << GameManager::player1->getName() << endl;
-            file << GameManager::player1->getScore() << endl;
-            file << *GameManager::player1->getHand()->getTiles() << endl;
-            file << GameManager::player2->getName() << endl;
-            file << GameManager::player2->getScore() << endl;
-            file << *GameManager::player2->getHand()->getTiles() << endl;
-            file << BOARD_LENGTH << "," <<  BOARD_LENGTH << endl;
+    } else if (operation == "save") {
+        gameFileName = gameFileName + ".save";
+        std::ofstream file(gameFileName);
+        file << GameManager::player1->getName() << endl;
+        file << GameManager::player1->getScore() << endl;
+        file << *GameManager::player1->getHand()->getTiles() << endl;
+        file << GameManager::player2->getName() << endl;
+        file << GameManager::player2->getScore() << endl;
+        file << *GameManager::player2->getHand()->getTiles() << endl;
+        file << BOARD_LENGTH << "," <<  BOARD_LENGTH << endl;
             file << "/*tiles played* from sam/" << endl;
             file << *GameManager::bag->getTiles() << endl;
             file << GameManager::currentPlayer->getName() << endl;
@@ -403,7 +403,7 @@ void IOHandler::playRound() {
                         int column = (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n') 
                         ? pos[1] - '0' 
                         : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
-                        gameRunning = true;
+
                         board->placeTile(make_shared<Tile>(tile[0], tile[1] - '0'), row, column);
                     }
                     count++;
@@ -412,9 +412,8 @@ void IOHandler::playRound() {
             cout << "Qwirkle game successfully loaded" << endl;
             file.close();
             GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
-            playRound();
-/*            // Testing prints
-            std::cout << GameManager::player1->getName() << std::endl;
+            // Testing prints
+            /*std::cout << GameManager::player1->getName() << std::endl;
             std::cout << GameManager::player1->getScore() << std::endl;
             std::cout << *GameManager::player1->getHand() << std::endl;
             std::cout << GameManager::player2->getName() << std::endl;
@@ -424,8 +423,6 @@ void IOHandler::playRound() {
             std::cout << *GameManager::bag << std::endl;
             std::cout << GameManager::currentPlayer->getName() << std::endl;
             std::cout << *GameManager::board << std::endl;*/
-
-
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
         }
