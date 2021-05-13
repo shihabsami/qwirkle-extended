@@ -396,8 +396,9 @@ void IOHandler::playRound() {
                                 "The board should appear as a list of "
                                 "tile@postion");
                         }
+                        char last = substr.length() < 6 ? ',' : substr[5];
                         char tile[2] = { substr[0], substr[1] };
-                        char pos[3] = { substr[3], substr[4], substr[5] };
+                        char pos[3] = { substr[3], substr[4], last };
 
                         int row = pos[0] - ASCII_ALPHABET_BEGIN;
                         int column = (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n') 
