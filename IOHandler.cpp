@@ -351,14 +351,6 @@ void IOHandler::loadGame() {
                             throw std::invalid_argument(
                                 "Wrong Tile List Format");
                         }
-                        char last = substr.length() < 6 ? ',' : substr[5];
-                        char tile[2] = { substr[0], substr[1] };
-                        char pos[3] = { substr[3], substr[4], last };
-
-                        int row = pos[0] - ASCII_ALPHABET_BEGIN;
-                        int column = (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n') 
-                        ? pos[1] - '0' 
-                        : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
 
                         // Player 1 hand
                         if (count == 2) {
@@ -406,8 +398,9 @@ void IOHandler::loadGame() {
                             "The board should appear as a list of "
                             "tile@postion");
                     }
+                    char last = substr.length() < 6 ? ',' : substr[5];
                     char tile[2] = {substr[0], substr[1]};
-                    char pos[3] = {substr[3], substr[4], substr[5]};
+                    char pos[3] = {substr[3], substr[4], last};
 
                     int row = pos[0] - ASCII_ALPHABET_BEGIN;
                     int column =
