@@ -17,7 +17,7 @@
 #define MAX_BOARD_INDEX         25
 #define MIN_TILE_RANGE          0
 #define MAX_TILE_RANGE          9
-#define ERROR_MESSAGE           "I"
+#define ERROR_MESSAGE           "Invalid input - "
 
 
 

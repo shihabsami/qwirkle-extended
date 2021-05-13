@@ -24,19 +24,17 @@ void IOHandler::beginGame() {
     selection();
 }
 
-void IOHandler::menu() {
+void IOHandler::prompt() { cout << "> "; }
+
+void IOHandler::selection() {
+
     cout << "Menu" << endl;
     cout << "----" << endl;
     cout << "1. New Game" << endl;
     cout << "2. Load Game" << endl;
     cout << "3. Credits (Show student information)" << endl;
     cout << "4. Quit" << endl;
-}
 
-void IOHandler::prompt() { cout << "> "; }
-
-void IOHandler::selection() {
-    menu();
     bool flag = true;
     while (!cin.eof() && flag) {
         int option = 0;
@@ -202,7 +200,7 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         file.close();
         takingInput = true;
     } else {
-        cout << "Not a valid command." << endl;
+        cout << ERROR_MESSAGE << "Not a valid command." << endl;
     }
     return takingInput;
 }
@@ -241,13 +239,22 @@ void IOHandler::loadGame() {
     prompt();
     cin >> filename;
     std::ifstream file(filename);
+    if (cin.eof()) {
+        quit();
+    }
 
-    // Tiles add to back
+    if(!file){
+        loadGame();
+    }
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+
+
     shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
     shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
     shared_ptr<Player> p1 = make_shared<Player>("Player1", p1Hand);
     shared_ptr<Player> p2 = make_shared<Player>("Player2", p2Hand);
-    // getTiles().Add()
     shared_ptr<TileBag> tileBag = make_shared<TileBag>();
     shared_ptr<GameBoard> board = make_shared<GameBoard>();
     shared_ptr<Player> currentPlayer = nullptr;
@@ -387,7 +394,8 @@ void IOHandler::loadGame() {
         file.close();
         GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
         gameRunning = true;
-        cin.ignore();
+        //cin.clear();
+        //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         playRound();
 
     } catch (const std::invalid_argument& e) {
@@ -421,10 +429,10 @@ bool IOHandler::checkTile(const string& tile) {
         if (boolLetter && boolNumber) {
             condition = true;
         } else {
-            cout << "Not a valid tile." << endl;
+            cout << ERROR_MESSAGE "Not a valid tile." << endl;
         }
     } catch (const std::invalid_argument& e) {
-        cout << "Not a valid tile." << endl;
+        cout << ERROR_MESSAGE "Not a valid tile." << endl;
         condition = false;
     }
     return condition;
@@ -433,9 +441,7 @@ bool IOHandler::checkTile(const string& tile) {
 // Tile position checker
 bool IOHandler::checkTilePosition(const string& position) {
     string appended;
-    bool condition = false;
-    bool boolLetter = false;
-    bool boolNumber = false;
+    bool condition = false, boolLetter = false, boolNumber = false;
 
     try {
         if (position.size() == STRING_SIZE_2) {
@@ -480,11 +486,11 @@ bool IOHandler::checkTilePosition(const string& position) {
         if (boolNumber && boolLetter) {
             condition = true;
         } else {
-            cout << "Not a valid position." << endl;
+            cout << ERROR_MESSAGE "Not a valid position." << endl;
         }
         return condition;
     } catch (const std::invalid_argument& e) {
-        cout << "Not a valid position." << endl;
+        cout << ERROR_MESSAGE "Not a valid position." << endl;
         return false;
     }
 }
@@ -496,6 +502,8 @@ void IOHandler::placeTile(const string& tile, const string& position) {
     Shape shape = static_cast<int>(tile.at(1)) - ASCII_NUMERICAL_BEGIN;
     int row = 0;
     int col = 0;
+
+
 
     if (position.size() == STRING_SIZE_2) {
         char asciiLetter = position.at(FIRST_POSITION);
@@ -529,27 +537,27 @@ void IOHandler::notify(const string& message, State state) {
         cout << message << endl;
         takingInput = false;
     } else if (state == PLACE_FAILURE) {
-        cout << message << endl;
+        cout << ERROR_MESSAGE << message << endl;
     } else if (state == REPLACE_SUCCESS) {
         cout << message << endl;
         takingInput = false;
     } else if (state == REPLACE_FAILURE) {
-        cout << message << endl;
+        cout << ERROR_MESSAGE << message << endl;
     } else if (state == QWIRKLE) {
         cout << message << endl;
         takingInput = false;
     } else if (state == GAME_OVER) {
         cout << message << endl;
         cout << "Game Over" << endl;
-        cout << "Score for " << GameManager::player1 << " : "
+        cout << "Score for " << GameManager::player1->getName() << " : "
              << GameManager::player1->getScore() << endl;
-        cout << "Score for " << GameManager::player2 << " : "
+        cout << "Score for " << GameManager::player2->getName() << " : "
              << GameManager::player2->getScore() << endl;
         if (GameManager::player1->getScore() >
             GameManager::player2->getScore()) {
-            cout << "Player " << GameManager::player1 << " won!" << endl;
+            cout << "Player " << GameManager::player1->getName() << " won!" << endl;
         } else {
-            cout << "Player " << GameManager::player2 << " won!" << endl;
+            cout << "Player " << GameManager::player2->getName() << " won!" << endl;
         }
         cout << "Goodbye" << endl;
         takingInput = false;

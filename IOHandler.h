@@ -8,7 +8,6 @@
 class IOHandler {
 public:
     static void beginGame();
-    static void menu();
     static void prompt();
     static void selection();
     static void newGame();
