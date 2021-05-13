@@ -32,8 +32,9 @@ void GameManager::beginGame(
     gameBegan = false;
 }
 
-void GameManager::loadGame(const shared_ptr<Player>& player1, const shared_ptr<Player>& player2,
-    const shared_ptr<TileBag>& loadedBag, const shared_ptr<GameBoard>& loadedBoard,
+void GameManager::loadGame(const shared_ptr<Player>& player1,
+    const shared_ptr<Player>& player2, const shared_ptr<TileBag>& loadedBag,
+    const shared_ptr<GameBoard>& loadedBoard,
     const shared_ptr<Player>& currentPlayer) {
     gameBegan = true;
 
@@ -126,6 +127,7 @@ void GameManager::switchPlayer() {
 
 /**
  * Check if location in board is empty for tile being placed.
+ *
  * @param row,column - the specified grid location
  */
 bool GameManager::isGridLocationEmpty(int row, int column) {
@@ -134,6 +136,7 @@ bool GameManager::isGridLocationEmpty(int row, int column) {
 
 /**
  * Check if the player hand contains a tile.
+ *
  * @param tile - the tile to be checked
  */
 bool GameManager::isTileInHand(const Tile& tile) {
@@ -148,9 +151,7 @@ bool GameManager::isTileInHand(const Tile& tile) {
  * lines
  * */
 Lines GameManager::getAdjacentLines(const Tile& tile, int row, int column) {
-    bool tileUnique = true;
-    LinkedList horizontalTiles{};
-    LinkedList verticalTiles{};
+    Lines lines = make_pair(LinkedList{}, LinkedList{});
 
     int currentRow = row;
     int currentColumn = column;
@@ -158,34 +159,28 @@ Lines GameManager::getAdjacentLines(const Tile& tile, int row, int column) {
     bool allDirectionTraversed = false;
 
     // only traverse as many times as there are tiles in all directions
-    while (tileUnique && !allDirectionTraversed) {
-        if (currentDirection == UP) {
+    while (!allDirectionTraversed) {
+        if (currentDirection == UP)
             --currentRow;
-        } else if (currentDirection == DOWN) {
+        else if (currentDirection == DOWN)
             ++currentRow;
-        } else if (currentDirection == LEFT) {
+        else if (currentDirection == LEFT)
             --currentColumn;
-        } else if (currentDirection == RIGHT) {
+        else if (currentDirection == RIGHT)
             ++currentColumn;
-        }
 
         try {
             shared_ptr<Tile> other = board->at(currentRow, currentColumn);
 
             /*
              * if location is empty (nullptr), proceed to traverse a different
-             * direction, else if location is not empty and the tile present at
-             * the location is the same then tile is no longer unique
+             * direction else keep track of traversed tiles
              */
             if (other != nullptr) {
-                if (*other == tile)
-                    tileUnique = false;
-
-                // keep track of traversed tiles for further operations
                 if (currentDirection == UP || currentDirection == DOWN)
-                    verticalTiles.addBack(other);
+                    lines.second.addBack(other);
                 else
-                    horizontalTiles.addBack(other);
+                    lines.first.addBack(other);
             } else {
                 throw out_of_range("");
             }
@@ -199,7 +194,7 @@ Lines GameManager::getAdjacentLines(const Tile& tile, int row, int column) {
         }
     }
 
-    return make_pair(horizontalTiles, verticalTiles);
+    return lines;
 }
 
 /**
@@ -211,7 +206,7 @@ Lines GameManager::getAdjacentLines(const Tile& tile, int row, int column) {
  * @return boolean indicating whether the tile has adjacent neighbors
  */
 bool GameManager::hasAdjacentTile(const Tile& tile, const Lines& lines) {
-    return !lines.first.isEmpty() && !lines.second.isEmpty();
+    return !lines.first.isEmpty() || !lines.second.isEmpty();
 }
 
 /**
@@ -230,7 +225,7 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
     const LinkedList& verticalTiles = lines.second;
 
     bool tileUnique =
-        horizontalTiles.contains(tile) || verticalTiles.contains(tile);
+        !horizontalTiles.contains(tile) && !verticalTiles.contains(tile);
 
     /*
      * check whether tile shares similarity with the other tiles on both the
@@ -276,11 +271,13 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
  */
 void GameManager::updateScore(const Lines& lines) {
     if (!gameBegan) {
-        // score for first round
+        // score for the first round
         currentPlayer->setScore(1);
     } else {
-        unsigned int horizontalScore = lines.first.size() + 1;
-        unsigned int verticalScore = lines.second.size() + 1;
+        unsigned int horizontalScore =
+            lines.first.isEmpty() ? 0 : lines.first.size() + 1;
+        unsigned int verticalScore =
+            lines.second.isEmpty() ? 0 : lines.second.size() + 1;
 
         // qwirkle is printed twice if it happens twice on the same move
         if (horizontalScore == MAX_LINE_SIZE) {
@@ -291,12 +288,16 @@ void GameManager::updateScore(const Lines& lines) {
         }
 
         // bonus points for emptying hand or scoring qwirkle
-        if (player1->getHand()->getTiles()->isEmpty() ||
-            horizontalScore == MAX_LINE_SIZE ||
-            verticalScore == MAX_LINE_SIZE) {
-            currentPlayer->setScore(currentPlayer->getScore() + SCORE_BONUS);
-        }
+        int bonusCount = 0;
+        if (player1->getHand()->getTiles()->isEmpty())
+            ++bonusCount;
+        if (horizontalScore == MAX_LINE_SIZE)
+            ++bonusCount;
+        if (verticalScore == MAX_LINE_SIZE)
+            ++bonusCount;
 
+        currentPlayer->setScore(
+            currentPlayer->getScore() + SCORE_BONUS * bonusCount);
         currentPlayer->setScore(
             currentPlayer->getScore() + horizontalScore + verticalScore);
     }

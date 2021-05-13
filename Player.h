@@ -11,6 +11,7 @@ using std::string;
 class Player {
 public:
     Player(const string& name, shared_ptr<PlayerHand> hand);
+    ~Player();
     string getName();
     void setName(const string name);
     unsigned int getScore();

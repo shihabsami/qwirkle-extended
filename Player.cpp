@@ -2,7 +2,11 @@
 #include "Player.h"
 
 Player::Player(const string& name, shared_ptr<PlayerHand> hand)
-    : name(name), hand(hand) {}
+    : name(name), score(0), hand(hand) {}
+
+Player::~Player() {
+    hand.reset();
+}
 
 string Player::getName() { return name; }
 void Player::setName(const string name) { this->name = name; }

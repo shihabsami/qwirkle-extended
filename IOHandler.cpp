@@ -177,24 +177,24 @@ void IOHandler::playRound() {
 
         if (operation == "place") {
             if (tile.empty() || keywordAT.empty() || pos.empty()) {
-                cout << "Invalid Command" << endl;
+                cout << "Invalid command" << endl;
             } else {
                 takingInput = testingPurpose(operation, tile, keywordAT, pos);
             }
         } else if (operation == "replace") {
             if (tile.empty()) {
-                cout << "Invalid Command" << endl;
+                cout << "Invalid command" << endl;
             } else {
                 takingInput = testingPurpose(operation, tile, keywordAT, pos);
             }
         } else if (operation == "save") {
             if (tile.empty()) {
-                cout << "Invalid Command" << endl;
+                cout << "Invalid command" << endl;
             } else {
                 takingInput = testingPurpose(operation, tile, keywordAT, pos);
             }
         } else {
-            cout << "Invalid Command" << endl;
+            cout << "Invalid command" << endl;
         }
     }
 }
@@ -233,7 +233,7 @@ bool IOHandler::testingPurpose(
         file.close();
         takingInput = true;
     } else {
-        cout << "Not A Valid Command" << endl;
+        cout << "Not a valid command." << endl;
     }
     return takingInput;
 }
@@ -268,7 +268,7 @@ void IOHandler::credits() {
 // to load game copy path of t1.save
 void IOHandler::loadGame() {
     string filename;
-    cout << "Enter the filename from which load a game" << endl;
+    cout << "Enter the filename from which to load a game." << endl;
     prompt();
     cin >> filename;
     std::ifstream file(filename);
@@ -315,7 +315,7 @@ void IOHandler::loadGame() {
                 count++;
                 // checks if score is a number
             } else if (count == 1 || count == 4) {
-                // Check Interger
+                // Check integer
                 int number = stoi(text);
                 if (number < 0) {
                     throw std::invalid_argument(
@@ -329,9 +329,9 @@ void IOHandler::loadGame() {
                 }
 
                 count++;
-                // checks if tiles are seperated by ','
+                // checks if tiles are separated by ','
             } else if (count == 2 || count == 5 || count == 8) {
-                // seperated with comma
+                // separated with comma
                 std::stringstream ss(text);
                 while (ss.good()) {
                     string substr;
@@ -349,7 +349,7 @@ void IOHandler::loadGame() {
 
                         if (substr.length() != 2) {
                             throw std::invalid_argument(
-                                "Wrong Tile List Format");
+                                "Wrong tile list format");
                         }
 
                         // Player 1 hand
@@ -368,7 +368,7 @@ void IOHandler::loadGame() {
                     }
                 }
                 count++;
-                // checks if board size is seperated by ',' and not more than 26
+                // checks if board size is separated by ',' and not more than 26
             } else if (count == 6) {
                 // height, width
                 std::stringstream ss(text);
@@ -413,7 +413,7 @@ void IOHandler::loadGame() {
                 count++;
             }
         }
-        cout << "Qwirkle game successfully loaded" << endl;
+        cout << "Qwirkle game successfully loaded." << endl;
         file.close();
         GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
         // Testing prints
@@ -458,10 +458,10 @@ bool IOHandler::checkTile(const string& tile) {
         if (boolLetter && boolNumber) {
             condition = true;
         } else {
-            cout << "Tile Not Valid" << endl;
+            cout << "Not a valid tile." << endl;
         }
     } catch (const std::invalid_argument& e) {
-        cout << "Tile Not Valid" << endl;
+        cout << "Not a valid tile." << endl;
         condition = false;
     }
     return condition;
@@ -517,11 +517,11 @@ bool IOHandler::checkTilePosition(const string& position) {
         if (boolNumber && boolLetter) {
             condition = true;
         } else {
-            cout << "Not A Valid Position" << endl;
+            cout << "Not a valid position." << endl;
         }
         return condition;
     } catch (const std::invalid_argument& e) {
-        cout << "Not A Valid Position" << endl;
+        cout << "Not a valid position." << endl;
         return false;
     }
 }
@@ -588,7 +588,7 @@ void IOHandler::notify(const string& message, State state) {
         } else {
             cout << "Player " << GameManager::player2 << " won!" << endl;
         }
-        cout << "GoodBye" << endl;
+        cout << "Goodbye" << endl;
         takingInput = false;
         gameRunning = false;
         GameManager::resetGame();
