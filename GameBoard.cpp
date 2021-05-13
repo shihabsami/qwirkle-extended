@@ -52,7 +52,7 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
     os << endl;
 
     for (int i = 0; i < BOARD_LENGTH; ++i) {
-        os << (char)(i + ASCII_BEGIN) << " |";
+        os << (char)(i + ASCII_ALPHABET_BEGIN) << " |";
         for (int j = 0; j < BOARD_LENGTH; ++j) {
             if (gameBoard.board.at(i).at(j))
                 os << *gameBoard.board.at(i).at(j);
@@ -74,13 +74,12 @@ ostream& operator<<(ofstream& ofs, const GameBoard& gameBoard) {
             shared_ptr<Tile> tile = gameBoard.board.at(i).at(j);
             if (tile != nullptr) {
                 ofs << (first ? ", " : "") << *tile << "@"
-                    << (char)(i + ASCII_BEGIN) << j;
+                    << (char)(i + ASCII_ALPHABET_BEGIN) << j;
 
                 first = true;
             }
         }
     }
 
-    ofs << endl;
     return ofs;
 }
