@@ -513,7 +513,7 @@ void IOHandler::playRound() {
             cout << "GoodBye" << endl;
             errorChecking = false;
             gameRunning = false;
-            GameManager::reset();
+            GameManager::resetGame();
         }
     }
 

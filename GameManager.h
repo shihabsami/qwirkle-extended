@@ -10,8 +10,20 @@
 #include "GameBoard.h"
 #include "Player.h"
 
+#include <utility>
+
+using std::pair;
+using std::make_pair;
+
+typedef pair<LinkedList, LinkedList> Lines;
+
 enum State {
-    PLACE_SUCCESS, PLACE_FAILURE, REPLACE_SUCCESS, REPLACE_FAILURE, GAME_OVER, QWIRKLE
+    PLACE_SUCCESS,
+    PLACE_FAILURE,
+    REPLACE_SUCCESS,
+    REPLACE_FAILURE,
+    GAME_OVER,
+    QWIRKLE
 };
 
 class GameManager {
@@ -24,19 +36,21 @@ public:
 
     static void switchPlayer();
 
-    static unsigned int calculateScore(const Tile& playedTile, int row, int column);
-
     static bool isGridLocationEmpty(int row, int column);
 
     static bool isTileInHand(const Tile& tile);
 
-    static bool hasAdjacentTile(const Tile& tile, int row, int column);
+    static Lines getAdjacentLines(const Tile& tile, int row, int column);
 
-    static bool isTileValidOnLine(const Tile& tile, int row, int column);
+    static bool hasAdjacentTile(const Tile& tile, const Lines& lines);
+
+    static bool isTileValidOnLine(const Tile& tile, const Lines& lines);
+
+    static void updateScore(const Lines& lines);
 
     static bool hasGameEnded();
 
-    static void reset();
+    static void resetGame();
 
     static bool gameBegan;
     static shared_ptr<TileBag> bag;
