@@ -25,7 +25,6 @@ void GameManager::beginGame(
 
 void GameManager::loadGame(shared_ptr<Player> p1, shared_ptr<Player> p2, shared_ptr<TileBag> loadedBag, shared_ptr<GameBoard> loadedBoard, shared_ptr<Player> currentP) {
     gameBegan = true;
-    
     player1 = p1;
     player2 = p2;
     bag = loadedBag;
