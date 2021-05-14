@@ -143,7 +143,7 @@ void IOHandler::playRound() {
     takingInput = true;
     while (takingInput) {
         prompt();
-        string temp, operation, tile, keywordAT, pos; // D5
+        string temp, operation, tile, keywordAT, pos;
         getline(cin, temp);
         std::istringstream command(temp);
         if (cin.eof()) {
@@ -194,20 +194,19 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         file << *GameManager::board << endl;
         file << *GameManager::bag->getTiles() << endl;
         file << GameManager::currentPlayer->getName() << endl;
+        file.close();
         cout << endl;
         cout << "Game successfully saved" << endl;
         cout << endl;
-        file.close();
         takingInput = true;
     } else if (operation == "quit") {
         quit();
         takingInput = false;
     } else {
-            cout << ERROR_MESSAGE << "Not a valid command." << endl;
-        }
+        cout << ERROR_MESSAGE << "Not a valid command." << endl;
+    }
     return takingInput;
 }
-
 
 void IOHandler::credits() {
     cout << "----------------------------------" << endl;
@@ -247,13 +246,11 @@ void IOHandler::loadGame() {
         quit();
     }
 
-    if(!file){
+    if (!file) {
         loadGame();
     }
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-
 
     shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
     shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
@@ -268,11 +265,12 @@ void IOHandler::loadGame() {
     try {
         while (getline(file, text)) {
             // checks if name is correct
+            text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+            text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
             if (count == 0 || count == 3 || count == 9) {
                 for (unsigned i = 0; i < text.length() - 1; i++) {
                     // check name ASCII
                     int ascii = text[i];
-
                     if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
                         ascii > ASCII_ALPHABET_END + 1) {
                         throw std::invalid_argument(
@@ -316,35 +314,21 @@ void IOHandler::loadGame() {
                 while (ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
-                    // removing new lines
-                    if (substr[0] != '\n' && substr[0] != '\r') {
-                        if (substr.length() > 2) {
-                            substr.erase(
-                                std::remove(substr.begin(), substr.end(), '\r'),
-                                substr.end());
-                            substr.erase(
-                                std::remove(substr.begin(), substr.end(), '\n'),
-                                substr.end());
-                        }
-
-                        if (substr.length() != 2) {
-                            throw std::invalid_argument(
-                                "Wrong tile list format.");
-                        }
-
-                        // Player 1 hand
-                        if (count == 2) {
-                            p1Hand->addTile(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Player 2 hand
-                        else if (count == 5) {
-                            p2Hand->addTile(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Tile Bag Tiles
-                        else {
-                            tileBag->getTiles()->addBack(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        }
+                    if (substr.length() != 2) {
+                        throw std::invalid_argument("Wrong tile list format.");
+                    }
+                    // Player 1 hand
+                    if (count == 2) {
+                        p1Hand->addTile(
+                            make_shared<Tile>(substr[0], substr[1] - '0'));
+                    } // Player 2 hand
+                    else if (count == 5) {
+                        p2Hand->addTile(
+                            make_shared<Tile>(substr[0], substr[1] - '0'));
+                    } // Tile Bag Tiles
+                    else {
+                        tileBag->getTiles()->addBack(
+                            make_shared<Tile>(substr[0], substr[1] - '0'));
                     }
                 }
                 count++;
@@ -355,7 +339,6 @@ void IOHandler::loadGame() {
                 while (ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
-
                     int number = std::stoi(substr);
                     if (number < 0 || (number > 26)) {
                         throw std::invalid_argument(
@@ -372,7 +355,6 @@ void IOHandler::loadGame() {
                     string substr;
                     getline(ss, substr, ' ');
                     const char at = '@';
-
                     if (substr[2] != at) {
                         throw std::invalid_argument(
                             "The board should appear as a list of "
@@ -398,15 +380,14 @@ void IOHandler::loadGame() {
         file.close();
         GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
         gameRunning = true;
-        //cin.clear();
-        //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // cin.clear();
+        // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         playRound();
 
     } catch (const std::invalid_argument& e) {
         cerr << "The error is " << e.what() << endl;
     }
 }
-
 bool IOHandler::checkTile(const string& tile) {
     bool condition = false;
     bool boolLetter = false;
@@ -507,22 +488,20 @@ void IOHandler::placeTile(const string& tile, const string& position) {
     int row = 0;
     int col = 0;
 
-
-
     if (position.size() == STRING_SIZE_2) {
         char asciiLetter = position.at(FIRST_POSITION);
-        int rowi = int(asciiLetter);
-        row = rowi - ASCII_ALPHABET_BEGIN;
-        char coli = position.at(SECOND_POSITION);
-        appended.append(1, coli);
+        int tempRow = int(asciiLetter);
+        row = tempRow - ASCII_ALPHABET_BEGIN;
+        char tempCol = position.at(SECOND_POSITION);
+        appended.append(1, tempCol);
         col = stoi(appended);
 
     } else if (position.size() == STRING_SIZE_3) {
         char asciiLetter = position.at(FIRST_POSITION);
         char num1 = position.at(SECOND_POSITION);
         char num2 = position.at(THIRD_POSITION);
-        int rowi = int(asciiLetter);
-        row = rowi - ASCII_ALPHABET_BEGIN;
+        int tempRow = int(asciiLetter);
+        row = tempRow - ASCII_ALPHABET_BEGIN;
         appended.append(1, num1);
         appended.append(1, num2);
         col = stoi(appended);
@@ -559,9 +538,11 @@ void IOHandler::notify(const string& message, State state) {
              << GameManager::player2->getScore() << endl;
         if (GameManager::player1->getScore() >
             GameManager::player2->getScore()) {
-            cout << "Player " << GameManager::player1->getName() << " won!" << endl;
+            cout << "Player " << GameManager::player1->getName() << " won!"
+                 << endl;
         } else {
-            cout << "Player " << GameManager::player2->getName() << " won!" << endl;
+            cout << "Player " << GameManager::player2->getName() << " won!"
+                 << endl;
         }
         cout << "Goodbye" << endl;
         takingInput = false;

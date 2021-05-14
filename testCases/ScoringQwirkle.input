@@ -1,5 +1,5 @@
 2
-base_game.save
+testCases/base_game.save
 place g4 at b5
 replace o1
 place g3 at b3
