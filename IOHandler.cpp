@@ -199,11 +199,15 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         cout << endl;
         file.close();
         takingInput = true;
+    } else if (operation == "quit") {
+        quit();
+        takingInput = false;
     } else {
-        cout << ERROR_MESSAGE << "Not a valid command." << endl;
-    }
+            cout << ERROR_MESSAGE << "Not a valid command." << endl;
+        }
     return takingInput;
 }
+
 
 void IOHandler::credits() {
     cout << "----------------------------------" << endl;
