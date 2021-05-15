@@ -243,167 +243,173 @@ void IOHandler::credits() {
 
 // to load game copy path of t1.save
 void IOHandler::loadGame() {
+    bool fileCheck = true;
+    while(fileCheck) {
+        try {
     string filename;
     cout << "Enter the filename from which to load a game." << endl;
     prompt();
     cin >> filename;
     std::ifstream file(filename);
-    if (cin.eof()) {
-        quit();
-    }
 
-    if (!file) {
-        loadGame();
-    }
-    cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
-    shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
-    shared_ptr<Player> p1 = make_shared<Player>("Player1", p1Hand);
-    shared_ptr<Player> p2 = make_shared<Player>("Player2", p2Hand);
-    shared_ptr<TileBag> tileBag = make_shared<TileBag>();
-    shared_ptr<GameBoard> board = make_shared<GameBoard>();
-    shared_ptr<Player> currentPlayer = nullptr;
-
-    int count = 0;
-    string text;
-    try {
-        while (getline(file, text)) {
-            // checks if name is correct
-            text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
-            text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
-            if (count == 0 || count == 3 || count == 9) {
-                for (unsigned i = 0; i < text.length() - 1; i++) {
-                    // check name ASCII
-                    int ascii = text[i];
-                    if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
-                        ascii > ASCII_ALPHABET_END + 1) {
-                        throw std::invalid_argument(
-                            "Name format is not part of ASCII text.");
-                    }
-                }
-
-                if (count == 0) {
-                    p1->setName(text);
-                } else if (count == 3) {
-                    p2->setName(text);
-                } else {
-                    if (p1->getName() == text) {
-                        currentPlayer = p1;
-                    } else {
-                        currentPlayer = p2;
-                    }
-                }
-
-                count++;
-                // checks if score is a number
-            } else if (count == 1 || count == 4) {
-                // Check integer
-                int number = stoi(text);
-                if (number < 0) {
-                    throw std::invalid_argument(
-                        "The number should be positive.");
-                }
-
-                if (count == 1) {
-                    p1->setScore(number);
-                } else {
-                    p2->setScore(number);
-                }
-
-                count++;
-                // checks if tiles are separated by ','
-            } else if (count == 2 || count == 5 || count == 8) {
-                // separated with comma
-                std::stringstream ss(text);
-                string c = "\0";
-                while (ss.good()) {
-                    string substr;
-                    getline(ss, substr, ',');
-                    if(text != c) {
-                        if (substr.length() != 2) {
-                            throw std::invalid_argument(
-                                "Wrong tile list format.");
-                        }
-                    }
-                    // Player 1 hand
-                    if (count == 2) {
-                        p1Hand->addTile(
-                            make_shared<Tile>(substr[0], substr[1] - '0'));
-                    } // Player 2 hand
-                    else if (count == 5) {
-                        p2Hand->addTile(
-                            make_shared<Tile>(substr[0], substr[1] - '0'));
-                    } // Tile Bag Tiles
-                    else {
-                        if (substr != "") {
-                            tileBag->getTiles()->addBack(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        }
-                    }
-                }
-                count++;
-            // checks if board size is separated by ',' and not more than 26
-            } else if (count == 6) {
-                // height, width
-                std::stringstream ss(text);
-                while (ss.good()) {
-                    string substr;
-                    getline(ss, substr, ',');
-                    int number = std::stoi(substr);
-                    if (number < 0 || (number > 26)) {
-                        throw std::invalid_argument(
-                            "The grid should be more than 0 and less that "
-                            "26.");
-                    }
-                }
-                // Board size does nothing at the moment, no loading
-                count++;
-            } else if (count == 7) {
-                // all tiles placed on board
-                std::stringstream ss(text);
-                string c = "\0";
-                    while (ss.good()) {
-                    string substr;
-                    getline(ss, substr, ' ');
-                    const char at = '@';
-                    if(substr != c) {
-                        if (substr[2] != at) {
-                            throw std::invalid_argument(
-                                "The board should appear as a list of "
-                                "tile@postion.");
-                        }
-                    }
-                    char last = substr.length() < 6 ? ',' : substr[5];
-                    char tile[2] = {substr[0], substr[1]};
-                    char pos[3] = {substr[3], substr[4], last};
-
-                    int row = pos[0] - ASCII_ALPHABET_BEGIN;
-                    int column =
-                        (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
-                        ? pos[1] - '0'
-                        : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
-                    if (substr != "") {
-                        board->placeTile(
-                            make_shared<Tile>(tile[0], tile[1] - '0'), row,
-                            column);
-                    }
-                }
-                    count++;
-
-            }
+        if (cin.eof()) {
+            quit();
         }
-        cout << "Qwirkle game successfully loaded." << endl;
-        file.close();
-        GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
-        gameRunning = true;
-        // cin.clear();
-        // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        playRound();
 
-    } catch (const std::invalid_argument& e) {
-        cerr << "The error is " << e.what() << endl;
+        if (!file) {
+            throw::std::invalid_argument("File does not exits.");
+        }
+
+        cin.clear();
+        cin.ignore();
+
+        shared_ptr<PlayerHand> p1Hand = make_shared<PlayerHand>();
+        shared_ptr<PlayerHand> p2Hand = make_shared<PlayerHand>();
+        shared_ptr<Player> p1 = make_shared<Player>("Player1", p1Hand);
+        shared_ptr<Player> p2 = make_shared<Player>("Player2", p2Hand);
+        shared_ptr<TileBag> tileBag = make_shared<TileBag>();
+        shared_ptr<GameBoard> board = make_shared<GameBoard>();
+        shared_ptr<Player> currentPlayer = nullptr;
+
+        int count = 0;
+        string text;
+            while (getline(file, text)) {
+                // checks if name is correct
+                text.erase(
+                    std::remove(text.begin(), text.end(), '\r'), text.end());
+                text.erase(
+                    std::remove(text.begin(), text.end(), '\n'), text.end());
+                if (count == 0 || count == 3 || count == 9) {
+                    for (unsigned i = 0; i < text.length() - 1; i++) {
+                        // check name ASCII
+                        int ascii = text[i];
+                        if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
+                            ascii > ASCII_ALPHABET_END + 1) {
+                            throw std::invalid_argument(
+                                "Name format is not part of ASCII text.");
+                        }
+                    }
+
+                    if (count == 0) {
+                        p1->setName(text);
+                    } else if (count == 3) {
+                        p2->setName(text);
+                    } else {
+                        if (p1->getName() == text) {
+                            currentPlayer = p1;
+                        } else {
+                            currentPlayer = p2;
+                        }
+                    }
+
+                    count++;
+                    // checks if score is a number
+                } else if (count == 1 || count == 4) {
+                    // Check integer
+                    int number = stoi(text);
+                    if (number < 0) {
+                        throw std::invalid_argument(
+                            "The number should be positive.");
+                    }
+
+                    if (count == 1) {
+                        p1->setScore(number);
+                    } else {
+                        p2->setScore(number);
+                    }
+
+                    count++;
+                    // checks if tiles are separated by ','
+                } else if (count == 2 || count == 5 || count == 8) {
+                    // separated with comma
+                    std::stringstream ss(text);
+                    string c = "\0";
+                    while (ss.good()) {
+                        string substr;
+                        getline(ss, substr, ',');
+                        if (text != c) {
+                            if (substr.length() != 2) {
+                                throw std::invalid_argument(
+                                    "Wrong tile list format.");
+                            }
+                        }
+                        // Player 1 hand
+                        if (count == 2) {
+                            p1Hand->addTile(
+                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                        } // Player 2 hand
+                        else if (count == 5) {
+                            p2Hand->addTile(
+                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                        } // Tile Bag Tiles
+                        else {
+                            if (substr != "") {
+                                tileBag->getTiles()->addBack(make_shared<Tile>(
+                                    substr[0], substr[1] - '0'));
+                            }
+                        }
+                    }
+                    count++;
+                    // checks if board size is separated by ',' and not more than 26
+                } else if (count == 6) {
+                    // height, width
+                    std::stringstream ss(text);
+                    while (ss.good()) {
+                        string substr;
+                        getline(ss, substr, ',');
+                        int number = std::stoi(substr);
+                        if (number < 0 || (number > 26)) {
+                            throw std::invalid_argument(
+                                "The grid should be more than 0 and less that "
+                                "26.");
+                        }
+                    }
+                    // Board size does nothing at the moment, no loading
+                    count++;
+                } else if (count == 7) {
+                    // all tiles placed on board
+                    std::stringstream ss(text);
+                    string c = "\0";
+                    while (ss.good()) {
+                        string substr;
+                        getline(ss, substr, ' ');
+                        const char at = '@';
+                        if (substr != c) {
+                            if (substr[2] != at) {
+                                throw std::invalid_argument(
+                                    "The board should appear as a list of "
+                                    "tile@postion.");
+                            }
+                        }
+                        char last = substr.length() < 6 ? ',' : substr[5];
+                        char tile[2] = {substr[0], substr[1]};
+                        char pos[3] = {substr[3], substr[4], last};
+
+                        int row = pos[0] - ASCII_ALPHABET_BEGIN;
+                        int column =
+                            (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
+                            ? pos[1] - '0'
+                            : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
+                        if (substr != "") {
+                            board->placeTile(
+                                make_shared<Tile>(tile[0], tile[1] - '0'), row,
+                                column);
+                        }
+                    }
+                    count++;
+                }
+            }
+            cout << "Qwirkle game successfully loaded." << endl;
+            file.close();
+            GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
+            gameRunning = true;
+            fileCheck = false;
+            playRound();
+
+
+        } catch (const std::invalid_argument& e) {
+            cerr << "The error is " << e.what() << endl;
+        }
     }
 }
 bool IOHandler::checkTile(const string& tile) {

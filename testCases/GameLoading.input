@@ -1,5 +1,7 @@
 2
 wddasd
-testCases/load_no_files.save
-testCases/broken_file.save
-testCases/base_game.save
+testCases/loadFile.save
+testCases/brokenFile.save
+testCases/baseGame.save
+place g3 at b5
+quit

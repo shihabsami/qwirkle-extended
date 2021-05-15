@@ -1,0 +1,21 @@
+2
+testCases/baseGame.save
+place g3 at b5
+place g4 at b6
+place y4 c6
+place y4 at c6
+replace y4
+place y3 at c5
+replace b2
+place y5 at c7
+replace b6
+replace y4
+place g6 at b3
+replace y4
+replace y4
+replace y4
+place p6 at a3
+place r4at d6
+place r4 at d6
+replace g4
+place y4 at d7
