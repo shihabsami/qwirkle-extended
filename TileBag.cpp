@@ -67,7 +67,7 @@ shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
 unsigned int TileBag::getRandomIndex() {
     random_device engine;
     uniform_int_distribution<unsigned int> distribution(0, tiles->size() - 1);
-    return 0;
+    return distribution(engine);
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {
