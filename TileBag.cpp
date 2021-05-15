@@ -46,8 +46,7 @@ shared_ptr<Tile> TileBag::getRandomTile() {
         throw length_error("no remaining tiles for TileBag::getRandomTile");
 
     int randomIndex = getRandomIndex();
-    //shared_ptr<Tile> randomTile = tiles->at(randomIndex);
-    shared_ptr<Tile> randomTile = tiles->at(0);
+    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
     tiles->remove(randomIndex);
 
     return randomTile;
