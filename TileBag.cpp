@@ -46,7 +46,8 @@ shared_ptr<Tile> TileBag::getRandomTile() {
         throw length_error("no remaining tiles for TileBag::getRandomTile");
 
     int randomIndex = getRandomIndex();
-    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
+    //shared_ptr<Tile> randomTile = tiles->at(randomIndex);
+    shared_ptr<Tile> randomTile = tiles->at(0);
     tiles->remove(randomIndex);
 
     return randomTile;
@@ -80,7 +81,8 @@ unsigned int TileBag::getRandomIndex() {
     random_device engine;
     uniform_int_distribution<unsigned int> distribution(0, tiles->size() - 1);
 
-    return distribution(engine);
+    //return distribution(engine);
+    return tiles->size()-1;
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {

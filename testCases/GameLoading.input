@@ -1,5 +1,5 @@
 2
 wddasd
-load_no_files.save
-broken_file.save
-base_game.save
+testCases/load_no_files.save
+testCases/broken_file.save
+testCases/base_game.save

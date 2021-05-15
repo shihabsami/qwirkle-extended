@@ -143,7 +143,7 @@ void IOHandler::playRound() {
     takingInput = true;
     while (takingInput) {
         prompt();
-        string temp, operation, tile, keywordAT, pos;
+        string temp, operation, tile, keywordAT, pos, saveName;
         getline(cin, temp);
         std::istringstream command(temp);
         if (cin.eof()) {
@@ -152,6 +152,8 @@ void IOHandler::playRound() {
         }
         command >> operation >> tile >> keywordAT >> pos;
 
+        saveName = tile;
+
         transform(
             operation.begin(), operation.end(), operation.begin(), ::tolower);
         transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
@@ -159,7 +161,11 @@ void IOHandler::playRound() {
             keywordAT.begin(), keywordAT.end(), keywordAT.begin(), ::tolower);
         transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
 
-        takingInput = logicHandler(operation, tile, keywordAT, pos);
+        if(operation == "save"){
+            takingInput = logicHandler(operation, saveName, keywordAT, pos);
+        } else {
+            takingInput = logicHandler(operation, tile, keywordAT, pos);
+        }
     }
 }
 
@@ -310,12 +316,12 @@ void IOHandler::loadGame() {
                 // checks if tiles are separated by ','
             } else if (count == 2 || count == 5 || count == 8) {
                 // separated with comma
-                string c = "\0";
                 std::stringstream ss(text);
+                string c = "\0";
                 while (ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
-                    if (text != c) {
+                    if(text != c) {
                         if (substr.length() != 2) {
                             throw std::invalid_argument(
                                 "Wrong tile list format.");
@@ -359,30 +365,31 @@ void IOHandler::loadGame() {
                 std::stringstream ss(text);
                 string c = "\0";
                     while (ss.good()) {
-                        string substr;
-                        getline(ss, substr, ' ');
-                        const char at = '@';
-                        if (text == c) {
-                            if (substr[2] != at) {
-                                throw std::invalid_argument(
-                                    "The board should appear as a list of "
-                                    "tile@postion.");
-                            }
+                    string substr;
+                    getline(ss, substr, ' ');
+                    const char at = '@';
+                    if(substr != c) {
+                        if (substr[2] != at) {
+                            throw std::invalid_argument(
+                                "The board should appear as a list of "
+                                "tile@postion.");
                         }
-                        char last = substr.length() < 6 ? ',' : substr[5];
-                        char tile[2] = {substr[0], substr[1]};
-                        char pos[3] = {substr[3], substr[4], last};
+                    }
+                    char last = substr.length() < 6 ? ',' : substr[5];
+                    char tile[2] = {substr[0], substr[1]};
+                    char pos[3] = {substr[3], substr[4], last};
 
-                        int row = pos[0] - ASCII_ALPHABET_BEGIN;
-                        int column =
-                            (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
-                            ? pos[1] - '0'
-                            : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
-
+                    int row = pos[0] - ASCII_ALPHABET_BEGIN;
+                    int column =
+                        (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
+                        ? pos[1] - '0'
+                        : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
+                    if (substr != "") {
                         board->placeTile(
                             make_shared<Tile>(tile[0], tile[1] - '0'), row,
                             column);
                     }
+                }
                     count++;
 
             }
