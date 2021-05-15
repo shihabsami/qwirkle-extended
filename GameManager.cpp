@@ -5,7 +5,6 @@
 using std::invalid_argument;
 using std::out_of_range;
 
-bool GameManager::gameBegan = false;
 shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<Player> GameManager::player1 = nullptr;
 shared_ptr<Player> GameManager::player2 = nullptr;
@@ -29,14 +28,12 @@ void GameManager::beginGame(
     currentPlayer = player1;
 
     board = make_shared<GameBoard>();
-    gameBegan = false;
 }
 
 void GameManager::loadGame(const shared_ptr<Player>& player1,
     const shared_ptr<Player>& player2, const shared_ptr<TileBag>& loadedBag,
     const shared_ptr<GameBoard>& loadedBoard,
     const shared_ptr<Player>& currentPlayer) {
-    gameBegan = true;
 
     bag = loadedBag;
     board = loadedBoard;
@@ -69,7 +66,7 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
         }
 
         Lines lines = getAdjacentLines(tile, row, column);
-        if (gameBegan && !hasAdjacentTile(tile, lines)) {
+        if (!board->isEmpty() && !hasAdjacentTile(tile, lines)) {
             message = "No adjacent tile to form line.";
             throw invalid_argument("");
         } else if (!isTileValidOnLine(tile, lines)) {
@@ -83,7 +80,6 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
         updateScore(lines);
         GameManager::switchPlayer();
-        gameBegan = true;
     } catch (...) {
         state = PLACE_FAILURE;
     }
@@ -107,12 +103,13 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
         if (!isTileInHand(tile)) {
             message = "The specified tile is not present in hand.";
             throw invalid_argument("");
-        } else if (!gameBegan) {
+        } else if (board->isEmpty()) {
             message = "Must place a tile on the first move.";
             throw invalid_argument("");
         }
 
-        currentPlayer->getHand()->replaceTile(tile, *bag);
+        if (!bag->getTiles()->isEmpty())
+            currentPlayer->getHand()->replaceTile(tile, *bag);
         GameManager::switchPlayer();
     } catch (...) {
         state = REPLACE_FAILURE;
@@ -273,7 +270,7 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
  * @param lines - the horizontal and vertical lines
  */
 void GameManager::updateScore(const Lines& lines) {
-    if (!gameBegan) {
+    if (board->isEmpty()) {
         // score for the first round
         currentPlayer->setScore(1);
     } else {
@@ -324,5 +321,4 @@ void GameManager::resetGame() {
     player1.reset();
     player2.reset();
     currentPlayer.reset();
-    gameBegan = false;
 }

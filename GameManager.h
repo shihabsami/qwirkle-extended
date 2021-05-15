@@ -57,7 +57,6 @@ public:
 
     static void resetGame();
 
-    static bool gameBegan;
     static shared_ptr<TileBag> bag;
     static shared_ptr<Player> player1;
     static shared_ptr<Player> player2;
