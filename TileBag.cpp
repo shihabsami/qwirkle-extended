@@ -41,18 +41,6 @@ void TileBag::shuffle() {
     }
 }
 
-shared_ptr<Tile> TileBag::getRandomTile() {
-    if (tiles->isEmpty())
-        throw length_error("no remaining tiles for TileBag::getRandomTile");
-
-    int randomIndex = getRandomIndex();
-    //shared_ptr<Tile> randomTile = tiles->at(randomIndex);
-    shared_ptr<Tile> randomTile = tiles->at(0);
-    tiles->remove(randomIndex);
-
-    return randomTile;
-}
-
 shared_ptr<PlayerHand> TileBag::getHand() {
     if (tiles->size() < HAND_SIZE)
         throw length_error("insufficient number of tiles for TileBag::getHand");
@@ -69,20 +57,17 @@ shared_ptr<PlayerHand> TileBag::getHand() {
 shared_ptr<LinkedList> TileBag::getTiles() { return tiles; }
 
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
-    int randomIndex = getRandomIndex();
-    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
-    tiles->remove(randomIndex);
+    shared_ptr<Tile> toBeReplaced = tiles->at(FIRST_POSITION);
+    tiles->removeFront();
     tiles->addBack(tile);
 
-    return randomTile;
+    return toBeReplaced;
 }
 
 unsigned int TileBag::getRandomIndex() {
     random_device engine;
     uniform_int_distribution<unsigned int> distribution(0, tiles->size() - 1);
-
-    //return distribution(engine);
-    return tiles->size()-1;
+    return 0;
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {

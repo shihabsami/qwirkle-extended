@@ -13,7 +13,6 @@ public:
     ~TileBag();
     void fill();
     void shuffle();
-    shared_ptr<Tile> getRandomTile();
     shared_ptr<PlayerHand> getHand();
     shared_ptr<LinkedList> getTiles();
     shared_ptr<Tile> replace(shared_ptr<Tile>& tile);
