@@ -20,10 +20,12 @@ public:
     void placeTile(
         const shared_ptr<Tile>& tile, unsigned int row, unsigned int column);
     shared_ptr<Tile> at(unsigned int row, unsigned int column);
+    bool isEmpty() const;
     friend ostream& operator<<(ostream& os, const GameBoard& board);
     friend ostream& operator<<(ofstream& ofs, const GameBoard& board);
 
 private:
+    unsigned int tileCount;
     vector<vector<shared_ptr<Tile>>> board;
 };
 
