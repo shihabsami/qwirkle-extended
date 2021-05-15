@@ -81,7 +81,7 @@ unsigned int TileBag::getRandomIndex() {
     uniform_int_distribution<unsigned int> distribution(0, tiles->size() - 1);
 
     //return distribution(engine);
-    return tiles->size()-1;
+    return 0;
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {
