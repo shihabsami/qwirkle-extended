@@ -310,26 +310,31 @@ void IOHandler::loadGame() {
                 // checks if tiles are separated by ','
             } else if (count == 2 || count == 5 || count == 8) {
                 // separated with comma
+                string c = "\0";
                 std::stringstream ss(text);
                 while (ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
-                    if (substr.length() != 2) {
-                        throw std::invalid_argument("Wrong tile list format.");
+                    if (text != c) {
+                        if (substr.length() != 2) {
+                            throw std::invalid_argument(
+                                "Wrong tile list format.");
+                        }
                     }
-                    // Player 1 hand
-                    if (count == 2) {
-                        p1Hand->addTile(
-                            make_shared<Tile>(substr[0], substr[1] - '0'));
-                    } // Player 2 hand
-                    else if (count == 5) {
-                        p2Hand->addTile(
-                            make_shared<Tile>(substr[0], substr[1] - '0'));
-                    } // Tile Bag Tiles
-                    else {
-                        tileBag->getTiles()->addBack(
-                            make_shared<Tile>(substr[0], substr[1] - '0'));
-                    }
+                        // Player 1 hand
+                        if (count == 2) {
+                            p1Hand->addTile(
+                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                        } // Player 2 hand
+                        else if (count == 5) {
+                            p2Hand->addTile(
+                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                        } // Tile Bag Tiles
+                        else {
+                            tileBag->getTiles()->addBack(
+                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                        }
+
                 }
                 count++;
                 // checks if board size is separated by ',' and not more than 26
@@ -351,29 +356,34 @@ void IOHandler::loadGame() {
             } else if (count == 7) {
                 // all tiles placed on board
                 std::stringstream ss(text);
-                while (ss.good()) {
-                    string substr;
-                    getline(ss, substr, ' ');
-                    const char at = '@';
-                    if (substr[2] != at) {
-                        throw std::invalid_argument(
-                            "The board should appear as a list of "
-                            "tile@postion.");
+                string c = "\0";
+                    while (ss.good()) {
+                        string substr;
+                        getline(ss, substr, ' ');
+                        const char at = '@';
+                        if (text == c) {
+                            if (substr[2] != at) {
+                                throw std::invalid_argument(
+                                    "The board should appear as a list of "
+                                    "tile@postion.");
+                            }
+                        }
+                        char last = substr.length() < 6 ? ',' : substr[5];
+                        char tile[2] = {substr[0], substr[1]};
+                        char pos[3] = {substr[3], substr[4], last};
+
+                        int row = pos[0] - ASCII_ALPHABET_BEGIN;
+                        int column =
+                            (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
+                            ? pos[1] - '0'
+                            : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
+
+                        board->placeTile(
+                            make_shared<Tile>(tile[0], tile[1] - '0'), row,
+                            column);
                     }
-                    char last = substr.length() < 6 ? ',' : substr[5];
-                    char tile[2] = {substr[0], substr[1]};
-                    char pos[3] = {substr[3], substr[4], last};
+                    count++;
 
-                    int row = pos[0] - ASCII_ALPHABET_BEGIN;
-                    int column =
-                        (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
-                        ? pos[1] - '0'
-                        : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
-
-                    board->placeTile(
-                        make_shared<Tile>(tile[0], tile[1] - '0'), row, column);
-                }
-                count++;
             }
         }
         cout << "Qwirkle game successfully loaded." << endl;
