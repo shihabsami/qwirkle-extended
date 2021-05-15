@@ -8,7 +8,6 @@
 # debug symbols and object files
 *.dSYM
 *.o
-*.save
 qwirkle
 
 # code history
