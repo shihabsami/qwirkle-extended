@@ -78,7 +78,9 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
         }
 
         board->placeTile(currentPlayer->getHand()->playTile(tile), row, column);
-        currentPlayer->getHand()->addTile(bag->getRandomTile());
+        if (!bag->getTiles()->isEmpty())
+            currentPlayer->getHand()->addTile(bag->getRandomTile());
+
         updateScore(lines);
         GameManager::switchPlayer();
         gameBegan = true;

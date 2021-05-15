@@ -321,23 +321,24 @@ void IOHandler::loadGame() {
                                 "Wrong tile list format.");
                         }
                     }
-                        // Player 1 hand
-                        if (count == 2) {
-                            p1Hand->addTile(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Player 2 hand
-                        else if (count == 5) {
-                            p2Hand->addTile(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Tile Bag Tiles
-                        else {
+                    // Player 1 hand
+                    if (count == 2) {
+                        p1Hand->addTile(
+                            make_shared<Tile>(substr[0], substr[1] - '0'));
+                    } // Player 2 hand
+                    else if (count == 5) {
+                        p2Hand->addTile(
+                            make_shared<Tile>(substr[0], substr[1] - '0'));
+                    } // Tile Bag Tiles
+                    else {
+                        if (substr != "") {
                             tileBag->getTiles()->addBack(
                                 make_shared<Tile>(substr[0], substr[1] - '0'));
                         }
-
+                    }
                 }
                 count++;
-                // checks if board size is separated by ',' and not more than 26
+            // checks if board size is separated by ',' and not more than 26
             } else if (count == 6) {
                 // height, width
                 std::stringstream ss(text);
@@ -540,7 +541,8 @@ void IOHandler::notify(const string& message, State state) {
         cout << message << endl;
         takingInput = false;
     } else if (state == GAME_OVER) {
-        cout << message << endl;
+        cout << endl;
+        cout << *GameManager::board << endl;
         cout << "Game Over" << endl;
         cout << "Score for " << GameManager::player1->getName() << " : "
              << GameManager::player1->getScore() << endl;
