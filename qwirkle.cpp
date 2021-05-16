@@ -1,8 +1,8 @@
 
-#include "TileBag.h"
-#include "LinkedList.h"
 #include "TileCodes.h"
+#include "TileBag.h"
 #include "PlayerHand.h"
+#include "GameBoard.h"
 
 #include <iostream>
 
@@ -18,12 +18,17 @@ void testTileBag();
 // tests for PlayerHand implementation
 void testPlayerHand();
 
+// tests for GameBoard implementation
+void testGameBoard();
+
 int main(void) {
     // testLinkedList();
 
-    testTileBag();
+    // testTileBag();
 
-    testPlayerHand();
+    // testPlayerHand();
+
+    // testGameBoard();
 
     return EXIT_SUCCESS;
 }
@@ -134,4 +139,21 @@ void testPlayerHand() {
     cout << "replacing a tile from the hand..." << endl;
     hand->replaceTile(*tile2, *bag);
     cout << *hand << endl;
+}
+
+void testGameBoard() {
+    cout << "testing gameboard..." << endl;
+    shared_ptr<GameBoard> board = make_shared<GameBoard>();
+
+    shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
+    shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, STAR_4);
+    shared_ptr<Tile> tile3 = make_shared<Tile>(YELLOW, DIAMOND);
+    shared_ptr<Tile> tile4 = make_shared<Tile>(GREEN, SQUARE);
+
+    cout << "placing tiles on gameboard..." << endl;
+    board->placeTile(tile1, 5, 10);
+    board->placeTile(tile2, 10, 5);
+    board->placeTile(tile3, 15, 20);
+    board->placeTile(tile4, 20, 10);
+    cout << *board << endl;
 }
