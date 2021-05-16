@@ -55,7 +55,6 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
 
     try {
         Tile tile(colour, shape);
-
         if (!isTileInHand(tile)) {
             message = "The specified tile is not present in hand.";
             throw invalid_argument("");
@@ -74,13 +73,14 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
             throw invalid_argument("");
         }
 
+        updateScore(lines);
         board->placeTile(currentPlayer->getHand()->playTile(tile), row, column);
         if (!bag->getTiles()->isEmpty()) {
-            currentPlayer->getHand()->addTile(bag->getTiles()->at(FIRST_POSITION));
+            currentPlayer->getHand()->addTile(
+                bag->getTiles()->at(FIRST_POSITION));
             bag->getTiles()->removeFront();
         }
 
-        updateScore(lines);
         GameManager::switchPlayer();
     } catch (...) {
         state = PLACE_FAILURE;
@@ -112,6 +112,7 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
 
         if (!bag->getTiles()->isEmpty())
             currentPlayer->getHand()->replaceTile(tile, *bag);
+
         GameManager::switchPlayer();
     } catch (...) {
         state = REPLACE_FAILURE;
@@ -298,10 +299,8 @@ void GameManager::updateScore(const Lines& lines) {
         if (verticalScore == MAX_LINE_SIZE)
             ++bonusCount;
 
-        currentPlayer->setScore(
-            currentPlayer->getScore() + SCORE_BONUS * bonusCount);
-        currentPlayer->setScore(
-            currentPlayer->getScore() + horizontalScore + verticalScore);
+        currentPlayer->setScore(currentPlayer->getScore()
+            + horizontalScore + verticalScore + SCORE_BONUS * bonusCount);
     }
 }
 
@@ -310,8 +309,7 @@ void GameManager::updateScore(const Lines& lines) {
  */
 bool GameManager::hasGameEnded() {
     return (player1->getHand()->getTiles()->isEmpty() ||
-               player2->getHand()->getTiles()->isEmpty()) &&
-        bag->getTiles()->isEmpty();
+       player2->getHand()->getTiles()->isEmpty()) && bag->getTiles()->isEmpty();
 }
 
 /**

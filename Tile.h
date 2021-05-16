@@ -20,6 +20,20 @@ public:
     Tile(Colour color, Shape shape);
 
     /**
+     * Get the tile's colour.
+     *
+     * @return the Colour (char)
+     */
+    Colour getColour() const;
+
+    /**
+     * Get the tile's shape.
+     *
+     * @return the Shape (int)
+     */
+    Shape getShape() const;
+
+    /**
      * Check if other has same colour as this.
      */
     bool hasSameColour(const Tile& other) const;
@@ -39,11 +53,9 @@ public:
      */
     friend ostream& operator<<(ostream& os, const Tile& tile);
 
-    bool hasSameColour(const Tile& tile);
-    bool hasSameShape(const Tile& tile);
-
-    Colour colour;
-    Shape shape;
+private:
+    const Colour colour;
+    const Shape shape;
 };
 
 #endif // ASSIGN2_TILE_H

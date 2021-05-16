@@ -18,16 +18,15 @@ using std::array;
 
 // Shapes
 #define CIRCLE 1
-#define STAR_4 2 
+#define STAR_4 2
 #define DIAMOND 3
 #define SQUARE 4
 #define STAR_6 5
 #define CLOVER 6
 
-
-/*
- * @Note
- * Global variable made static, as well as const according to the style guide.
+/**
+ * @note
+ * Global variables made static, as well as const according to the style guide.
  */
 static const array<Colour, 6> COLOURS{
     RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
