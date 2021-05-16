@@ -111,7 +111,6 @@ void IOHandler::newGame() {
     gameRunning = true;
 }
 
-// Player Names have to be CAPITALIZED
 bool IOHandler::validateName(const string& name) {
 
     bool state = false;
@@ -241,7 +240,6 @@ void IOHandler::credits() {
     selection();
 }
 
-// to load game copy path of t1.save
 void IOHandler::loadGame() {
     bool fileCheck = true;
     while(fileCheck) {
@@ -274,15 +272,13 @@ void IOHandler::loadGame() {
         int count = 0;
         string text;
             while (getline(file, text)) {
-                // checks if name is correct
                 text.erase(
                     std::remove(text.begin(), text.end(), '\r'), text.end());
                 text.erase(
                     std::remove(text.begin(), text.end(), '\n'), text.end());
                 if (count == 0 || count == 3 || count == 9) {
                     for (unsigned i = 0; i < text.length() - 1; i++) {
-                        // check name ASCII
-                        int ascii = text[i];
+                        int ascii =  static_cast<unsigned char>(text[i]);
                         if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
                             ascii > ASCII_ALPHABET_END + 1) {
                             throw std::invalid_argument(
@@ -303,9 +299,7 @@ void IOHandler::loadGame() {
                     }
 
                     count++;
-                    // checks if score is a number
                 } else if (count == 1 || count == 4) {
-                    // Check integer
                     int number = stoi(text);
                     if (number < 0) {
                         throw std::invalid_argument(
@@ -319,11 +313,9 @@ void IOHandler::loadGame() {
                     }
 
                     count++;
-                    // checks if tiles are separated by ','
                 } else if (count == 2 || count == 5 || count == 8) {
-                    // separated with comma
                     std::stringstream ss(text);
-                    string c = "\0";
+                    string c = " ";
                     while (ss.good()) {
                         string substr;
                         getline(ss, substr, ',');
@@ -333,26 +325,23 @@ void IOHandler::loadGame() {
                                     "Wrong tile list format.");
                             }
                         }
-                        // Player 1 hand
                         if (count == 2) {
                             p1Hand->addTile(
                                 make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Player 2 hand
+                        }
                         else if (count == 5) {
                             p2Hand->addTile(
                                 make_shared<Tile>(substr[0], substr[1] - '0'));
-                        } // Tile Bag Tiles
+                        }
                         else {
-                            if (substr != "") {
+                            if (!substr.empty()) {
                                 tileBag->getTiles()->addBack(make_shared<Tile>(
                                     substr[0], substr[1] - '0'));
                             }
                         }
                     }
                     count++;
-                    // checks if board size is separated by ',' and not more than 26
                 } else if (count == 6) {
-                    // height, width
                     std::stringstream ss(text);
                     while (ss.good()) {
                         string substr;
@@ -364,12 +353,10 @@ void IOHandler::loadGame() {
                                 "26.");
                         }
                     }
-                    // Board size does nothing at the moment, no loading
                     count++;
                 } else if (count == 7) {
-                    // all tiles placed on board
                     std::stringstream ss(text);
-                    string c = "\0";
+                    string c = " ";
                     while (ss.good()) {
                         string substr;
                         getline(ss, substr, ' ');
@@ -390,7 +377,7 @@ void IOHandler::loadGame() {
                             (pos[2] == 44 || pos[2] == '\r' || pos[2] == '\n')
                             ? pos[1] - '0'
                             : (int)(pos[1] - '0') * 10 + (int)(pos[2] - '0');
-                        if (substr != "") {
+                        if (!substr.empty()) {
                             board->placeTile(
                                 make_shared<Tile>(tile[0], tile[1] - '0'), row,
                                 column);
@@ -447,7 +434,6 @@ bool IOHandler::checkTile(const string& tile) {
     return condition;
 }
 
-// Tile position checker
 bool IOHandler::checkTilePosition(const string& position) {
     string appended;
     bool condition = false, boolLetter = false, boolNumber = false;
@@ -456,7 +442,7 @@ bool IOHandler::checkTilePosition(const string& position) {
         if (position.size() == STRING_SIZE_2) {
             char letter = position.at(FIRST_POSITION);
             char num1 = position.at(SECOND_POSITION);
-            int asciiLetter = int(letter);
+            int asciiLetter = static_cast<unsigned char>(int(letter));
             if (asciiLetter >= ASCII_ALPHABET_BEGIN &&
                 asciiLetter <= ASCII_ALPHABET_END) {
                 boolLetter = true;
@@ -470,12 +456,11 @@ bool IOHandler::checkTilePosition(const string& position) {
                 boolNumber = false;
             }
         } else if (position.size() == STRING_SIZE_3) {
-            // get the position
             char letter = position.at(FIRST_POSITION);
             char num1 = position.at(SECOND_POSITION);
             char num2 = position.at(THIRD_POSITION);
 
-            int asciiLetter = int(letter);
+            int asciiLetter = static_cast<unsigned char>(int(letter));
             if (asciiLetter >= ASCII_ALPHABET_BEGIN &&
                 asciiLetter <= ASCII_ALPHABET_END) {
                 boolLetter = true;
@@ -504,7 +489,6 @@ bool IOHandler::checkTilePosition(const string& position) {
     }
 }
 
-// what is the return type
 void IOHandler::placeTile(const string& tile, const string& position) {
     string appended;
     Colour colour = tile.at(0);
@@ -514,7 +498,7 @@ void IOHandler::placeTile(const string& tile, const string& position) {
 
     if (position.size() == STRING_SIZE_2) {
         char asciiLetter = position.at(FIRST_POSITION);
-        int tempRow = int(asciiLetter);
+        int tempRow = static_cast<unsigned char>(int(asciiLetter));
         row = tempRow - ASCII_ALPHABET_BEGIN;
         char tempCol = position.at(SECOND_POSITION);
         appended.append(1, tempCol);
@@ -524,7 +508,7 @@ void IOHandler::placeTile(const string& tile, const string& position) {
         char asciiLetter = position.at(FIRST_POSITION);
         char num1 = position.at(SECOND_POSITION);
         char num2 = position.at(THIRD_POSITION);
-        int tempRow = int(asciiLetter);
+        int tempRow = static_cast<unsigned char>(int(asciiLetter));
         row = tempRow - ASCII_ALPHABET_BEGIN;
         appended.append(1, num1);
         appended.append(1, num2);
