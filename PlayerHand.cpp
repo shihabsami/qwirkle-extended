@@ -59,5 +59,6 @@ shared_ptr<Tile> PlayerHand::getTile(const Tile& tile) {
 shared_ptr<LinkedList> PlayerHand::getTiles() { return tiles; }
 
 ostream& operator<<(ostream& os, const PlayerHand& hand) {
+    os << *hand.tiles;
     return os;
 }

@@ -394,7 +394,6 @@ void IOHandler::loadGame() {
             GameManager::loadGame(p1, p2, tileBag, board, currentPlayer);
             gameRunning = true;
             fileCheck = false;
-            playRound();
 
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
