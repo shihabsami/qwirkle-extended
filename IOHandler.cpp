@@ -396,7 +396,6 @@ void IOHandler::loadGame() {
             fileCheck = false;
             playRound();
 
-
         } catch (const std::invalid_argument& e) {
             cerr << "The error is " << e.what() << endl;
         }
@@ -406,6 +405,7 @@ void IOHandler::loadGame() {
 bool IOHandler::is_empty(std::ifstream& file){
     return file.peek() == std::ifstream::traits_type::eof();
 }
+
 bool IOHandler::checkTile(const string& tile) {
     bool condition = false;
     bool boolLetter = false;
@@ -568,6 +568,7 @@ void IOHandler::notify(const string& message, State state) {
 }
 
 void IOHandler::quit() {
+    GameManager::resetGame();
     cout << "Goodbye" << endl;
     exit(EXIT_SUCCESS);
 }

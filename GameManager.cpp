@@ -113,10 +113,13 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             throw invalid_argument("");
         }
 
-        if (!bag->getTiles()->isEmpty())
+        if (!bag->getTiles()->isEmpty()) {
             currentPlayer->getHand()->replaceTile(tile, *bag);
-
-        GameManager::switchPlayer();
+            GameManager::switchPlayer();
+        } else {
+            message = "No more tiles remain to be replaced.";
+            throw out_of_range("");
+        }
     } catch (...) {
         state = REPLACE_FAILURE;
     }

@@ -1,5 +1,5 @@
 2
-testCases/baseGame.save
+Tests/baseGame.save
 place g3 at b5
 place g4 at b6
 place r3 at c5
@@ -56,5 +56,5 @@ replace o5
 replace p6
 replace b4
 place g2 at b8
-save boxQwirkle
+save Tests/boxQwirkle
 quit
