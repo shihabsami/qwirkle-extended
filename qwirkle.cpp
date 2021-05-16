@@ -1,5 +1,6 @@
 
 #include "TileCodes.h"
+#include "Constants.h"
 #include "IOHandler.h"
 
 #include <iostream>
@@ -28,12 +29,16 @@ int main(void) {
 
     // testGameBoard();
 
+    cout << SPLASH_SCREEN << endl;
+
     IOHandler::beginGame();
     while (!std::cin.eof() && IOHandler::gameRunning) {
         IOHandler::playRound();
         if (std::cin.eof())
             IOHandler::quit();
     }
+
+
 
     return EXIT_SUCCESS;
 }
