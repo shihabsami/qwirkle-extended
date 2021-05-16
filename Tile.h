@@ -35,21 +35,31 @@ public:
 
     /**
      * Check if other has same colour as this.
+     *
+     * @param other - the other tile to compare to
      */
     bool hasSameColour(const Tile& other) const;
 
     /**
      * Check if other has same shape as this.
+     *
+     * @param other - the other tile to compare to
      */
     bool hasSameShape(const Tile& other) const;
 
     /**
      * Check for equality of two tiles based on colour and shape.
+     *
+     * @param other - the other tile to compare to
+     * @return true if this tile has the same colour and shape as the other
      */
     bool operator==(const Tile& other) const;
 
     /**
      * Overloaded output stream operator for easy printing.
+     *
+     * @param os - a reference to the output stream operator
+     * @param tile - a reference to the tile to be printed
      */
     friend ostream& operator<<(ostream& os, const Tile& tile);
 
