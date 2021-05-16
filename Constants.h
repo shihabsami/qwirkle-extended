@@ -22,5 +22,6 @@
 #define MIN_TILE_RANGE          0
 #define MAX_TILE_RANGE          9
 #define ERROR_MESSAGE           "Invalid input - "
+#define SPLASH_SCREEN           "\n░█▀▀█ ░█──░█ ▀█▀ ░█▀▀█ ░█─▄▀ ░█─── ░█▀▀▀\n░█─░█ ░█░█░█ ░█─ ░█▄▄▀ ░█▀▄─ ░█─── ░█▀▀▀\n─▀▀█▄ ░█▄▀▄█ ▄█▄ ░█─░█ ░█─░█ ░█▄▄█ ░█▄▄▄\n"
 
 #endif // CONSTANTS_H

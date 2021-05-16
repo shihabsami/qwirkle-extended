@@ -73,14 +73,17 @@ void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
             throw invalid_argument("");
         }
 
-        updateScore(lines);
+        // score for the first round
+        if (board->isEmpty())
+            currentPlayer->setScore(1);
+
         board->placeTile(currentPlayer->getHand()->playTile(tile), row, column);
         if (!bag->getTiles()->isEmpty()) {
-            currentPlayer->getHand()->addTile(
-                bag->getTiles()->at(FIRST_POSITION));
+            currentPlayer->getHand()->addTile(bag->getTiles()->at(FIRST_POSITION));
             bag->getTiles()->removeFront();
         }
 
+        updateScore(lines);
         GameManager::switchPlayer();
     } catch (...) {
         state = PLACE_FAILURE;
@@ -273,35 +276,30 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
  * @param lines - the horizontal and vertical lines
  */
 void GameManager::updateScore(const Lines& lines) {
-    if (board->isEmpty()) {
-        // score for the first round
-        currentPlayer->setScore(1);
-    } else {
-        unsigned int horizontalScore =
-            lines.first.isEmpty() ? 0 : lines.first.size() + 1;
-        unsigned int verticalScore =
-            lines.second.isEmpty() ? 0 : lines.second.size() + 1;
+    unsigned int horizontalScore =
+        lines.first.isEmpty() ? 0 : lines.first.size() + 1;
+    unsigned int verticalScore =
+        lines.second.isEmpty() ? 0 : lines.second.size() + 1;
 
-        // qwirkle is printed twice if it happens twice on the same move
-        if (horizontalScore == MAX_LINE_SIZE) {
-            IOHandler::notify("QWIRKLE!!!", QWIRKLE);
-        }
-        if (verticalScore == MAX_LINE_SIZE) {
-            IOHandler::notify("QWIRKLE!!!", QWIRKLE);
-        }
-
-        // bonus points for emptying hand or scoring qwirkle
-        int bonusCount = 0;
-        if (player1->getHand()->getTiles()->isEmpty())
-            ++bonusCount;
-        if (horizontalScore == MAX_LINE_SIZE)
-            ++bonusCount;
-        if (verticalScore == MAX_LINE_SIZE)
-            ++bonusCount;
-
-        currentPlayer->setScore(currentPlayer->getScore()
-            + horizontalScore + verticalScore + SCORE_BONUS * bonusCount);
+    // qwirkle is printed twice if it happens twice on the same move
+    if (horizontalScore == MAX_LINE_SIZE) {
+        IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
+    if (verticalScore == MAX_LINE_SIZE) {
+        IOHandler::notify("QWIRKLE!!!", QWIRKLE);
+    }
+
+    // bonus points for emptying hand or scoring qwirkle
+    int bonusCount = 0;
+    if (player1->getHand()->getTiles()->isEmpty())
+        ++bonusCount;
+    if (horizontalScore == MAX_LINE_SIZE)
+        ++bonusCount;
+    if (verticalScore == MAX_LINE_SIZE)
+        ++bonusCount;
+
+    currentPlayer->setScore(currentPlayer->getScore()
+        + horizontalScore + verticalScore + SCORE_BONUS * bonusCount);
 }
 
 /**
