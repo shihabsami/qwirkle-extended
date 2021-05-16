@@ -47,7 +47,7 @@ public:
      * @param index - the index to insert the tile at
      * @param replace - whether the tile should replace the existing tile
      */
-    void insert(const shared_ptr<Tile>& tile, unsigned int index, bool replace);
+    void insert(const shared_ptr<Tile>& tile, size_t index, bool replace);
 
     /**
      * Remove an element with based on tile value.
@@ -61,14 +61,14 @@ public:
      *
      * @param index - the index to remove the tile at
      * */
-    void remove(unsigned int index);
+    void remove(size_t index);
 
     /**
      * Get the size of the linkedlist.
      *
      * @return an integer representing the count of elements
      */
-    unsigned int size() const;
+     size_t size() const;
 
     /**
      * Get the element at a given index.
@@ -76,7 +76,7 @@ public:
      * @param the index of the tile to get
      * @return a pointer to the tile
      */
-    shared_ptr<Tile> at(unsigned int index) const;
+    shared_ptr<Tile> at(size_t index) const;
 
     /**
      * Query whether the given tile exists.
@@ -101,7 +101,7 @@ public:
     friend ostream& operator<<(ostream& os, const LinkedList& list);
 
 private:
-    unsigned int length;
+    size_t length;
     shared_ptr<Node> head;
     shared_ptr<Node> tail;
 };
