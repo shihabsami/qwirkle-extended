@@ -1,6 +1,6 @@
 
-#include "LinkedList.h"
 #include "TileCodes.h"
+#include "LinkedList.h"
 
 #include <iostream>
 
@@ -69,4 +69,7 @@ void testLinkedList() {
     cout << "testing if linkedlist contains tile..." << endl;
     cout << "contains " << *tile7 << " - " << (list->contains(*tile7) ? "true" : "false") << endl;
     cout << "contains " << *tile4 << " - " << (list->contains(*tile4) ? "true" : "false") << endl;
+
+    cout << "testing if linkedlist is empty..." << endl;
+    cout << "empty - " << (list->isEmpty() ? "true" : "false") << endl;
 }

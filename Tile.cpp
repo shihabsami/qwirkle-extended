@@ -5,6 +5,10 @@ using std::invalid_argument;
 
 Tile::Tile(Colour colour, Shape shape) : colour(colour), shape(shape) {}
 
+Colour Tile::getColour() const { return colour; }
+
+Shape Tile::getShape() const { return shape; }
+
 bool Tile::hasSameColour(const Tile& other) const {
     return colour == other.colour;
 }

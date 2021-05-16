@@ -25,7 +25,7 @@ public:
         const shared_ptr<Node>& previous);
 
     /**
-     * Destructor.
+     * Destructor to free up the owning tile.
      */
     ~Node();
 

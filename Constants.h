@@ -1,7 +1,10 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// this file contains all of the constants
+/**
+ * @note
+ * A file to organise all constants used throughout the game.
+ */
 #define HAND_SIZE 6
 #define TILE_SIZE 72
 #define BOARD_LENGTH 26
