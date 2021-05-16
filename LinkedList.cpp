@@ -62,13 +62,13 @@ void LinkedList::removeBack() {
 }
 
 void LinkedList::insert(
-    const shared_ptr<Tile>& tile, unsigned int index, bool replace) {
+    const shared_ptr<Tile>& tile, size_t index, bool replace) {
     if (index >= length)
         throw out_of_range("invalid index for LinkedList::insert");
 
     shared_ptr<Node> toBeInserted = make_shared<Node>(tile);
     shared_ptr<Node> nodeAtIndex = head;
-    for (unsigned int i = 0; i < index; ++i)
+    for (size_t i = 0; i < index; ++i)
         nodeAtIndex = nodeAtIndex->next;
 
     if (replace) {
@@ -116,7 +116,7 @@ void LinkedList::insert(
 void LinkedList::remove(const shared_ptr<Tile>& tile) {
     shared_ptr<Node> current = head;
     bool removed = false;
-    unsigned int i = 0;
+    size_t i = 0;
     while (i < length && !removed) {
         if (*current->tile == *tile) {
             remove(i);
@@ -128,7 +128,7 @@ void LinkedList::remove(const shared_ptr<Tile>& tile) {
     }
 }
 
-void LinkedList::remove(unsigned int index) {
+void LinkedList::remove(size_t index) {
     if (index >= length)
         throw out_of_range("invalid index for LinkedList::remove");
 
@@ -138,7 +138,7 @@ void LinkedList::remove(unsigned int index) {
         removeBack();
     else {
         shared_ptr<Node> toBeDeleted = head;
-        for (unsigned int i = 0; i < index; ++i)
+        for (size_t i = 0; i < index; ++i)
             toBeDeleted = toBeDeleted->next;
 
         toBeDeleted->next->previous = toBeDeleted->previous;
@@ -147,14 +147,14 @@ void LinkedList::remove(unsigned int index) {
     }
 }
 
-unsigned int LinkedList::size() const { return length; }
+size_t LinkedList::size() const { return length; }
 
-shared_ptr<Tile> LinkedList::at(unsigned int index) const {
+shared_ptr<Tile> LinkedList::at(size_t index) const {
     if (index >= length)
         throw out_of_range("invalid index for LinkedList::at");
 
     shared_ptr<Node> toReturn = head;
-    for (unsigned int i = 0; i < index; ++i)
+    for (size_t i = 0; i < index; ++i)
         toReturn = toReturn->next;
 
     return toReturn->tile;
@@ -163,7 +163,7 @@ shared_ptr<Tile> LinkedList::at(unsigned int index) const {
 bool LinkedList::contains(const Tile& tile) const {
     shared_ptr<Node> current = head;
     bool found = false;
-    unsigned int i = 0;
+    size_t i = 0;
     while (i < length && !found) {
         if (*current->tile == tile) {
             found = true;
@@ -180,7 +180,7 @@ bool LinkedList::isEmpty() const { return length == 0; }
 
 ostream& operator<<(ostream& os, const LinkedList& list) {
     shared_ptr<Node> current = list.head;
-    for (unsigned int i = 0; i < list.length; ++i) {
+    for (size_t i = 0; i < list.length; ++i) {
         os << *current->tile << (i < list.length - 1 ? "," : "");
         current = current->next;
     }
