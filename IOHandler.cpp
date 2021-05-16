@@ -257,6 +257,9 @@ void IOHandler::loadGame() {
         if (!file) {
             throw::std::invalid_argument("File does not exits.");
         }
+        if (is_empty(file)){
+            throw::std::invalid_argument("File Is Empty!.");
+        }
 
         cin.clear();
         cin.ignore();
@@ -280,7 +283,7 @@ void IOHandler::loadGame() {
                     for (unsigned i = 0; i < text.length() - 1; i++) {
                         int ascii =  static_cast<unsigned char>(text[i]);
                         if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
-                            ascii > ASCII_ALPHABET_END + 1) {
+                            ascii > ASCII_ALPHABET_END + 1 || ascii == 0) {
                             throw std::invalid_argument(
                                 "Name format is not part of ASCII text.");
                         }
@@ -398,6 +401,10 @@ void IOHandler::loadGame() {
             cerr << "The error is " << e.what() << endl;
         }
     }
+}
+
+bool IOHandler::is_empty(std::ifstream& file){
+    return file.peek() == std::ifstream::traits_type::eof();
 }
 bool IOHandler::checkTile(const string& tile) {
     bool condition = false;

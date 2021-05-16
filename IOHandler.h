@@ -87,6 +87,8 @@ public:
  **/
     static void loadGame();
 
+    static bool is_empty(std::ifstream& file);
+
 /**
  *
  * Checks if tile is valid

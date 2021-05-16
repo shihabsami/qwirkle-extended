@@ -57,12 +57,11 @@ shared_ptr<PlayerHand> TileBag::getHand() {
 shared_ptr<LinkedList> TileBag::getTiles() { return tiles; }
 
 shared_ptr<Tile> TileBag::replace(shared_ptr<Tile>& tile) {
-    size_t randomIndex = getRandomIndex();
-    shared_ptr<Tile> randomTile = tiles->at(randomIndex);
-    tiles->remove(randomIndex);
+    shared_ptr<Tile> toBeReplaced = tiles->at(FIRST_POSITION);
+    tiles->removeFront();
     tiles->addBack(tile);
 
-    return randomTile;
+    return toBeReplaced;
 }
 
 size_t TileBag::getRandomIndex() {
