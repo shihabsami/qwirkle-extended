@@ -69,7 +69,7 @@ size_t TileBag::getRandomIndex() {
     random_device engine;
     uniform_int_distribution<size_t> distribution(0, tiles->size() - 1);
 
-    return 0;
+    return distribution(engine);
 }
 
 ostream& operator<<(ostream& os, const TileBag& bag) {
