@@ -1,27 +1,24 @@
 Welcome to Qwirkle!
 -------------------
-
+ 
 Menu
 ----
 1. New Game
 2. Load Game
 3. Credits (Show student information)
 4. Quit
-
->
-Starting a New Game
+ 
+> Starting a New Game
 
 Enter a name for player 1 (uppercase characters only)
->
-Enter a name for player 2 (uppercase characters only)
->
-Let's Play!
+> Enter a name for player 2 (uppercase characters only)
+> Let's Play!
 
-A, it's your turn
+A, it's your turn 
 Score for A: 0
 Score for B: 0
 
-   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
   -------------------------------------------------------------------------------
 A |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 B |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -50,8 +47,9 @@ X |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
 Y |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 Z |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
-Your hand is
+Your hand is 
 P6,P5,P5,P4,P4,P3
->
-
+> 
 Game successfully saved
+
+> Goodbye

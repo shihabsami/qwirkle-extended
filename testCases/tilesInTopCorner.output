@@ -50,7 +50,7 @@ P6,P5,P5,P4,P4,P3
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 0
+Score for A: 1
 Score for B: 0
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -87,7 +87,7 @@ P3,P2,P2,P1,P1,B6
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 0
+Score for A: 1
 Score for B: 2
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -124,7 +124,7 @@ P5,P5,P4,P4,P3,P6
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 2
+Score for A: 3
 Score for B: 2
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -161,7 +161,7 @@ P3,P2,P2,P1,P1,R1
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 2
+Score for A: 3
 Score for B: 2
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -198,7 +198,7 @@ P5,P4,P4,P3,P6,R1
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 2
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -235,7 +235,7 @@ P3,P2,P1,P1,R1,R2
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 6
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -272,7 +272,7 @@ P5,P4,P3,P6,R1,R2
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 6
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -309,7 +309,7 @@ P2,P1,P1,R1,R2,R3
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 11
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -346,7 +346,7 @@ P4,P3,P6,R1,R2,R3
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 11
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -384,7 +384,7 @@ P1,P1,R1,R2,R3,R4
 Tile placed successfully.
 
 A, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 23
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -421,7 +421,7 @@ P3,P6,R1,R2,R3,R4
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 23
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -458,7 +458,7 @@ P1,R1,R2,R3,R4,R5
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 23
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -495,7 +495,7 @@ P6,R1,R2,R3,R4,R5
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 23
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -532,7 +532,7 @@ R1,R2,R3,R4,R5,R6
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 5
+Score for A: 6
 Score for B: 26
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -569,7 +569,7 @@ R1,R2,R3,R4,R5,R6
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 7
+Score for A: 8
 Score for B: 26
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -606,7 +606,7 @@ R1,R2,R3,R4,R5,O1
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 7
+Score for A: 8
 Score for B: 29
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -643,7 +643,7 @@ R1,R2,R3,R4,R6,O1
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 11
+Score for A: 12
 Score for B: 29
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -680,7 +680,7 @@ R1,R2,R3,R5,O1,O2
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 11
+Score for A: 12
 Score for B: 34
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -718,7 +718,7 @@ R1,R2,R4,R6,O1,O2
 Tile placed successfully.
 
 B, it's your turn 
-Score for A: 23
+Score for A: 24
 Score for B: 34
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -755,7 +755,7 @@ R1,R3,R5,O1,O2,O3
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 23
+Score for A: 24
 Score for B: 36
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -792,7 +792,7 @@ R2,R4,R6,O1,O2,O3
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 27
+Score for A: 28
 Score for B: 36
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -829,7 +829,7 @@ R1,R3,R5,O1,O2,O4
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 27
+Score for A: 28
 Score for B: 41
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -866,7 +866,7 @@ R2,R4,R6,O1,O3,O4
 > Tile placed successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 41
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -903,7 +903,7 @@ R1,R3,R5,O2,O4,O5
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 48
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -940,7 +940,7 @@ R2,R4,R6,O1,O3,O5
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 48
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -978,7 +978,7 @@ R1,R3,R5,O2,O4,O6
 Tile placed successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1015,7 +1015,7 @@ R4,R6,O1,O3,O5,O6
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1052,7 +1052,7 @@ R1,R3,R5,O2,O4,Y1
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1089,7 +1089,7 @@ R6,O1,O3,O5,O6,Y1
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1126,7 +1126,7 @@ R3,R5,O2,O4,Y1,Y2
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1163,7 +1163,7 @@ O1,O3,O5,O6,Y1,Y2
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1200,7 +1200,7 @@ R5,O2,O4,Y1,Y2,Y3
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1237,7 +1237,7 @@ O3,O5,O6,Y1,Y2,Y3
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1274,7 +1274,7 @@ O2,O4,Y1,Y2,Y3,Y4
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1311,7 +1311,7 @@ O5,O6,Y1,Y2,Y3,Y4
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1348,7 +1348,7 @@ O4,Y1,Y2,Y3,Y4,Y5
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1385,7 +1385,7 @@ O6,Y1,Y2,Y3,Y4,Y5
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1422,7 +1422,7 @@ Y1,Y2,Y3,Y4,Y5,Y6
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1459,7 +1459,7 @@ Y1,Y2,Y3,Y4,Y5,Y6
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1496,7 +1496,7 @@ Y2,Y3,Y4,Y5,Y6,G1
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1533,7 +1533,7 @@ Y2,Y3,Y4,Y5,Y6,G1
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1570,7 +1570,7 @@ Y3,Y4,Y5,Y6,G1,G2
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1607,7 +1607,7 @@ Y3,Y4,Y5,Y6,G1,G2
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1644,7 +1644,7 @@ Y4,Y5,Y6,G1,G2,G3
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1681,7 +1681,7 @@ Y4,Y5,Y6,G1,G2,G3
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1718,7 +1718,7 @@ Y5,Y6,G1,G2,G3,G4
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1755,7 +1755,7 @@ Y5,Y6,G1,G2,G3,G4
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1792,7 +1792,7 @@ Y6,G1,G2,G3,G4,G5
 > Tile replaced successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1829,7 +1829,7 @@ Y6,G1,G2,G3,G4,G5
 > Tile replaced successfully.
 
 B, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 64
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
@@ -1879,7 +1879,7 @@ G1,G2,G3,G4,G5,G6
 > Tile placed successfully.
 
 A, it's your turn 
-Score for A: 33
+Score for A: 34
 Score for B: 69
 
    0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 

@@ -315,7 +315,7 @@ void IOHandler::loadGame() {
                     count++;
                 } else if (count == 2 || count == 5 || count == 8) {
                     std::stringstream ss(text);
-                    string c = " ";
+                    string c = "\0";
                     while (ss.good()) {
                         string substr;
                         getline(ss, substr, ',');
@@ -356,7 +356,7 @@ void IOHandler::loadGame() {
                     count++;
                 } else if (count == 7) {
                     std::stringstream ss(text);
-                    string c = " ";
+                    string c = "\0";
                     while (ss.good()) {
                         string substr;
                         getline(ss, substr, ' ');

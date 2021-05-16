@@ -18,7 +18,7 @@
 #define THIRD_POSITION          2
 #define STRING_SIZE_2           2
 #define STRING_SIZE_3           3
-#define MAX_BOARD_INDEX         25
+#define MAX_BOARD_INDEX         BOARD_LENGTH - 1
 #define MIN_TILE_RANGE          0
 #define MAX_TILE_RANGE          9
 #define ERROR_MESSAGE           "Invalid input - "
