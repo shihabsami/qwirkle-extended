@@ -5,9 +5,7 @@ using std::out_of_range;
 
 LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
 
-LinkedList::~LinkedList() {
-    while (length != 0) removeFront();
-}
+LinkedList::~LinkedList() { while (length != 0) removeFront(); }
 
 void LinkedList::addFront(const shared_ptr<Tile>& tile) {
     shared_ptr<Node> toBeAdded = make_shared<Node>(tile);
