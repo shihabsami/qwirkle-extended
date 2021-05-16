@@ -6,6 +6,7 @@
 #include <iostream>
 
 using std::cout;
+using std::cin;
 using std::endl;
 
 // tests for LinkedList implementation
@@ -22,23 +23,21 @@ void testGameBoard();
 
 int main(void) {
     // testLinkedList();
-
     // testTileBag();
-
     // testPlayerHand();
-
     // testGameBoard();
 
     cout << SPLASH_SCREEN << endl;
 
+    // begin the game
     IOHandler::beginGame();
-    while (!std::cin.eof() && IOHandler::gameRunning) {
+
+    // run the main game loop
+    while (!cin.eof() && IOHandler::gameRunning) {
         IOHandler::playRound();
-        if (std::cin.eof())
+        if (cin.eof())
             IOHandler::quit();
     }
-
-
 
     return EXIT_SUCCESS;
 }
