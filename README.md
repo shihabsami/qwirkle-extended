@@ -1,14 +1,17 @@
-# Qwirkle.
+# Credits
 
-## Implementation Notes
+**Name :** Shihab Sami\
+**Student ID :** S3823710\
+**Email :** S3823710@student.rmit.edu.au
 
-- Using `std::vector<>::reserve(26)` with initial size, better performance.
-- Using `const&` parameters to prevent one additional copy.
-- Forward declaration instead of `#include`.
-- `LinkedList::remove` returning the removed item?
-  <br/><br/>
+**Name :** Harrison Lorraway\
+**Student ID :** S3856166\
+**Email :** S3856166@student.rmit.edu.au
 
-## Additional
+**Name :** Yeu Haw Teh\
+**Student ID :** S3813866\
+**Email :** S3813866@student.rmit.edu.au
 
-- Single argument constructor made `explicit` to prevent implicit type conversion.
-
+**Name :** Andrew Nhan Trong Tran\
+**Student ID :** S3785952\
+**Email :** S3785952@student.rmit.edu.au
