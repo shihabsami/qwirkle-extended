@@ -4,16 +4,15 @@
 Player::Player(const string& name, shared_ptr<PlayerHand> hand)
     : name(name), score(0), hand(hand) {}
 
-Player::~Player() {
-    hand.reset();
-}
+Player::~Player() { hand.reset(); }
 
 string Player::getName() { return name; }
-void Player::setName(const string name) { this->name = name; }
 
-unsigned int Player::getScore() { return score; }
+void Player::setName(const string& name) { this->name = name; }
 
-void Player::setScore(unsigned int score) { this->score = score; }
+size_t Player::getScore() { return score; }
+
+void Player::setScore(size_t score) { this->score = score; }
 
 shared_ptr<PlayerHand> Player::getHand() { return hand; }
 

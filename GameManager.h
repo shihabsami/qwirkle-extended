@@ -35,17 +35,17 @@ public:
         const shared_ptr<GameBoard>& loadedBoard,
         const shared_ptr<Player>& currentPlayer);
 
-    static void placeTile(Colour colour, Shape shape, int row, int column);
+    static void placeTile(Colour colour, Shape shape, size_t row, size_t column);
 
     static void replaceTile(Colour colour, Shape shape);
 
     static void switchPlayer();
 
-    static bool isGridLocationEmpty(int row, int column);
+    static bool isGridLocationEmpty(size_t row, size_t column);
 
     static bool isTileInHand(const Tile& tile);
 
-    static Lines getAdjacentLines(const Tile& tile, int row, int column);
+    static Lines getAdjacentLines(const Tile& tile, size_t row, size_t column);
 
     static bool hasAdjacentTile(const Tile& tile, const Lines& lines);
 

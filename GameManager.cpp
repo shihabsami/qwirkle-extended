@@ -49,7 +49,7 @@ void GameManager::loadGame(const shared_ptr<Player>& player1,
  * @param colour,shape - the tile attributes
  * @param row,column - the specified grid location
  */
-void GameManager::placeTile(Colour colour, Shape shape, int row, int column) {
+void GameManager::placeTile(Colour colour, Shape shape, size_t row, size_t column) {
     string message = "Tile placed successfully.";
     State state = PLACE_SUCCESS;
 
@@ -136,7 +136,7 @@ void GameManager::switchPlayer() {
  *
  * @param row,column - the specified grid location
  */
-bool GameManager::isGridLocationEmpty(int row, int column) {
+bool GameManager::isGridLocationEmpty(size_t row, size_t column) {
     return board->at(row, column) == nullptr;
 }
 
@@ -156,11 +156,11 @@ bool GameManager::isTileInHand(const Tile& tile) {
  * @return Lines (pair<LinkedList, LinkedList) for the horizontal and vertical
  * lines
  * */
-Lines GameManager::getAdjacentLines(const Tile& tile, int row, int column) {
+Lines GameManager::getAdjacentLines(const Tile& tile, size_t row, size_t column) {
     Lines lines = make_pair(LinkedList{}, LinkedList{});
 
-    int currentRow = row;
-    int currentColumn = column;
+    size_t currentRow = row;
+    size_t currentColumn = column;
     int currentDirection = UP;
     bool allDirectionTraversed = false;
 
@@ -244,7 +244,7 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
     bool hasSameColourAsLine = true;
     bool hasSameShapeAsLine = true;
 
-    for (unsigned int i = 0; i < horizontalTiles.size() &&
+    for (size_t i = 0; i < horizontalTiles.size() &&
          (hasSameColourAsLine || hasSameShapeAsLine) && i < 2;
          ++i) {
         hasSameColourAsLine &= tile.hasSameColour(*horizontalTiles.at(i));
@@ -256,7 +256,7 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
     hasSameShapeAsLine = true;
 
     // only iterate if the tile matched the horizontal line above
-    for (unsigned int i = 0; i < verticalTiles.size() && matchHorizontalLine &&
+    for (size_t i = 0; i < verticalTiles.size() && matchHorizontalLine &&
          (hasSameColourAsLine || hasSameShapeAsLine) && i < 2;
          ++i) {
         hasSameColourAsLine &= tile.hasSameColour(*verticalTiles.at(i));
@@ -276,9 +276,9 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
  * @param lines - the horizontal and vertical lines
  */
 void GameManager::updateScore(const Lines& lines) {
-    unsigned int horizontalScore =
+    size_t horizontalScore =
         lines.first.isEmpty() ? 0 : lines.first.size() + 1;
-    unsigned int verticalScore =
+    size_t verticalScore =
         lines.second.isEmpty() ? 0 : lines.second.size() + 1;
 
     // qwirkle is printed twice if it happens twice on the same move
