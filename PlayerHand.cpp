@@ -7,8 +7,7 @@ PlayerHand::PlayerHand() : tiles(make_shared<LinkedList>()) {}
 
 PlayerHand::PlayerHand(const shared_ptr<LinkedList>& tiles) : tiles(tiles) {}
 
-PlayerHand::PlayerHand(const PlayerHand& hand)
-    : tiles(hand.tiles) {}
+PlayerHand::PlayerHand(const PlayerHand& hand) : tiles(hand.tiles) {}
 
 PlayerHand::~PlayerHand() { tiles.reset(); }
 

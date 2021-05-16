@@ -1,7 +1,11 @@
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// this file contains all of the constants
+/**
+ * @note
+ * A file to organise all constants used throughout the game.
+ */
 #define HAND_SIZE               6
 #define MAX_LINE_SIZE           6
 #define SCORE_BONUS             6
@@ -18,7 +22,5 @@
 #define MIN_TILE_RANGE          0
 #define MAX_TILE_RANGE          9
 #define ERROR_MESSAGE           "Invalid input - "
-
-
 
 #endif // CONSTANTS_H

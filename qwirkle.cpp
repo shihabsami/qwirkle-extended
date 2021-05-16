@@ -19,49 +19,24 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
-// tests for GameManager implementation
-
-void testGameManager();
-
 int main(void) {
     // testLinkedList();
+
     // testTileBag();
+
     // testPlayerHand();
+
     // testGameBoard();
-    // testCalculateScore();
-    // testTileValidOnLine();
-    //IOHandler::Test();
 
     IOHandler::beginGame();
     while (!std::cin.eof() && IOHandler::gameRunning) {
         IOHandler::playRound();
-        if (std::cin.eof()) {
+        if (std::cin.eof())
             IOHandler::quit();
-        }
     }
-
-    // testGameManager();
 
     return EXIT_SUCCESS;
 }
-
-void testGameManager() {
-    GameManager::beginGame("A", "B");
-
-    shared_ptr<Tile> tile1 = make_shared<Tile>(RED, CIRCLE);
-    shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, CIRCLE);
-    shared_ptr<Tile> tile3 = make_shared<Tile>(RED, CIRCLE);
-
-    GameManager::placeTile(tile1->colour, tile1->shape, 4, 4);
-    cout << *GameManager::board << endl;
-
-    GameManager::placeTile(tile2->colour, tile2->shape, 4, 5);
-    cout << *GameManager::board << endl;
-
-    GameManager::placeTile(tile3->colour, tile3->shape, 4, 6);
-    cout << *GameManager::board << endl;
-}
-
 
 void testLinkedList() {
     cout << "testing linkedlist..." << endl;
@@ -115,10 +90,11 @@ void testLinkedList() {
     cout << *list << endl;
 
     cout << "testing if linkedlist contains tile..." << endl;
-    cout << "contains " << *tile7 << " - "
-         << (list->contains(*tile7) ? "true" : "false") << endl;
-    cout << "contains " << *tile4 << " - "
-         << (list->contains(*tile4) ? "true" : "false") << endl;
+    cout << "contains " << *tile7 << " - " << (list->contains(*tile7) ? "true" : "false") << endl;
+    cout << "contains " << *tile4 << " - " << (list->contains(*tile4) ? "true" : "false") << endl;
+
+    cout << "testing if linkedlist is empty..." << endl;
+    cout << "empty - " << (list->isEmpty() ? "true" : "false") << endl;
 }
 
 void testTileBag() {
@@ -131,16 +107,16 @@ void testTileBag() {
     bag->shuffle();
     cout << *bag << endl;
 
-    cout << "getting hand of cards from tilebag..." << endl;
+    cout << "getting hand of tiles from tilebag..." << endl;
     shared_ptr<PlayerHand> hand = bag->getHand();
     cout << "hand -" << *hand << endl;
     cout << *bag << endl;
 
-    cout << "replacing a tile2 from tilebag..." << endl;
-    shared_ptr<Tile> tile2 = make_shared<Tile>(PURPLE, CLOVER);
-    cout << "tile2 " << *tile2;
-    tile2 = bag->replace(tile2);
-    cout << " replaced with " << *tile2 << endl;
+    cout << "replacing a tile from tilebag..." << endl;
+    shared_ptr<Tile> tile = make_shared<Tile>(PURPLE, CLOVER);
+    cout << "tile " << *tile;
+    tile = bag->replace(tile);
+    cout << " replaced with " << *tile << endl;
     cout << *bag << endl;
 }
 
