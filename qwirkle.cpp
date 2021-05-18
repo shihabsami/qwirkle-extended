@@ -21,23 +21,23 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
-int main(void) {
-    // testLinkedList();
-    // testTileBag();
-    // testPlayerHand();
-    // testGameBoard();
+int main() {
+//     testLinkedList();
+//     testTileBag();
+//     testPlayerHand();
+     testGameBoard();
 
-    cout << SPLASH_SCREEN << endl;
-
-    // begin the game
-    IOHandler::beginGame();
-
-    // run the main game loop
-    while (!cin.eof() && IOHandler::gameRunning) {
-        IOHandler::playRound();
-        if (cin.eof())
-            IOHandler::quit();
-    }
+//    cout << SPLASH_SCREEN << endl;
+//
+//    // begin the game
+//    IOHandler::beginGame();
+//
+//    // run the main game loop
+//    while (!cin.eof() && IOHandler::gameRunning) {
+//        IOHandler::playRound();
+//        if (cin.eof())
+//            IOHandler::quit();
+//    }
 
     return EXIT_SUCCESS;
 }
@@ -158,11 +158,15 @@ void testGameBoard() {
     shared_ptr<Tile> tile2 = make_shared<Tile>(ORANGE, STAR_4);
     shared_ptr<Tile> tile3 = make_shared<Tile>(YELLOW, DIAMOND);
     shared_ptr<Tile> tile4 = make_shared<Tile>(GREEN, SQUARE);
+    shared_ptr<Tile> tile5 = make_shared<Tile>(BLUE, STAR_6);
+    shared_ptr<Tile> tile6 = make_shared<Tile>(PURPLE, CLOVER);
 
     cout << "placing tiles on gameboard..." << endl;
     board->placeTile(tile1, 5, 10);
     board->placeTile(tile2, 10, 5);
     board->placeTile(tile3, 15, 20);
     board->placeTile(tile4, 20, 10);
+    board->placeTile(tile5, 20, 5);
+    board->placeTile(tile6, 10, 20);
     cout << *board << endl;
 }

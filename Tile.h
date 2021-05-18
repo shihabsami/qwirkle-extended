@@ -4,13 +4,9 @@
 
 #include <ostream>
 
+#include "TileCodes.h"
+
 using std::ostream;
-
-// Define a Colour type.
-typedef char Colour;
-
-// Define a Shape type.
-typedef int Shape;
 
 class Tile {
 public:

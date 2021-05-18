@@ -22,6 +22,19 @@ bool Tile::operator==(const Tile& other) const {
 }
 
 ostream& operator<<(ostream& os, const Tile& tile) {
-    os << tile.colour << tile.shape;
+    if (tile.colour == RED)
+        os << RED_ANSI;
+    else if (tile.colour == ORANGE)
+        os << ORANGE_ANSI;
+    else if (tile.colour == YELLOW)
+        os << YELLOW_ANSI;
+    else if (tile.colour == GREEN)
+        os << GREEN_ANSI;
+    else if (tile.colour == BLUE)
+        os << BLUE_ANSI;
+    else if (tile.colour == PURPLE)
+        os << PURPLE_ANSI;
+
+    os << tile.colour << tile.shape << ANSI_END;
     return os;
 }
