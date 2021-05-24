@@ -25,19 +25,19 @@ int main() {
 //     testLinkedList();
 //     testTileBag();
 //     testPlayerHand();
-     testGameBoard();
+//     testGameBoard();
 
-//    cout << SPLASH_SCREEN << endl;
-//
-//    // begin the game
-//    IOHandler::beginGame();
-//
-//    // run the main game loop
-//    while (!cin.eof() && IOHandler::gameRunning) {
-//        IOHandler::playRound();
-//        if (cin.eof())
-//            IOHandler::quit();
-//    }
+    cout << SPLASH_SCREEN << endl;
+
+    // begin the game
+    IOHandler::beginGame();
+
+    // run the main game loop
+    while (!cin.eof() && IOHandler::gameRunning) {
+        IOHandler::playRound();
+        if (cin.eof())
+            IOHandler::quit();
+    }
 
     return EXIT_SUCCESS;
 }

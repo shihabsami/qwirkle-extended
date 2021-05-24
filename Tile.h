@@ -7,6 +7,7 @@
 #include "TileCodes.h"
 
 using std::ostream;
+using std::ofstream;
 
 class Tile {
 public:
@@ -58,6 +59,9 @@ public:
      * @param tile - a reference to the tile to be printed
      */
     friend ostream& operator<<(ostream& os, const Tile& tile);
+
+    friend ofstream& operator<<(ofstream& ofs, const Tile& tile);
+
 
 private:
     const Colour colour;
