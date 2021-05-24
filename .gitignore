@@ -1,6 +1,6 @@
-# everything except settings.json is ignored
+# everything except settingsSelection.json is ignored
 .vscode/*
-!settings.json
+!settingsSelection.json
 
 # workspace file
 *.code-workspace

@@ -13,9 +13,15 @@
 #define ASCII_ALPHABET_BEGIN    65
 #define ASCII_NUMERICAL_BEGIN   48
 #define ASCII_ALPHABET_END      90
+
+#define MOVE_TILE               0
+#define MOVE_LOCATION           1
+#define MOVE_SCORE              2
+
 #define FIRST_POSITION          0
 #define SECOND_POSITION         1
 #define THIRD_POSITION          2
+
 #define STRING_SIZE_2           2
 #define STRING_SIZE_3           3
 #define MAX_BOARD_INDEX         BOARD_LENGTH - 1

@@ -8,6 +8,8 @@
 using std::cout;
 using std::cin;
 using std::endl;
+using std::sort;
+using std::get;
 
 // tests for LinkedList implementation
 void testLinkedList();
@@ -21,23 +23,64 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
-int main() {
-//     testLinkedList();
-//     testTileBag();
-//     testPlayerHand();
-     testGameBoard();
+// tests for AI implementation
+void testAi();
 
-//    cout << SPLASH_SCREEN << endl;
-//
-//    // begin the game
-//    IOHandler::beginGame();
-//
-//    // run the main game loop
-//    while (!cin.eof() && IOHandler::gameRunning) {
-//        IOHandler::playRound();
-//        if (cin.eof())
-//            IOHandler::quit();
-//    }
+int main(int argc, char** argv) {
+    //     testLinkedList();
+    //     testTileBag();
+    //     testPlayerHand();
+    //     testGameBoard();
+    //     testAi();
+
+    if (argc > 1) {
+        for (int i = 0; i < argc; ++i) {
+            string arg = argv[i];
+            if (arg == "--ai")
+                IOHandler::aiEnabled = true;
+        }
+    }
+
+    cout << SPLASH_SCREEN << endl;
+
+    // begin the game
+    IOHandler::beginGame();
+
+    // if AI is enabled the player2 is considered to be AI
+    shared_ptr<Player> ai =
+        IOHandler::aiEnabled ? GameManager::player2 : nullptr;
+
+    // run the main game loop
+    while (!cin.eof() && IOHandler::gameRunning) {
+        if (IOHandler::aiEnabled && *GameManager::currentPlayer == *ai) {
+            IOHandler::printRound();
+            vector<Move> moves = GameManager::getPossibleMoves();
+            shared_ptr<PlayerHand> hand = ai->getHand();
+
+            if (moves.empty()) {
+                GameManager::replaceTile(hand->getTiles()->at(0)->getColour(),
+                    hand->getTiles()->at(0)->getShape());
+            } else {
+                sort(moves.begin(), moves.end(),
+                    [](const Move& m1, const Move& m2) {
+                        return get<MOVE_SCORE>(m1) > get<MOVE_SCORE>(m2);
+                    }
+                );
+
+                auto move = moves.begin();
+                shared_ptr<Tile> tile = get<MOVE_TILE>(*move);
+                size_t row = get<MOVE_LOCATION>(*move).first;
+                size_t column = get<MOVE_LOCATION>(*move).second;
+                GameManager::placeTile(tile->getColour(),
+                tile->getShape(), row, column);
+            }
+        } else {
+            IOHandler::playRound();
+        }
+
+        if (cin.eof())
+            IOHandler::quit();
+    }
 
     return EXIT_SUCCESS;
 }
@@ -94,8 +137,10 @@ void testLinkedList() {
     cout << *list << endl;
 
     cout << "testing if linkedlist contains tile..." << endl;
-    cout << "contains " << *tile7 << " - " << (list->contains(*tile7) ? "true" : "false") << endl;
-    cout << "contains " << *tile4 << " - " << (list->contains(*tile4) ? "true" : "false") << endl;
+    cout << "contains " << *tile7 << " - "
+         << (list->contains(*tile7) ? "true" : "false") << endl;
+    cout << "contains " << *tile4 << " - "
+         << (list->contains(*tile4) ? "true" : "false") << endl;
 
     cout << "testing if linkedlist is empty..." << endl;
     cout << "empty - " << (list->isEmpty() ? "true" : "false") << endl;

@@ -2,20 +2,36 @@
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
 
-#define UP 0
-#define DOWN 1
-#define LEFT 2
-#define RIGHT 3
-
 #include "GameBoard.h"
 #include "Player.h"
 
+#include <tuple>
+#include <unordered_map>
 #include <utility>
 
-using std::pair;
-using std::make_pair;
+// Line calculation constants
+#define DIRECTION_UP 0
+#define DIRECTION_DOWN 1
+#define DIRECTION_LEFT 2
+#define DIRECTION_RIGHT 3
 
+using std::pair;
+using std::tuple;
+using std::unordered_map;
+
+//struct Location {
+//    size_t row;
+//    size_t column;
+//};
+//
+//struct Lines {
+//    LinkedList horizontal;
+//    LinkedList vertical;
+//};
+
+typedef pair<size_t, size_t> Location;
 typedef pair<LinkedList, LinkedList> Lines;
+typedef tuple<shared_ptr<Tile>, Location, size_t> Move;
 
 enum State {
     PLACE_SUCCESS,
@@ -30,12 +46,12 @@ class GameManager {
 public:
     static void beginGame(const string& player1Name, const string& player2Name);
 
-    static void loadGame(const shared_ptr<Player>& player1,
-        const shared_ptr<Player>& player2, const shared_ptr<TileBag>& loadedBag,
-        const shared_ptr<GameBoard>& loadedBoard,
-        const shared_ptr<Player>& currentPlayer);
+    static void loadGame(const shared_ptr<Player>& p1,
+        const shared_ptr<Player>& p2, const shared_ptr<TileBag>& loadedBag,
+        const shared_ptr<GameBoard>& loadedBoard, const shared_ptr<Player>& cp);
 
-    static void placeTile(Colour colour, Shape shape, size_t row, size_t column);
+    static void placeTile(
+        Colour colour, Shape shape, size_t row, size_t column);
 
     static void replaceTile(Colour colour, Shape shape);
 
@@ -51,6 +67,10 @@ public:
 
     static bool isTileValidOnLine(const Tile& tile, const Lines& lines);
 
+    static vector<Move> getPossibleMoves();
+
+    static size_t calculateScore(const Lines& lines);
+
     static void updateScore(const Lines& lines);
 
     static bool hasGameEnded();
@@ -62,6 +82,15 @@ public:
     static shared_ptr<Player> player2;
     static shared_ptr<Player> currentPlayer;
     static shared_ptr<GameBoard> board;
+    static shared_ptr<unordered_map<shared_ptr<Tile>, Location>> tileRegister;
+
+    // settings
+    static bool helpEnabled;
+    static bool invalidInputEnabled;
+    static bool colourEnabled;
+    static bool hintEnabled;
+    static bool multipleTilesEnabled;
+
 };
 
 #endif // !GAME_MANAGER_H
