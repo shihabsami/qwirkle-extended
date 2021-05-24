@@ -10,28 +10,30 @@
 #include <utility>
 
 // Line calculation constants
-#define DIRECTION_UP 0
-#define DIRECTION_DOWN 1
-#define DIRECTION_LEFT 2
-#define DIRECTION_RIGHT 3
+#define DIRECTION_UP      0
+#define DIRECTION_DOWN    1
+#define DIRECTION_LEFT    2
+#define DIRECTION_RIGHT   3
 
 using std::pair;
 using std::tuple;
 using std::unordered_map;
 
-//struct Location {
-//    size_t row;
-//    size_t column;
-//};
-//
-//struct Lines {
-//    LinkedList horizontal;
-//    LinkedList vertical;
-//};
+struct Location {
+    size_t row;
+    size_t column;
+};
 
-typedef pair<size_t, size_t> Location;
-typedef pair<LinkedList, LinkedList> Lines;
-typedef tuple<shared_ptr<Tile>, Location, size_t> Move;
+struct Lines {
+    LinkedList horizontal;
+    LinkedList vertical;
+};
+
+struct Move {
+    shared_ptr<Tile> tile;
+    Location location;
+    size_t points;
+};
 
 enum State {
     PLACE_SUCCESS,
@@ -90,7 +92,6 @@ public:
     static bool colourEnabled;
     static bool hintEnabled;
     static bool multipleTilesEnabled;
-
 };
 
 #endif // !GAME_MANAGER_H

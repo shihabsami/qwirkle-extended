@@ -56,7 +56,7 @@ void GameManager::loadGame(const shared_ptr<Player>& p1,
     for (size_t i = 0; i < BOARD_LENGTH; ++i)
         for (size_t j = 0; j < BOARD_LENGTH; ++j)
             if (board->at(i, j) != nullptr)
-                (*tileRegister)[board->at(i, j)] = make_pair(i, j);
+                (*tileRegister)[board->at(i, j)] = {i, j};
 
     GameManager::player1 = p1;
     GameManager::player2 = p2;
@@ -94,14 +94,14 @@ void GameManager::placeTile(
             throw invalid_argument("");
         }
 
-        // score for the first round
+        // points for the first round
         if (board->isEmpty())
             currentPlayer->setScore(1);
 
         updateScore(lines);
         shared_ptr<Tile> tilePtr = currentPlayer->getHand()->playTile(tile);
         board->placeTile(tilePtr, row, column);
-        (*tileRegister)[tilePtr] = make_pair(row, column);
+        (*tileRegister)[tilePtr] = {row, column};
 
         if (!bag->getTiles()->isEmpty()) {
             currentPlayer->getHand()->addTile(
@@ -192,7 +192,7 @@ bool GameManager::isTileInHand(const Tile& tile) {
  * */
 Lines GameManager::getAdjacentLines(
     const Tile& tile, size_t row, size_t column) {
-    Lines lines = make_pair(LinkedList{}, LinkedList{});
+    Lines lines{LinkedList{}, LinkedList{}};
 
     size_t currentRow = row;
     size_t currentColumn = column;
@@ -220,9 +220,9 @@ Lines GameManager::getAdjacentLines(
             if (other != nullptr) {
                 if (currentDirection == DIRECTION_UP ||
                     currentDirection == DIRECTION_DOWN)
-                    lines.second.addBack(other);
+                    lines.vertical.addBack(other);
                 else
-                    lines.first.addBack(other);
+                    lines.horizontal.addBack(other);
             } else {
                 throw out_of_range("");
             }
@@ -248,7 +248,7 @@ Lines GameManager::getAdjacentLines(
  * @return boolean indicating whether the tile has adjacent neighbors
  */
 bool GameManager::hasAdjacentTile(const Tile& tile, const Lines& lines) {
-    return !lines.first.isEmpty() || !lines.second.isEmpty();
+    return !lines.horizontal.isEmpty() || !lines.vertical.isEmpty();
 }
 
 /**
@@ -263,8 +263,8 @@ bool GameManager::hasAdjacentTile(const Tile& tile, const Lines& lines) {
  * @return boolean indicating whether the tile can be placed on line
  */
 bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
-    const LinkedList& horizontalTiles = lines.first;
-    const LinkedList& verticalTiles = lines.second;
+    const LinkedList& horizontalTiles = lines.horizontal;
+    const LinkedList& verticalTiles = lines.vertical;
 
     bool tileUnique =
         !horizontalTiles.contains(tile) && !verticalTiles.contains(tile);
@@ -307,16 +307,16 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
 }
 
 /**
- * Update the score for a round based on the formed lines.
+ * Update the points for a round based on the formed lines.
  *
  * @param lines - the horizontal and vertical lines
  */
 void GameManager::updateScore(const Lines& lines) {
     // qwirkle is printed twice if it happens twice on the same move
-    if (lines.first.size() + 1 == MAX_LINE_SIZE) {
+    if (lines.horizontal.size() + 1 == MAX_LINE_SIZE) {
         IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
-    if (lines.second.size() + 1 == MAX_LINE_SIZE) {
+    if (lines.vertical.size() + 1 == MAX_LINE_SIZE) {
         IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
 
@@ -324,8 +324,10 @@ void GameManager::updateScore(const Lines& lines) {
 }
 
 size_t GameManager::calculateScore(const Lines& lines) {
-    size_t horizontalScore = lines.first.isEmpty() ? 0 : lines.first.size() + 1;
-    size_t verticalScore = lines.second.isEmpty() ? 0 : lines.second.size() + 1;
+    size_t horizontalScore =
+        lines.horizontal.isEmpty() ? 0 : lines.horizontal.size() + 1;
+    size_t verticalScore =
+        lines.vertical.isEmpty() ? 0 : lines.vertical.size() + 1;
 
     // bonus points for emptying hand or scoring qwirkle
     int bonusCount = 0;
@@ -370,8 +372,8 @@ vector<Move> GameManager::getPossibleMoves() {
         // for each tileToBePlaced already present on the board
         for (const auto& pair : *tileRegister) {
             shared_ptr<Tile> tileComparingAgainst = pair.first;
-            size_t row = pair.second.first;
-            size_t column = pair.second.second;
+            size_t row = pair.second.row;
+            size_t column = pair.second.column;
 
             // proceed only if tileToBePlaced shares similarity with the
             // tileToBePlaced to be placed
@@ -401,18 +403,19 @@ vector<Move> GameManager::getPossibleMoves() {
                             if (isTileValidOnLine(*tileToBePlaced, lines)) {
                                 bool unique = true;
                                 for (const auto& move : moves)
-                                    if (get<1>(move).first == currentRow &&
-                                        get<1>(move).second == currentColumn)
+                                    if (move.location.row == currentRow &&
+                                        move.location.column == currentColumn)
                                         unique = false;
 
-                                if (unique)
-                                    moves.emplace_back(make_tuple(
-                                        tileToBePlaced,
-                                        make_pair(currentRow, currentColumn),
-                                        calculateScore(lines)));
+                                if (unique) {
+                                    moves.emplace_back(Move{tileToBePlaced,
+                                        {currentRow, currentColumn},
+                                        calculateScore(lines)});
+                                }
                             }
                         }
-                    } catch (out_of_range& exception) {}
+                    } catch (out_of_range& exception) {
+                    }
 
                     ++currentDirection;
                     allDirectionTraversed = currentDirection > DIRECTION_RIGHT;

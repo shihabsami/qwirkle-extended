@@ -4,6 +4,7 @@
 #include "IOHandler.h"
 
 #include <iostream>
+#include <algorithm>
 
 using std::cout;
 using std::cin;
@@ -23,9 +24,6 @@ void testPlayerHand();
 // tests for GameBoard implementation
 void testGameBoard();
 
-// tests for AI implementation
-void testAi();
-
 int main(int argc, char** argv) {
     //     testLinkedList();
     //     testTileBag();
@@ -41,12 +39,11 @@ int main(int argc, char** argv) {
         }
     }
 
-    cout << SPLASH_SCREEN << endl;
-
     // begin the game
+    cout << SPLASH_SCREEN << endl;
     IOHandler::beginGame();
 
-    // if AI is enabled the player2 is considered to be AI
+    // if AI is enabled the player2 is considered to be the AI
     shared_ptr<Player> ai =
         IOHandler::aiEnabled ? GameManager::player2 : nullptr;
 
@@ -63,16 +60,13 @@ int main(int argc, char** argv) {
             } else {
                 sort(moves.begin(), moves.end(),
                     [](const Move& m1, const Move& m2) {
-                        return get<MOVE_SCORE>(m1) > get<MOVE_SCORE>(m2);
-                    }
-                );
+                        return m1.points > m2.points;
+                    });
 
                 auto move = moves.begin();
-                shared_ptr<Tile> tile = get<MOVE_TILE>(*move);
-                size_t row = get<MOVE_LOCATION>(*move).first;
-                size_t column = get<MOVE_LOCATION>(*move).second;
-                GameManager::placeTile(tile->getColour(),
-                tile->getShape(), row, column);
+                GameManager::placeTile(move->tile->getColour(),
+                    move->tile->getShape(), move->location.row,
+                    move->location.column);
             }
         } else {
             IOHandler::playRound();

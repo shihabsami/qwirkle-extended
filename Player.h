@@ -37,16 +37,16 @@ public:
     void setName(const string& name);
 
     /**
-     * Get the current score for the player.
+     * Get the current points for the player.
      *
-     * @return the integer representing score
+     * @return the integer representing points
      */
     size_t getScore();
 
     /**
-     * Set the player's score.
+     * Set the player's points.
      *
-     * @param score - the integer representing score
+     * @param score - the integer representing points
      */
     void setScore(size_t score);
 

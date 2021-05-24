@@ -121,16 +121,16 @@ void IOHandler::playRound() {
     takingInput = true;
     while (takingInput) {
         prompt();
-        string temp, operation, tile, keywordAt, pos, saveName;
-        getline(cin, temp);
-        std::istringstream command(temp);
+        string commandString, operation, tile, keywordAt, position, saveName;
+        getline(cin, commandString);
+        std::istringstream command(commandString);
 
         if (cin.eof()) {
             quit();
             cin.clear();
         }
 
-        command >> operation >> tile >> keywordAt >> pos;
+        command >> operation >> tile >> keywordAt >> position;
         saveName = tile;
 
         transform(
@@ -138,12 +138,13 @@ void IOHandler::playRound() {
         transform(tile.begin(), tile.end(), tile.begin(), ::toupper);
         transform(
             keywordAt.begin(), keywordAt.end(), keywordAt.begin(), ::tolower);
-        transform(pos.begin(), pos.end(), pos.begin(), ::toupper);
+        transform(
+            position.begin(), position.end(), position.begin(), ::toupper);
 
         if (operation == "save") {
-            takingInput = logicHandler(operation, saveName, keywordAt, pos);
+            takingInput = logicHandler(operation, saveName, keywordAt, position);
         } else {
-            takingInput = logicHandler(operation, tile, keywordAt, pos);
+            takingInput = logicHandler(operation, tile, keywordAt, position);
         }
     }
 }
@@ -173,9 +174,9 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
             cout << "Your possible moves are as follows" << endl;
 
             for (const auto& move : moves) {
-                cout << *get<0>(move) << " at "
-                     << (char)(get<1>(move).first + ASCII_ALPHABET_BEGIN)
-                     << get<1>(move).second << " for " << get<2>(move)
+                cout << *move.tile << " at "
+                     << (char)(move.location.row + ASCII_ALPHABET_BEGIN)
+                     << move.location.column << " for " << move.points
                      << " points" << endl;
             }
         } else {
@@ -577,12 +578,13 @@ void IOHandler::printMenu() {
     cout << "----" << endl;
     cout << "1. New Game" << endl;
     cout << "2. Load Game" << endl;
-    cout << "3. Credits (Show student information)" << endl;
-    cout << "4. Quit" << endl;
+    cout << "3. Settings" << endl;
+    cout << "4. Credits (Show student information)" << endl;
+    cout << "5. Quit" << endl;
 }
 
 void IOHandler::menuSelection() {
-    int option = getSelection(1, 5);
+    int option = getSelection(5);
 
     if (option == 1)
         newGame();
@@ -608,8 +610,7 @@ void IOHandler::printSettings() {
 }
 
 void IOHandler::settingsSelection() {
-    printSettings();
-    int option = getSelection(1, 6);
+    int option = getSelection(6);
 
     if (option == 1)
         GameManager::helpEnabled = getConfirmation();
@@ -627,18 +628,17 @@ void IOHandler::settingsSelection() {
 
 void IOHandler::prompt() { cout << "> "; }
 
-int IOHandler::getSelection(int startOption, int endOption) {
-    bool flag = true;
+int IOHandler::getSelection(int range) {
+    bool selecting = true;
     int option = std::numeric_limits<int>::min();
-
-    while (!cin.eof() && flag) {
+    while (!cin.eof() && selecting) {
         cout << endl;
         prompt();
         cin >> option;
 
         try {
-            if (option >= startOption && option <= endOption) {
-                flag = false;
+            if (option >= 1 && option <= range) {
+                selecting = false;
             } else if (cin.eof()) {
                 quit();
             } else {

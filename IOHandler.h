@@ -28,25 +28,16 @@ public:
     static void newGame();
 
     /**
-     * Validates username.
-     * @param name - the name for the player
-     */
-    static bool validateName(const string& name);
-
-    /**
-     * Prints out base gameplay
-     * Current player name
-     * Scores of player 1 and 2
-     * Ask for user input
+     * Initiates gameplay for a single round for a single player.
      */
     static void playRound();
 
     /**
      * Based on user input will either
-     * place tiles , replace tiles or save game
+     * place tiles, replace tiles or save game
      * @parms operation - place ,replace ,save
      * @parms tile - tile in format of D1
-     * @parms keywordAt - needs keyword at to place tile
+     * @parms keywordAt - needs keyword "at" to place tile
      * @parms position - tile position in format A0 - Z25
      */
     static bool logicHandler(const string& operation, const string& tile,
@@ -56,11 +47,6 @@ public:
      * Prints out round details
      */
     static void printRound();
-
-    /**
-     * Prints out credits
-     */
-    static void credits();
 
     /**
      * Game Loader
@@ -142,17 +128,27 @@ private:
 
     /**
      * Asks for user input on selecting an item from the provided numeric range.
-     * @param startOption - the first option
-     * @param endOption - the last option
+     * @param range - the range of selection values, starting from 1
      * @return the selected integer
      */
-    static int getSelection(int startOption, int endOption);
+    static int getSelection(int range);
 
     /**
      * Asks for user input on confirming an option as either yes or no.
      * @return true if the user responds with Y (yes), false otherwise
      */
     static bool getConfirmation();
+
+    /**
+     * Validates username.
+     * @param name - the name for the player
+     */
+    static bool validateName(const string& name);
+
+    /**
+     * Prints out credits
+     */
+    static void credits();
 };
 
 #endif // !IO_HANDLER
