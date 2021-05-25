@@ -1,9 +1,10 @@
 
 #include "Tile.h"
 
-#include <fstream>
+#include <iostream>
 #include <string>
 
+using std::cout;
 using std::string;
 using std::invalid_argument;
 
@@ -25,26 +26,22 @@ bool Tile::operator==(const Tile& other) const {
     return hasSameColour(other) && hasSameShape(other);
 }
 
-ostream& operator<<(ostream& os, const Tile& tile) {
-    if (tile.colour == RED) {
-        os << RED_ANSI;
-    } else if (tile.colour == ORANGE) {
-        os << ORANGE_ANSI;
-    } else if (tile.colour == YELLOW) {
-        os << YELLOW_ANSI;
-    } else if (tile.colour == GREEN) {
-        os << GREEN_ANSI;
-    } else if (tile.colour == BLUE) {
-        os << BLUE_ANSI;
-    } else if (tile.colour == PURPLE) {
-        os << PURPLE_ANSI;
+void Tile::print(ostream& os, bool coloured) const {
+    if (coloured) {
+        if (colour == RED) {
+            os << RED_ANSI;
+        } else if (colour == ORANGE) {
+            os << ORANGE_ANSI;
+        } else if (colour == YELLOW) {
+            os << YELLOW_ANSI;
+        } else if (colour == GREEN) {
+            os << GREEN_ANSI;
+        } else if (colour == BLUE) {
+            os << BLUE_ANSI;
+        } else if (colour == PURPLE) {
+            os << PURPLE_ANSI;
+        }
     }
 
-    os << tile.colour << tile.shape << ANSI_END;
-    return os;
-}
-
-ofstream& operator<<(ofstream& ofs, const Tile& tile) {
-    ofs << tile.colour << tile.shape;
-    return ofs;
+    os << colour << shape << ANSI_END;
 }

@@ -1,6 +1,8 @@
 
 #include "LinkedList.h"
 
+#include <fstream>
+
 using std::out_of_range;
 
 LinkedList::LinkedList() : length(0), head(nullptr), tail(nullptr) {}
@@ -176,12 +178,17 @@ bool LinkedList::contains(const Tile& tile) const {
 
 bool LinkedList::isEmpty() const { return length == 0; }
 
-ostream& operator<<(ostream& os, const LinkedList& list) {
-    shared_ptr<Node> current = list.head;
-    for (size_t i = 0; i < list.length; ++i) {
-        os << *current->tile << (i < list.length - 1 ? "," : "");
+
+void LinkedList::print(ostream& os, bool coloured) const {
+    shared_ptr<Node> current = head;
+    for (size_t i = 0; i < length; ++i) {
+        current->tile->print(os, coloured);
+        os << (i < length - 1 ? "," : "");
         current = current->next;
     }
+}
 
-    return os;
+ofstream& operator<<(ofstream& ofs, const LinkedList& list) {
+    list.print(ofs, false);
+    return ofs;
 }

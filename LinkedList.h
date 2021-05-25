@@ -93,12 +93,14 @@ public:
     bool isEmpty() const;
 
     /**
-     * Overloaded output stream operator for easy printing.
+     * Prints the LinkedList to an output stream.
      *
      * @param os - a reference to the output stream
-     * @param list - the LinkedList to be printed
+     * @param coloured - whether the tiles should be printed in colour
      */
-    friend ostream& operator<<(ostream& os, const LinkedList& list);
+    void print(ostream& os, bool coloured) const;
+
+    friend ofstream& operator<<(ofstream& ofs, const LinkedList& list);
 
 private:
     size_t length;

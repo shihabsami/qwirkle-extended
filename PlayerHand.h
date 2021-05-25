@@ -14,12 +14,7 @@ public:
     /**
      * Construct a hand with a LinkedList of tiles.
      */
-    PlayerHand(const shared_ptr<LinkedList>& tiles);
-
-    /**
-     * Copy constructor.
-     */
-    PlayerHand(const PlayerHand& hand);
+    explicit PlayerHand(const shared_ptr<LinkedList>& tiles);
 
     /**
      * Destructor to free the tiles in the hand.
@@ -31,7 +26,7 @@ public:
      *
      * @param tile - the tile to be added
      */
-    void addTile(shared_ptr<Tile> tile);
+    void addTile(const shared_ptr<Tile>& tile);
 
     /**
      * Play a tile from the player's hand.
@@ -65,12 +60,12 @@ public:
     shared_ptr<LinkedList> getTiles();
 
     /**
-     * Overloaded output stream operator for easy printing.
+     * Prints out the PlayerHand to an output stream.
      *
      * @param os - a reference to the output stream
-     * @param hand - a reference to the PlayerHand to be printed
+     * @param coloured - whether the tiles should be printed in colour
      */
-    friend ostream& operator<<(ostream& os, const PlayerHand& hand);
+    void print(ostream& os, bool coloured);
 
 private:
     shared_ptr<LinkedList> tiles;

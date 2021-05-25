@@ -1,6 +1,5 @@
 
 #include "TileBag.h"
-#include "TileCodes.h"
 #include "PlayerHand.h"
 #include "Constants.h"
 
@@ -16,11 +15,11 @@ TileBag::~TileBag() { tiles.reset(); }
 
 void TileBag::fill() {
     if (tiles->isEmpty()) {
-        for (size_t i = 0; i < COLOURS.size(); ++i) {
-            for (size_t j = 0; j < SHAPES.size(); ++j) {
+        for (Colour colour : COLOURS) {
+            for (Shape shape : SHAPES) {
                 // two of each colour and shape combination
-                tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
-                tiles->addBack(make_shared<Tile>(COLOURS.at(i), SHAPES.at(j)));
+                tiles->addBack(make_shared<Tile>(colour, shape));
+                tiles->addBack(make_shared<Tile>(colour, shape));
             }
         }
     } else {
@@ -34,7 +33,7 @@ void TileBag::shuffle() {
 
         shared_ptr<Tile> toBeReplaced = tiles->at(i);
         shared_ptr<Tile> randomTile = tiles->at(randomIndex);
-        shared_ptr<Tile> replaced = toBeReplaced;
+        const shared_ptr<Tile>& replaced = toBeReplaced;
 
         tiles->insert(randomTile, i, true);
         tiles->insert(replaced, randomIndex, true);
@@ -71,7 +70,6 @@ size_t TileBag::getRandomIndex() {
     return distribution(engine);
 }
 
-ostream& operator<<(ostream& os, const TileBag& bag) {
-    os << *bag.tiles;
-    return os;
+void TileBag::print(ostream& os, bool coloured) const {
+    tiles->print(os, coloured);
 }

@@ -13,15 +13,22 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::get;
+using std::istringstream;
+
+typedef std::numeric_limits<std::streamsize> CharLimit;
 
 bool IOHandler::gameRunning = false;
 bool IOHandler::takingInput = false;
 bool IOHandler::aiEnabled = false;
+bool IOHandler::helpEnabled = false;
+bool IOHandler::invalidInputEnabled = false;
+bool IOHandler::colourEnabled = false;
+bool IOHandler::hintEnabled = false;
+bool IOHandler::multipleTilesEnabled = false;
 
 void IOHandler::beginGame() {
     cout << "Welcome to Qwirkle!" << endl;
-    cout << "-------------------" << endl;
-    cout << endl;
+    cout << "-------------------" << endl << endl;
 
     mainMenu();
 }
@@ -38,12 +45,9 @@ void IOHandler::settingsMenu() {
 
 void IOHandler::newGame() {
     string player1Name;
-
-    // if AI is enabled, player 2 is named "AI"
     string player2Name = "AI";
 
-    cout << "Starting a New Game" << endl;
-    cout << endl;
+    cout << "Starting a New Game" << endl << endl;
     bool nameCheck1 = true;
     bool nameCheck2 = !aiEnabled;
     string message = "Must enter a name in CAPS for Player and name must "
@@ -69,7 +73,7 @@ void IOHandler::newGame() {
         if (!validateName(player2Name) || player1Name == player2Name) {
             cout << message << endl;
             cin.clear();
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cin.ignore(CharLimit::max(), '\n');
         } else {
             nameCheck2 = false;
         }
@@ -79,51 +83,19 @@ void IOHandler::newGame() {
         quit();
 
     cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin.ignore(CharLimit::max(), '\n');
     cout << "Let's Play!" << endl;
     GameManager::beginGame(player1Name, player2Name);
     gameRunning = true;
 }
 
-bool IOHandler::validateName(const string& name) {
-    bool valid = true;
-    for (char c : name)
-        valid &= isupper(c) != 0;
-
-    return valid;
-}
-
-void IOHandler::printRound() {
-    cout << endl;
-
-    if (aiEnabled && *GameManager::currentPlayer == *GameManager::player2) {
-        cout << "It's AI's turn." << endl;
-    } else {
-        cout << GameManager::currentPlayer->getName() << ", it's your turn "
-             << endl;
-    }
-
-    cout << "Score for " << GameManager::player1->getName() << ": "
-         << GameManager::player1->getScore() << endl;
-    cout << "Score for " << GameManager::player2->getName() << ": "
-         << GameManager::player2->getScore() << endl;
-    cout << endl;
-    cout << *GameManager::board << endl;
-    cout << (aiEnabled && *GameManager::currentPlayer == *GameManager::player2
-                    ? "AI's"
-                    : "Your")
-         << "hand is " << endl;
-    cout << *GameManager::currentPlayer->getHand() << endl;
-}
-
 void IOHandler::playRound() {
-    printRound();
     takingInput = true;
     while (takingInput) {
         prompt();
         string commandString, operation, tile, keywordAt, position, saveName;
         getline(cin, commandString);
-        std::istringstream command(commandString);
+        istringstream command(commandString);
 
         if (cin.eof()) {
             quit();
@@ -142,7 +114,8 @@ void IOHandler::playRound() {
             position.begin(), position.end(), position.begin(), ::toupper);
 
         if (operation == "save") {
-            takingInput = logicHandler(operation, saveName, keywordAt, position);
+            takingInput =
+                logicHandler(operation, saveName, keywordAt, position);
         } else {
             takingInput = logicHandler(operation, tile, keywordAt, position);
         }
@@ -155,7 +128,7 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
 
     if (operation == "place" && keywordAt == "at") {
         if (checkTile(tile) && checkTilePosition(position)) {
-            placeTile(tile, position);
+            placeTileOperation(tile, position);
         } else {
             takingInput = true;
         }
@@ -163,7 +136,7 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
     } else if (operation == "replace" && keywordAt.empty() &&
         position.empty()) {
         if (checkTile(tile)) {
-            replaceTile(tile);
+            replaceTileOperation(tile);
         } else {
             takingInput = true;
         }
@@ -174,7 +147,8 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
             cout << "Your possible moves are as follows" << endl;
 
             for (const auto& move : moves) {
-                cout << *move.tile << " at "
+                move.tile->print(cout, colourEnabled);
+                cout << " at "
                      << (char)(move.location.row + ASCII_ALPHABET_BEGIN)
                      << move.location.column << " for " << move.points
                      << " points" << endl;
@@ -198,7 +172,7 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         file << GameManager::currentPlayer->getName() << endl;
         file.close();
         cout << endl;
-        cout << "Game successfully saved" << endl;
+        cout << "Game successfully ," << endl;
         cout << endl;
         takingInput = true;
     } else if (operation == "quit") {
@@ -208,34 +182,6 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         cout << ERROR_MESSAGE << "Not a valid command." << endl;
     }
     return takingInput;
-}
-
-void IOHandler::credits() {
-    cout << "----------------------------------" << endl;
-    cout << "Name : Shihab Sami" << endl;
-    cout << "Student ID : S3823710" << endl;
-    cout << "Email : S3823710@student.rmit.edu.au" << endl;
-
-    cout << endl;
-
-    cout << "Name : Harrison Lorraway" << endl;
-    cout << "Student ID : S3856166" << endl;
-    cout << "Email : S3856166@student.rmit.edu.au" << endl;
-
-    cout << endl;
-
-    cout << "Name : Yeu Haw Teh" << endl;
-    cout << "Student ID : S3813866" << endl;
-    cout << "Email : S3813866@student.rmit.edu.au" << endl;
-
-    cout << endl;
-
-    cout << "Name : Andrew Nhan Trong Tran" << endl;
-    cout << "Student ID : S3785952" << endl;
-    cout << "Email : S3785952@student.rmit.edu.au" << endl;
-    cout << "----------------------------------" << endl;
-
-    mainMenu();
 }
 
 void IOHandler::loadGame() {
@@ -255,7 +201,8 @@ void IOHandler::loadGame() {
             if (!file) {
                 throw ::std::invalid_argument("File does not exits.");
             }
-            if (is_empty(file)) {
+
+            if (isEmpty(file)) {
                 throw ::std::invalid_argument("File Is Empty!.");
             }
 
@@ -346,7 +293,7 @@ void IOHandler::loadGame() {
                         string substr;
                         getline(ss, substr, ',');
                         int number = std::stoi(substr);
-                        if (number < 0 || (number > 26)) {
+                        if (number < 0 || number > 26) {
                             throw std::invalid_argument(
                                 "The grid should be more than 0 and less that "
                                 "26.");
@@ -397,8 +344,262 @@ void IOHandler::loadGame() {
     }
 }
 
-bool IOHandler::is_empty(std::ifstream& file) {
-    return file.peek() == std::ifstream::traits_type::eof();
+void IOHandler::placeTileOperation(const string& tile, const string& position) {
+    string appended;
+    Colour colour = tile.at(FIRST_POSITION);
+    Shape shape =
+        static_cast<int>(tile.at(SECOND_POSITION)) - ASCII_NUMERICAL_BEGIN;
+    int rowNumeric = 0;
+    int columnNumeric = 0;
+
+    if (position.length() >= 2) {
+        int rowChar =
+            static_cast<unsigned char>(int(position.at(FIRST_POSITION)));
+        rowNumeric = rowChar - ASCII_ALPHABET_BEGIN;
+
+        char columnFirstDigit = position.at(SECOND_POSITION);
+        appended.append(1, columnFirstDigit);
+
+        if (position.size() == STRING_SIZE_2) {
+            columnNumeric = stoi(appended);
+        } else if (position.size() == STRING_SIZE_3) {
+            char columnSecondDigit = position.at(THIRD_POSITION);
+            appended.append(1, columnSecondDigit);
+            columnNumeric = stoi(appended);
+        }
+    }
+
+    GameManager::placeTile(colour, shape, rowNumeric, columnNumeric);
+}
+
+void IOHandler::replaceTileOperation(const string& tile) {
+    Colour colour = tile.at(FIRST_POSITION);
+    Shape shape =
+        static_cast<int>(tile.at(SECOND_POSITION)) - ASCII_NUMERICAL_BEGIN;
+    GameManager::replaceTile(colour, shape);
+}
+
+void IOHandler::printRound() {
+    cout << endl;
+
+    if (aiEnabled && *GameManager::currentPlayer == *GameManager::player2) {
+        cout << "It's AI's turn." << endl;
+    } else {
+        cout << GameManager::currentPlayer->getName() << ", it's your turn "
+             << endl;
+    }
+
+    cout << "Score for " << GameManager::player1->getName() << ": "
+         << GameManager::player1->getScore() << endl;
+    cout << "Score for " << GameManager::player2->getName() << ": "
+         << GameManager::player2->getScore() << endl;
+    cout << endl;
+    GameManager::board->print(cout, colourEnabled);
+    cout << endl;
+    cout << (aiEnabled && *GameManager::currentPlayer == *GameManager::player2
+                    ? "AI's"
+                    : "Your")
+         << "hand is " << endl;
+    GameManager::currentPlayer->getHand()->print(cout, colourEnabled);
+    cout << endl;
+}
+
+void IOHandler::notify(const string& message, State state) {
+    if (state == PLACE_SUCCESS || state == REPLACE_SUCCESS ||
+        state == QWIRKLE) {
+        cout << message << endl;
+        takingInput = false;
+    } else if (state == PLACE_FAILURE || state == REPLACE_FAILURE) {
+        cout << ERROR_MESSAGE << message << endl;
+    } else if (state == GAME_OVER) {
+        cout << endl;
+        GameManager::board->print(cout, colourEnabled);
+        cout << endl;
+        cout << "Game Over" << endl;
+        cout << "Score for " << GameManager::player1->getName() << " : "
+             << GameManager::player1->getScore() << endl;
+        cout << "Score for " << GameManager::player2->getName() << " : "
+             << GameManager::player2->getScore() << endl;
+
+        if (GameManager::player1->getScore() >
+            GameManager::player2->getScore()) {
+            cout << "Player " << GameManager::player1->getName() << " won!"
+                 << endl;
+        } else if (GameManager::player1->getScore() ==
+            GameManager::player2->getScore()) {
+            cout << "Game is drawn between " << GameManager::player1->getName()
+                 << " and " << GameManager::player2->getName() << endl;
+        } else {
+            cout << (!aiEnabled ? "Player" : "")
+                 << GameManager::player2->getName() << " won!" << endl;
+        }
+
+        cout << "Goodbye" << endl;
+        takingInput = false;
+        gameRunning = false;
+    }
+}
+
+void IOHandler::quit() {
+    GameManager::resetGame();
+    cout << "Goodbye" << endl;
+    exit(EXIT_SUCCESS);
+}
+
+void IOHandler::help(HelpLocation location) {
+    if (location == MAIN_MENU) {
+        cout << "MAIN_MENU";
+    } else if (location == NEW_GAME) {
+        cout << "NEW_GAME";
+    } else if (location == LOAD_GAME) {
+        cout << "LOAD_GAME";
+    } else if (location == PLACE_TILE) {
+        cout << "PLACE_TILE";
+    } else if (location == REPLACE_TILE) {
+        cout << "REPLACE_TILE";
+    } else if (location == SETTINGS_MENU) {
+        cout << "SETTINGS_MENU";
+    }
+}
+
+void IOHandler::printMenu() {
+    cout << "Menu" << endl;
+    cout << "----" << endl;
+    cout << "1. New Game" << endl;
+    cout << "2. Load Game" << endl;
+    cout << "3. Settings" << endl;
+    cout << "4. Credits (Show student information)" << endl;
+    cout << "5. Quit" << endl;
+}
+
+void IOHandler::menuSelection() {
+    int option = getSelection(5);
+
+    if (option == 1)
+        newGame();
+    else if (option == 2)
+        loadGame();
+    else if (option == 3)
+        settingsMenu();
+    else if (option == 4)
+        credits();
+    else if (option == 5 && !cin.eof())
+        quit();
+}
+
+void IOHandler::printSettings() {
+    cout << "Settings" << endl;
+    cout << "--------" << endl;
+    cout << "1. Help!" << endl;
+    cout << "2. Better Invalid Input" << endl;
+    cout << "3. Colour" << endl;
+    cout << "4. Hint" << endl;
+    cout << "5. Place multiple tiles" << endl;
+    cout << "6. Return to menu" << endl;
+}
+
+void IOHandler::settingsSelection() {
+    int option = getSelection(6);
+
+    if (option <= 5) {
+        bool enabled = false;
+        if (option == 1) {
+            helpEnabled = getConfirmation();
+            enabled = helpEnabled;
+        } else if (option == 2) {
+            invalidInputEnabled = getConfirmation();
+            enabled = invalidInputEnabled;
+        } else if (option == 3) {
+            colourEnabled = getConfirmation();
+            enabled = colourEnabled;
+        } else if (option == 4) {
+            hintEnabled = getConfirmation();
+            enabled = hintEnabled;
+        } else if (option == 5) {
+            multipleTilesEnabled = getConfirmation();
+            enabled = multipleTilesEnabled;
+        }
+
+        cout << (enabled ? "Enabled" : "Disabled") << " successfully" << endl;
+        settingsMenu();
+    } else if (option == 6) {
+        mainMenu();
+    }
+}
+
+void IOHandler::prompt() { cout << "> "; }
+
+int IOHandler::getSelection(int range) {
+    bool selecting = true;
+    int option = std::numeric_limits<int>::min();
+    while (!cin.eof() && selecting) {
+        cout << endl;
+        prompt();
+        cin >> option;
+
+        try {
+            if (option >= 1 && option <= range) {
+                selecting = false;
+            } else if (cin.eof()) {
+                quit();
+            } else {
+                cin.clear();
+                cin.ignore(CharLimit::max(), '\n');
+                cout << endl;
+                throw std::runtime_error("Invalid input.");
+            }
+        } catch (const std::runtime_error& e) {
+            cerr << e.what() << endl;
+            cout << endl;
+        }
+    }
+
+    return option;
+}
+
+bool IOHandler::getConfirmation() {
+    cout << "Enable? (Y/N)" << endl;
+
+    bool response;
+    bool selecting = true;
+    string responseString;
+    while (!cin.eof() && selecting) {
+        cout << endl;
+        prompt();
+        cin >> responseString;
+
+        try {
+            if (responseString.length() == 1) {
+                if (std::toupper(responseString[0]) == 'Y') {
+                    response = true;
+                    selecting = false;
+                } else if (std::toupper(responseString[0]) == 'N') {
+                    response = false;
+                    selecting = false;
+                }
+            } else if (cin.eof()) {
+                quit();
+            } else {
+                cin.clear();
+                cin.ignore(CharLimit::max(), '\n');
+                cout << endl;
+                throw std::runtime_error("Invalid input.");
+            }
+        } catch (const std::runtime_error& e) {
+            cerr << e.what() << endl;
+            cout << endl;
+        }
+    }
+
+    return response;
+}
+
+bool IOHandler::validateName(const string& name) {
+    bool valid = true;
+    for (char c : name)
+        valid &= isupper(c) != 0;
+
+    return valid;
 }
 
 bool IOHandler::checkTile(const string& tile) {
@@ -491,175 +692,34 @@ bool IOHandler::checkTilePosition(const string& position) {
     }
 }
 
-void IOHandler::placeTile(const string& tile, const string& position) {
-    string appended;
-    Colour colour = tile.at(0);
-    Shape shape = static_cast<int>(tile.at(1)) - ASCII_NUMERICAL_BEGIN;
-    int row = 0;
-    int col = 0;
-
-    if (position.size() == STRING_SIZE_2) {
-        char asciiLetter = position.at(FIRST_POSITION);
-        int tempRow = static_cast<unsigned char>(int(asciiLetter));
-        row = tempRow - ASCII_ALPHABET_BEGIN;
-        char tempCol = position.at(SECOND_POSITION);
-        appended.append(1, tempCol);
-        col = stoi(appended);
-
-    } else if (position.size() == STRING_SIZE_3) {
-        char asciiLetter = position.at(FIRST_POSITION);
-        char num1 = position.at(SECOND_POSITION);
-        char num2 = position.at(THIRD_POSITION);
-        int tempRow = static_cast<unsigned char>(int(asciiLetter));
-        row = tempRow - ASCII_ALPHABET_BEGIN;
-        appended.append(1, num1);
-        appended.append(1, num2);
-        col = stoi(appended);
-    }
-
-    GameManager::placeTile(colour, shape, row, col);
+bool IOHandler::isEmpty(ifstream& file) {
+    return file.peek() == ifstream::traits_type::eof();
 }
 
-void IOHandler::replaceTile(const string& tile) {
-    Colour colour = tile.at(0);
-    Shape shape = static_cast<int>(tile.at(1)) - ASCII_NUMERICAL_BEGIN;
-    GameManager::replaceTile(colour, shape);
-}
+void IOHandler::credits() {
+    cout << "----------------------------------" << endl;
+    cout << "Name : Shihab Sami" << endl;
+    cout << "Student ID : S3823710" << endl;
+    cout << "Email : S3823710@student.rmit.edu.au" << endl;
 
-void IOHandler::notify(const string& message, State state) {
-    if (state == PLACE_SUCCESS || state == REPLACE_SUCCESS ||
-        state == QWIRKLE) {
-        cout << message << endl;
-        takingInput = false;
-    } else if (state == PLACE_FAILURE || state == REPLACE_FAILURE) {
-        cout << ERROR_MESSAGE << message << endl;
-    } else if (state == GAME_OVER) {
-        cout << endl;
-        cout << *GameManager::board << endl;
-        cout << "Game Over" << endl;
-        cout << "Score for " << GameManager::player1->getName() << " : "
-             << GameManager::player1->getScore() << endl;
-        cout << "Score for " << GameManager::player2->getName() << " : "
-             << GameManager::player2->getScore() << endl;
+    cout << endl;
 
-        if (GameManager::player1->getScore() >
-            GameManager::player2->getScore()) {
-            if (!aiEnabled) {
-                cout << "Player " << GameManager::player1->getName();
-            } else {
-                cout << "You ";
-            }
+    cout << "Name : Harrison Lorraway" << endl;
+    cout << "Student ID : S3856166" << endl;
+    cout << "Email : S3856166@student.rmit.edu.au" << endl;
 
-            cout << " won!" << endl;
-        } else if (GameManager::player1->getScore() ==
-            GameManager::player2->getScore()) {
-            cout << "Game is drawn between " << GameManager::player1->getName()
-                 << " and " << GameManager::player2->getName() << endl;
-        } else {
-            cout << (!aiEnabled ? "Player" : "")
-                 << GameManager::player2->getName() << " won!" << endl;
-        }
+    cout << endl;
 
-        cout << "Goodbye" << endl;
-        takingInput = false;
-        gameRunning = false;
-        GameManager::resetGame();
-    }
-}
+    cout << "Name : Yeu Haw Teh" << endl;
+    cout << "Student ID : S3813866" << endl;
+    cout << "Email : S3813866@student.rmit.edu.au" << endl;
 
-void IOHandler::quit() {
-    GameManager::resetGame();
-    cout << "Goodbye" << endl;
-    exit(EXIT_SUCCESS);
-}
+    cout << endl;
 
-void IOHandler::printMenu() {
-    cout << "Menu" << endl;
-    cout << "----" << endl;
-    cout << "1. New Game" << endl;
-    cout << "2. Load Game" << endl;
-    cout << "3. Settings" << endl;
-    cout << "4. Credits (Show student information)" << endl;
-    cout << "5. Quit" << endl;
-}
+    cout << "Name : Andrew Nhan Trong Tran" << endl;
+    cout << "Student ID : S3785952" << endl;
+    cout << "Email : S3785952@student.rmit.edu.au" << endl;
+    cout << "----------------------------------" << endl;
 
-void IOHandler::menuSelection() {
-    int option = getSelection(5);
-
-    if (option == 1)
-        newGame();
-    else if (option == 2)
-        loadGame();
-    else if (option == 3)
-        settingsMenu();
-    else if (option == 4)
-        credits();
-    else if (option == 5 && !cin.eof())
-        quit();
-}
-
-void IOHandler::printSettings() {
-    cout << "Settings" << endl;
-    cout << "--------" << endl;
-    cout << "1. Help!" << endl;
-    cout << "2. Better Invalid Input" << endl;
-    cout << "3. Colour" << endl;
-    cout << "4. Hint" << endl;
-    cout << "5. Place multiple tiles" << endl;
-    cout << "6. Return to menu" << endl;
-}
-
-void IOHandler::settingsSelection() {
-    int option = getSelection(6);
-
-    if (option == 1)
-        GameManager::helpEnabled = getConfirmation();
-    else if (option == 2)
-        GameManager::invalidInputEnabled = getConfirmation();
-    else if (option == 3)
-        GameManager::colourEnabled = getConfirmation();
-    else if (option == 4)
-        GameManager::hintEnabled = getConfirmation();
-    else if (option == 5)
-        GameManager::multipleTilesEnabled = getConfirmation();
-    else if (option == 6)
-        mainMenu();
-}
-
-void IOHandler::prompt() { cout << "> "; }
-
-int IOHandler::getSelection(int range) {
-    bool selecting = true;
-    int option = std::numeric_limits<int>::min();
-    while (!cin.eof() && selecting) {
-        cout << endl;
-        prompt();
-        cin >> option;
-
-        try {
-            if (option >= 1 && option <= range) {
-                selecting = false;
-            } else if (cin.eof()) {
-                quit();
-            } else {
-                cin.clear();
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                cout << endl;
-                throw std::runtime_error("Invalid input.");
-            }
-        } catch (const std::runtime_error& e) {
-            cerr << e.what() << endl;
-            cout << endl;
-        }
-    }
-
-    return option;
-}
-
-bool IOHandler::getConfirmation() {
-    cout << "Enable? (Y/N)" << endl;
-    prompt();
-    bool answer = false;
-
-    return answer;
+    mainMenu();
 }

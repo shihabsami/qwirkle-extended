@@ -7,11 +7,9 @@ PlayerHand::PlayerHand() : tiles(make_shared<LinkedList>()) {}
 
 PlayerHand::PlayerHand(const shared_ptr<LinkedList>& tiles) : tiles(tiles) {}
 
-PlayerHand::PlayerHand(const PlayerHand& hand) : tiles(hand.tiles) {}
-
 PlayerHand::~PlayerHand() { tiles.reset(); }
 
-void PlayerHand::addTile(shared_ptr<Tile> tile) { tiles->addBack(tile); }
+void PlayerHand::addTile(const shared_ptr<Tile>& tile) { tiles->addBack(tile); }
 
 shared_ptr<Tile> PlayerHand::playTile(const Tile& tile) {
     shared_ptr<Tile> toPlay = nullptr;
@@ -33,7 +31,7 @@ void PlayerHand::replaceTile(const Tile& tile, TileBag& bag) {
         tiles->remove(fromHand);
         tiles->addBack(fromBag);
     } catch (invalid_argument& exception) {
-        throw invalid_argument("invalid tile for PlayerHand::replaceTile");
+        throw invalid_argument("invalid tile for PlayerHand::replaceTileOperation");
     }
 }
 
@@ -58,7 +56,6 @@ shared_ptr<Tile> PlayerHand::getTile(const Tile& tile) {
 
 shared_ptr<LinkedList> PlayerHand::getTiles() { return tiles; }
 
-ostream& operator<<(ostream& os, const PlayerHand& hand) {
-    os << *hand.tiles;
-    return os;
+void PlayerHand::print(ostream& os, bool coloured) {
+    tiles->print(os, coloured);
 }

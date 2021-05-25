@@ -19,12 +19,6 @@ shared_ptr<GameBoard> GameManager::board = nullptr;
 shared_ptr<unordered_map<shared_ptr<Tile>, Location>>
     GameManager::tileRegister = nullptr;
 
-bool GameManager::helpEnabled = false;
-bool GameManager::invalidInputEnabled = false;
-bool GameManager::colourEnabled = false;
-bool GameManager::hintEnabled = false;
-bool GameManager::multipleTilesEnabled = false;
-
 /**
  * Initialise the board, tilebag and the players for the game.
  *
@@ -77,7 +71,8 @@ void GameManager::placeTile(
     try {
         Tile tile(colour, shape);
         if (!isTileInHand(tile)) {
-            message = "The specified tile is not present in hand.";
+            message =
+                IOHandler::invalidInputEnabled ? "The specified tile is not present in hand." : message;
             throw invalid_argument("");
         } else if (!isGridLocationEmpty(row, column)) {
             message =
@@ -111,7 +106,8 @@ void GameManager::placeTile(
 
         if (IOHandler::aiEnabled && *currentPlayer == *player2) {
             ostringstream stream;
-            stream << "AI played " << tile;
+            stream << "AI played ";
+            tile.print(stream, IOHandler::colourEnabled);
             message = stream.str();
         }
 

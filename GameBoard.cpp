@@ -28,7 +28,7 @@ GameBoard::~GameBoard() {
 void GameBoard::placeTile(
     const shared_ptr<Tile>& tile, size_t row, size_t column) {
     if (row >= BOARD_LENGTH || column >= BOARD_LENGTH)
-        throw out_of_range("invalid grid location for GameBoard::placeTile");
+        throw out_of_range("invalid grid location for GameBoard::placeTileOperation");
 
     board.at(row).at(column) = tile;
     ++tileCount;
@@ -43,7 +43,7 @@ shared_ptr<Tile> GameBoard::at(size_t row, size_t column) const {
 
 bool GameBoard::isEmpty() const { return tileCount == 0; }
 
-ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
+void GameBoard::print(ostream& os, bool coloured) const {
     // print the column header
     os << left << setw(3) << " ";
     for (int i = 0; i < BOARD_LENGTH; ++i) os << setw(3) << i;
@@ -59,17 +59,22 @@ ostream& operator<<(ostream& os, const GameBoard& gameBoard) {
         os << (char)(i + ASCII_ALPHABET_BEGIN) << " |";
 
         for (int j = 0; j < BOARD_LENGTH; ++j) {
-            if (gameBoard.board.at(i).at(j)) os << *gameBoard.board.at(i).at(j);
+            if (board.at(i).at(j))
+                board.at(i).at(j)->print(os, coloured);
             else os << "  ";
             os << "|";
         }
 
         os << endl;
     }
-
-    return os;
 }
 
+/**
+ * Prints out the PlayerHand to an output stream.
+ *
+ * @param os - a reference to the output stream
+ * @param coloured - whether the tiles should be printed in colour
+ */
 ofstream& operator<<(ofstream& ofs, const GameBoard& gameBoard) {
     bool first = true;
     for (unsigned int i = 0; i < BOARD_LENGTH; ++i) {
@@ -77,9 +82,9 @@ ofstream& operator<<(ofstream& ofs, const GameBoard& gameBoard) {
             shared_ptr<Tile> tile = gameBoard.board.at(i).at(j);
             if (tile != nullptr) {
                 // print each row and column in specified "Tile@Location" format
-                ofs << (first ? "" : ", ") << *tile << "@"
-                    << (char)(i + ASCII_ALPHABET_BEGIN) << j;
-
+                ofs << (first ? "" : ", ");
+                tile->print(ofs, false);
+                ofs << "@" << (char)(i + ASCII_ALPHABET_BEGIN) << j;
                 first = false;
             }
         }

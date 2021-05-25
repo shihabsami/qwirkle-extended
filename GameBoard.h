@@ -49,12 +49,12 @@ public:
     bool isEmpty() const;
 
     /**
-     * Overloaded output stream operator for easy printing.
+     * Prints out the GameBoard to an output stream.
      *
      * @param os - a reference to the output stream
-     * @param board - a reference to the board to be printed
+     * @param coloured - whether the tiles should be printed in colour
      */
-    friend ostream& operator<<(ostream& os, const GameBoard& board);
+    void print(ostream& os, bool coloured) const;
 
     /**
      * Overloaded file output stream operator for writing to a file.

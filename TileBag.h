@@ -52,20 +52,12 @@ public:
     shared_ptr<Tile> replace(shared_ptr<Tile>& tile);
 
     /**
-     * Overloaded output stream operator for easy printing.
+     * Prints out the TileBag to an output stream.
      *
      * @param os - a reference to the output stream
-     * @param hand - a reference to the TileBag to be printed
+     * @param coloured - whether the tiles should be printed in colour
      */
-    friend ostream& operator<<(ostream& os, const TileBag& bag);
-
-    /**
-     * Overloaded file output stream operator for writing to a file.
-     *
-     * @param ofs - a reference to the file output stream
-     * @param hand - a reference to the TileBag to be printed
-     */
-    friend ostream& operator<<(ostream& os, const TileBag& bag);
+    void print(ostream& os, bool coloured) const;
 
 private:
     /**

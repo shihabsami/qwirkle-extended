@@ -45,23 +45,19 @@ public:
     bool hasSameShape(const Tile& other) const;
 
     /**
+     * Prints the tile to an output stream.
+     * @param os - a reference to the stream
+     * @param coloured - whether the tile should be printed in colour
+     */
+    void print(ostream& os, bool coloured) const;
+
+    /**
      * Check for equality of two tiles based on colour and shape.
      *
      * @param other - the other tile to compare to
      * @return true if this tile has the same colour and shape as the other
      */
     bool operator==(const Tile& other) const;
-
-    /**
-     * Overloaded output stream operator for easy printing.
-     *
-     * @param os - a reference to the output stream operator
-     * @param tile - a reference to the tile to be printed
-     */
-    friend ostream& operator<<(ostream& os, const Tile& tile);
-
-    friend ofstream& operator<<(ofstream& ofs, const Tile& tile);
-
 
 private:
     const Colour colour;

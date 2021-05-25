@@ -10,10 +10,10 @@
 #include <utility>
 
 // Line calculation constants
-#define DIRECTION_UP      0
-#define DIRECTION_DOWN    1
-#define DIRECTION_LEFT    2
-#define DIRECTION_RIGHT   3
+#define DIRECTION_UP 0
+#define DIRECTION_DOWN 1
+#define DIRECTION_LEFT 2
+#define DIRECTION_RIGHT 3
 
 using std::pair;
 using std::tuple;
@@ -85,13 +85,6 @@ public:
     static shared_ptr<Player> currentPlayer;
     static shared_ptr<GameBoard> board;
     static shared_ptr<unordered_map<shared_ptr<Tile>, Location>> tileRegister;
-
-    // settings
-    static bool helpEnabled;
-    static bool invalidInputEnabled;
-    static bool colourEnabled;
-    static bool hintEnabled;
-    static bool multipleTilesEnabled;
 };
 
 #endif // !GAME_MANAGER_H
