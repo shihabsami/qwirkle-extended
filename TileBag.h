@@ -59,6 +59,14 @@ public:
      */
     friend ostream& operator<<(ostream& os, const TileBag& bag);
 
+    /**
+     * Overloaded file output stream operator for writing to a file.
+     *
+     * @param ofs - a reference to the file output stream
+     * @param hand - a reference to the TileBag to be printed
+     */
+    friend ostream& operator<<(ostream& os, const TileBag& bag);
+
 private:
     /**
      * A random number generator.

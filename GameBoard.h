@@ -57,7 +57,7 @@ public:
     friend ostream& operator<<(ostream& os, const GameBoard& board);
 
     /**
-     * Overloaded file output stream operator for printing to a file.
+     * Overloaded file output stream operator for writing to a file.
      *
      * @param ofs - a reference to the file output stream
      * @param board - a reference to the board to be printed
