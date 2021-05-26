@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     while (!cin.eof() && IOHandler::gameRunning) {
         IOHandler::printRound();
 
-        if (IOHandler::aiEnabled && *GameManager::currentPlayer == *ai) {
+        if (IOHandler::aiEnabled && *GameManager::currentPlayerIndex == *ai) {
             vector<Move> moves = GameManager::getPossibleMoves();
             shared_ptr<PlayerHand> hand = ai->getHand();
 
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 //    while (!cin.eof() && IOHandler::gameRunning) {
 //        IOHandler::printRound();
 //        vector<Move> moves = GameManager::getPossibleMoves();
-//        shared_ptr<PlayerHand> hand = GameManager::currentPlayer->getHand();
+//        shared_ptr<PlayerHand> hand = GameManager::currentPlayerIndex->getHand();
 //
 //       if (!hasPlayedFirstRound) {
 //           auto tile = hand->getTiles()->at(0);

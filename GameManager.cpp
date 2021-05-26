@@ -3,46 +3,42 @@
 #include "Constants.h"
 
 #include <sstream>
+#include <algorithm>
 
 using std::get;
 using std::make_pair;
 using std::make_tuple;
+using std::find_if;
+using std::distance;
 using std::ostringstream;
 using std::invalid_argument;
 using std::out_of_range;
 
 shared_ptr<TileBag> GameManager::bag = nullptr;
-shared_ptr<Player> GameManager::player1 = nullptr;
-shared_ptr<Player> GameManager::player2 = nullptr;
-shared_ptr<Player> GameManager::currentPlayer = nullptr;
+array<shared_ptr<Player>, 4> GameManager::players;
+int GameManager::currentPlayerIndex = FIRST_POSITION;
 shared_ptr<GameBoard> GameManager::board = nullptr;
 shared_ptr<unordered_map<shared_ptr<Tile>, Location>>
     GameManager::tileRegister = nullptr;
 
-/**
- * Initialise the board, tilebag and the players for the game.
- *
- * @param player1Name - name of the first player
- * @param player2name - name of the second player
- */
-void GameManager::beginGame(
-    const string& player1Name, const string& player2Name) {
+void GameManager::beginGame(const array<string, 4>& playerNames) {
     bag = make_shared<TileBag>();
     bag->fill();
     bag->shuffle();
 
-    player1 = make_shared<Player>(player1Name, bag->getHand());
-    player2 = make_shared<Player>(player2Name, bag->getHand());
-    currentPlayer = player1;
+    for (int i = 0; i < IOHandler::numberOfPlayers; ++i) {
+        shared_ptr<Player> player =
+            make_shared<Player>(playerNames.at(i), bag->getHand());
+        players.at(i) = player;
+    }
 
     board = make_shared<GameBoard>();
     tileRegister = make_shared<unordered_map<shared_ptr<Tile>, Location>>();
 }
 
-void GameManager::loadGame(const shared_ptr<Player>& p1,
-    const shared_ptr<Player>& p2, const shared_ptr<TileBag>& loadedBag,
-    const shared_ptr<GameBoard>& loadedBoard, const shared_ptr<Player>& cp) {
-
+void GameManager::loadGame(const array<shared_ptr<Player>, 4>& loadedPlayers,
+    const string& currentPlayerName, const shared_ptr<TileBag>& loadedBag,
+    const shared_ptr<GameBoard>& loadedBoard) {
     bag = loadedBag;
     board = loadedBoard;
     tileRegister = make_shared<unordered_map<shared_ptr<Tile>, Location>>();
@@ -52,59 +48,66 @@ void GameManager::loadGame(const shared_ptr<Player>& p1,
             if (board->at(i, j) != nullptr)
                 (*tileRegister)[board->at(i, j)] = {i, j};
 
-    GameManager::player1 = p1;
-    GameManager::player2 = p2;
-    GameManager::currentPlayer = cp;
+    players = loadedPlayers;
+    auto it = find_if(
+        players.begin(), players.end(), [&](const shared_ptr<Player>& p) {
+            return p->getName() == currentPlayerName;
+        });
+
+    GameManager::currentPlayerIndex = (int)distance(players.begin(), it);
 }
 
-/**
- * Place a tile on to the board from the current player's hand.
- *
- * @param colour,shape - the tile attributes
- * @param row,column - the specified grid location
- */
 void GameManager::placeTile(
     Colour colour, Shape shape, size_t row, size_t column) {
-    string message = "Tile placed successfully.";
+    string message = "Tile could not be placed.";
     State state = PLACE_SUCCESS;
 
     try {
         Tile tile(colour, shape);
         if (!isTileInHand(tile)) {
-            message =
-                IOHandler::invalidInputEnabled ? "The specified tile is not present in hand." : message;
+            message = IOHandler::invalidInputEnabled
+                ? "The specified tile is not present in hand."
+                : message;
             throw invalid_argument("");
         } else if (!isGridLocationEmpty(row, column)) {
-            message =
-                "A tile is already present in the provided grid location.";
+            message = IOHandler::invalidInputEnabled
+                ? "A tile is already present in the provided grid location."
+                : message;
             throw invalid_argument("");
         }
 
         Lines lines = getAdjacentLines(tile, row, column);
         if (!board->isEmpty() && !hasAdjacentTile(tile, lines)) {
-            message = "No adjacent tile to form line.";
+            message = IOHandler::invalidInputEnabled
+                ? "No adjacent tile to form line."
+                : message;
             throw invalid_argument("");
         } else if (!isTileValidOnLine(tile, lines)) {
-            message = "Tile violates line rules.";
+            message = IOHandler::invalidInputEnabled
+                ? "Tile violates line rules."
+                : message;
             throw invalid_argument("");
         }
 
         // points for the first round
         if (board->isEmpty())
-            currentPlayer->setScore(1);
+            getCurrentPlayer()->setScore(1);
 
         updateScore(lines);
-        shared_ptr<Tile> tilePtr = currentPlayer->getHand()->playTile(tile);
+        shared_ptr<Tile> tilePtr =
+            getCurrentPlayer()->getHand()->playTile(tile);
         board->placeTile(tilePtr, row, column);
         (*tileRegister)[tilePtr] = {row, column};
+        message = "Tile placed successfully.";
 
         if (!bag->getTiles()->isEmpty()) {
-            currentPlayer->getHand()->addTile(
+            getCurrentPlayer()->getHand()->addTile(
                 bag->getTiles()->at(FIRST_POSITION));
             bag->getTiles()->removeFront();
         }
 
-        if (IOHandler::aiEnabled && *currentPlayer == *player2) {
+        if (IOHandler::aiEnabled &&
+            *getCurrentPlayer() == *players.at(SECOND_POSITION)) {
             ostringstream stream;
             stream << "AI played ";
             tile.print(stream, IOHandler::colourEnabled);
@@ -121,11 +124,6 @@ void GameManager::placeTile(
         IOHandler::notify("", GAME_OVER);
 }
 
-/**
- * Replace the tile from the current player's hand.
- *
- * @param colour,shape - the tile attributes
- */
 void GameManager::replaceTile(Colour colour, Shape shape) {
     string message = "Tile replaced successfully.";
     State state = REPLACE_SUCCESS;
@@ -133,18 +131,24 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
     try {
         Tile tile(colour, shape);
         if (!isTileInHand(tile)) {
-            message = "The specified tile is not present in hand.";
+            message = IOHandler::invalidInputEnabled
+                ? "The specified tile is not present in hand."
+                : message;
             throw invalid_argument("");
         } else if (board->isEmpty()) {
-            message = "Must place a tile on the first move.";
+            message = IOHandler::invalidInputEnabled
+                ? "Must place a tile on the first move."
+                : message;
             throw invalid_argument("");
         }
 
         if (!bag->getTiles()->isEmpty()) {
-            currentPlayer->getHand()->replaceTile(tile, *bag);
+            getCurrentPlayer()->getHand()->replaceTile(tile, *bag);
             GameManager::switchPlayer();
         } else {
-            message = "No more tiles remain to be replaced.";
+            message = IOHandler::invalidInputEnabled
+                ? "No more tiles remain to be replaced."
+                : message;
             throw out_of_range("");
         }
     } catch (...) {
@@ -154,38 +158,22 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
     IOHandler::notify(message, state);
 }
 
-/**
- * Switch player at the end of a round.
- */
 void GameManager::switchPlayer() {
-    currentPlayer = (*currentPlayer == *player1) ? player2 : player1;
+    currentPlayerIndex = (currentPlayerIndex + 1) % IOHandler::numberOfPlayers;
 }
 
-/**
- * Check if location in board is empty for tile being placed.
- *
- * @param row,column - the specified grid location
- */
+shared_ptr<Player> GameManager::getCurrentPlayer() {
+    return players.at(currentPlayerIndex);
+}
+
 bool GameManager::isGridLocationEmpty(size_t row, size_t column) {
     return board->at(row, column) == nullptr;
 }
 
-/**
- * Check if the player hand contains a tile.
- *
- * @param tile - the tile to be checked
- */
 bool GameManager::isTileInHand(const Tile& tile) {
-    return currentPlayer->getHand()->getTiles()->contains(tile);
+    return getCurrentPlayer()->getHand()->getTiles()->contains(tile);
 }
 
-/**
- * Gets the adjacent lines formed by the tile if placed at the specified
- * location.
- *
- * @return Lines (pair<LinkedList, LinkedList) for the horizontal and vertical
- * lines
- * */
 Lines GameManager::getAdjacentLines(
     const Tile& tile, size_t row, size_t column) {
     Lines lines{LinkedList{}, LinkedList{}};
@@ -235,29 +223,10 @@ Lines GameManager::getAdjacentLines(
     return lines;
 }
 
-/**
- * Check the surrounding grid locations if an adjacent tile is present to be
- * able to form a line.
- *
- * @param tile - the tile to be checked
- * @param lines - the horizontal and vertical lines
- * @return boolean indicating whether the tile has adjacent neighbors
- */
 bool GameManager::hasAdjacentTile(const Tile& tile, const Lines& lines) {
     return !lines.horizontal.isEmpty() || !lines.vertical.isEmpty();
 }
 
-/**
- * Check if the tile being placed violate the following rules.
- * - No more than 6 tiles per line.
- * - No same tile more than once per line.
- * - Tile has either same colour or shape with both the horizontal and vertical
- *   lines.
- *
- * @param tile - the tile to be placed
- * @param lines - the horizontal and vertical lines
- * @return boolean indicating whether the tile can be placed on line
- */
 bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
     const LinkedList& horizontalTiles = lines.horizontal;
     const LinkedList& verticalTiles = lines.vertical;
@@ -302,11 +271,6 @@ bool GameManager::isTileValidOnLine(const Tile& tile, const Lines& lines) {
         verticalTiles.size() < MAX_LINE_SIZE;
 }
 
-/**
- * Update the points for a round based on the formed lines.
- *
- * @param lines - the horizontal and vertical lines
- */
 void GameManager::updateScore(const Lines& lines) {
     // qwirkle is printed twice if it happens twice on the same move
     if (lines.horizontal.size() + 1 == MAX_LINE_SIZE) {
@@ -316,7 +280,8 @@ void GameManager::updateScore(const Lines& lines) {
         IOHandler::notify("QWIRKLE!!!", QWIRKLE);
     }
 
-    currentPlayer->setScore(currentPlayer->getScore() + calculateScore(lines));
+    getCurrentPlayer()->setScore(
+        getCurrentPlayer()->getScore() + calculateScore(lines));
 }
 
 size_t GameManager::calculateScore(const Lines& lines) {
@@ -327,7 +292,7 @@ size_t GameManager::calculateScore(const Lines& lines) {
 
     // bonus points for emptying hand or scoring qwirkle
     int bonusCount = 0;
-    if (currentPlayer->getHand()->getTiles()->size() - 1 == 0)
+    if (getCurrentPlayer()->getHand()->getTiles()->size() - 1 == 0)
         ++bonusCount;
     if (horizontalScore == MAX_LINE_SIZE)
         ++bonusCount;
@@ -337,29 +302,10 @@ size_t GameManager::calculateScore(const Lines& lines) {
     return horizontalScore + verticalScore + SCORE_BONUS * bonusCount;
 }
 
-/**
- * Check if conditions hold for game ending.
- */
-bool GameManager::hasGameEnded() {
-    return (player1->getHand()->getTiles()->isEmpty() ||
-               player2->getHand()->getTiles()->isEmpty()) &&
-        bag->getTiles()->isEmpty();
-}
-
-/**
- * Resets the data structures for a new game.
- */
-void GameManager::resetGame() {
-    board.reset();
-    bag.reset();
-    player1.reset();
-    player2.reset();
-    currentPlayer.reset();
-}
-
 vector<Move> GameManager::getPossibleMoves() {
     vector<Move> moves;
-    shared_ptr<LinkedList> handTiles = currentPlayer->getHand()->getTiles();
+    shared_ptr<LinkedList> handTiles =
+        players.at(currentPlayerIndex)->getHand()->getTiles();
 
     // for each tile in hand
     for (size_t i = 0; i < handTiles->size(); ++i) {
@@ -423,4 +369,19 @@ vector<Move> GameManager::getPossibleMoves() {
     }
 
     return moves;
+}
+
+bool GameManager::hasGameEnded() {
+    bool anyPlayerHandEmpty = false;
+    for (const auto& player : players)
+        anyPlayerHandEmpty |= player->getHand()->getTiles()->isEmpty();
+
+    return anyPlayerHandEmpty && bag->getTiles()->isEmpty();
+}
+
+void GameManager::resetGame() {
+    board.reset();
+    bag.reset();
+    for (int i = 0; i < IOHandler::numberOfPlayers; ++i)
+        players.at(i).reset();
 }

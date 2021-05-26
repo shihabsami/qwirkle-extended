@@ -5,13 +5,17 @@
 
 using std::ifstream;
 
+/**
+ * The possible locations help can be seeked. (i.e., a prompt is provided)
+ */
 enum HelpLocation {
     MAIN_MENU,
     NEW_GAME,
     LOAD_GAME,
-    PLACE_TILE,
-    REPLACE_TILE,
-    SETTINGS_MENU
+    GAME_ROUND,
+    SETTINGS_MENU,
+    PLAYER_MODE,
+    SETTINGS_CONFIRMATION
 };
 
 class IOHandler {
@@ -60,6 +64,7 @@ public:
 
     /**
      * Place tile operation, forwards information to GameManager.
+     *
      * @param tile - the tile received from input
      * @param position - the tile position
      */
@@ -67,6 +72,7 @@ public:
 
     /**
      * Replace tile operation, forwards information to GameManager.
+     *
      * @param tile - the tile received from input
      */
     static void replaceTileOperation(const string& tile);
@@ -78,6 +84,7 @@ public:
 
     /**
      * Prints out messages to notify the players about their operation.
+     *
      * @param message - explanatory message from the GameManager about the state
      * @param state - state passed from GameManager to check current state
      */
@@ -90,12 +97,13 @@ public:
 
     static bool gameRunning;
     static bool takingInput;
+
     static bool aiEnabled;
     static bool helpEnabled;
     static bool invalidInputEnabled;
     static bool colourEnabled;
     static bool hintEnabled;
-    static bool multipleTilesEnabled;
+    static int numberOfPlayers;
 
 private:
     /**
@@ -130,38 +138,52 @@ private:
 
     /**
      * Asks for user input on selecting an item from the provided numeric range.
+     *
      * @param range - the range of selection values, starting from 1
+     * @param location - the current location the selection is asked at so that
+     * if user requests help, it can retrieve help from the help function
      * @return the selected integer
      */
-    static int getSelection(int range);
+    static int getSelection(int range, HelpLocation location);
 
     /**
      * Asks for user input on confirming an option as either yes or no.
+     *
+     * @param location - the current location the selection is asked at so that
+     * if user requests help, it can retrieve help from the help function
      * @return true if the user responds with Y (yes), false otherwise
      */
-    static bool getConfirmation();
+    static bool getConfirmation(HelpLocation location);
 
     /**
-     * Validates username.
+     * Validates username according to game rules.
+     *
      * @param name - the name for the player
+     * @return true if valid
      */
     static bool validateName(const string& name);
 
     /**
-     * Checks if tile is valid.
+     * Checks if tile is valid according to game rules.
+     *
      * @param tile - tile to be checked
+     * @return true if valid
      */
     static bool checkTile(const string& tile);
 
     /**
-     * Checks if tile position is valid.
+     * Checks if tile position is valid according to game rules.
+     *
      * @param position - position to be checked
+     * @return true if valid
      */
     static bool checkTilePosition(const string& position);
 
     /**
      * Checks if file is empty.
+     *
      * @param file - the file to be checked
+     * @return true if the file is empty
      */
     static bool isEmpty(ifstream& file);
 

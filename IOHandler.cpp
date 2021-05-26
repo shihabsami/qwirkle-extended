@@ -24,7 +24,7 @@ bool IOHandler::helpEnabled = false;
 bool IOHandler::invalidInputEnabled = false;
 bool IOHandler::colourEnabled = false;
 bool IOHandler::hintEnabled = false;
-bool IOHandler::multipleTilesEnabled = false;
+int IOHandler::numberOfPlayers = 2;
 
 void IOHandler::beginGame() {
     cout << "Welcome to Qwirkle!" << endl;
@@ -156,7 +156,6 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         } else {
             cout << "Your only possible move is to replace a tile" << endl;
         }
-
     } else if (operation == "save") {
         gameFileName = gameFileName + ".save";
         std::ofstream file(gameFileName);
@@ -169,12 +168,14 @@ bool IOHandler::logicHandler(const string& operation, const string& tile,
         file << BOARD_LENGTH << "," << BOARD_LENGTH << endl;
         file << *GameManager::board << endl;
         file << *GameManager::bag->getTiles() << endl;
-        file << GameManager::currentPlayer->getName() << endl;
+        file << GameManager::currentPlayerIndex->getName() << endl;
         file.close();
         cout << endl;
         cout << "Game successfully ," << endl;
         cout << endl;
         takingInput = true;
+    } else if (operation == "help" && helpEnabled) {
+        help(GAME_ROUND);
     } else if (operation == "quit") {
         quit();
         takingInput = false;
@@ -192,6 +193,16 @@ void IOHandler::loadGame() {
             cout << "Enter the filename from which to load a game." << endl;
             prompt();
             cin >> filename;
+
+            string response = filename;
+            transform(response.begin(), response.end(), response.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            if (response == "help") {
+                help(LOAD_GAME);
+                throw std::invalid_argument("");
+            }
+
             std::ifstream file(filename);
 
             if (cin.eof()) {
@@ -199,11 +210,11 @@ void IOHandler::loadGame() {
             }
 
             if (!file) {
-                throw ::std::invalid_argument("File does not exits.");
+                throw ::std::invalid_argument("File does not exist.");
             }
 
             if (isEmpty(file)) {
-                throw ::std::invalid_argument("File Is Empty!.");
+                throw ::std::invalid_argument("File is empty.");
             }
 
             cin.clear();
@@ -251,7 +262,7 @@ void IOHandler::loadGame() {
                     int number = stoi(text);
                     if (number < 0) {
                         throw std::invalid_argument(
-                            "The number should be positive.");
+                            "Player score should be positive.");
                     }
 
                     if (count == 1) {
@@ -295,7 +306,7 @@ void IOHandler::loadGame() {
                         int number = std::stoi(substr);
                         if (number < 0 || number > 26) {
                             throw std::invalid_argument(
-                                "The grid should be more than 0 and less that "
+                                "The grid should be more than 0 and less than "
                                 "26.");
                         }
                     }
@@ -339,7 +350,7 @@ void IOHandler::loadGame() {
             fileCheck = false;
 
         } catch (const std::invalid_argument& e) {
-            cerr << "The error is " << e.what() << endl;
+            cerr << e.what() << endl;
         }
     }
 }
@@ -382,10 +393,10 @@ void IOHandler::replaceTileOperation(const string& tile) {
 void IOHandler::printRound() {
     cout << endl;
 
-    if (aiEnabled && *GameManager::currentPlayer == *GameManager::player2) {
+    if (aiEnabled && *GameManager::currentPlayerIndex == *GameManager::player2) {
         cout << "It's AI's turn." << endl;
     } else {
-        cout << GameManager::currentPlayer->getName() << ", it's your turn "
+        cout << GameManager::currentPlayerIndex->getName() << ", it's your turn "
              << endl;
     }
 
@@ -396,11 +407,11 @@ void IOHandler::printRound() {
     cout << endl;
     GameManager::board->print(cout, colourEnabled);
     cout << endl;
-    cout << (aiEnabled && *GameManager::currentPlayer == *GameManager::player2
+    cout << (aiEnabled && *GameManager::currentPlayerIndex == *GameManager::player2
                     ? "AI's"
                     : "Your")
          << "hand is " << endl;
-    GameManager::currentPlayer->getHand()->print(cout, colourEnabled);
+    GameManager::currentPlayerIndex->getHand()->print(cout, colourEnabled);
     cout << endl;
 }
 
@@ -448,17 +459,15 @@ void IOHandler::quit() {
 
 void IOHandler::help(HelpLocation location) {
     if (location == MAIN_MENU) {
-        cout << "MAIN_MENU";
+        cout << "MAIN_MENU" << endl;
     } else if (location == NEW_GAME) {
-        cout << "NEW_GAME";
+        cout << "NEW_GAME" << endl;
     } else if (location == LOAD_GAME) {
-        cout << "LOAD_GAME";
-    } else if (location == PLACE_TILE) {
-        cout << "PLACE_TILE";
-    } else if (location == REPLACE_TILE) {
-        cout << "REPLACE_TILE";
+        cout << "LOAD_GAME" << endl;
+    } else if (location == GAME_ROUND) {
+        cout << "GAME_ROUND" << endl;
     } else if (location == SETTINGS_MENU) {
-        cout << "SETTINGS_MENU";
+        cout << "SETTINGS_MENU" << endl;
     }
 }
 
@@ -473,7 +482,7 @@ void IOHandler::printMenu() {
 }
 
 void IOHandler::menuSelection() {
-    int option = getSelection(5);
+    int option = getSelection(5, MAIN_MENU);
 
     if (option == 1)
         newGame();
@@ -491,33 +500,39 @@ void IOHandler::printSettings() {
     cout << "Settings" << endl;
     cout << "--------" << endl;
     cout << "1. Help!" << endl;
-    cout << "2. Better Invalid Input" << endl;
+    cout << "2. Better invalid input" << endl;
     cout << "3. Colour" << endl;
     cout << "4. Hint" << endl;
-    cout << "5. Place multiple tiles" << endl;
+    cout << "5. 3-4 player modes" << endl;
     cout << "6. Return to menu" << endl;
 }
 
 void IOHandler::settingsSelection() {
-    int option = getSelection(6);
+    int option = getSelection(6, SETTINGS_MENU);
 
     if (option <= 5) {
         bool enabled = false;
         if (option == 1) {
-            helpEnabled = getConfirmation();
+            helpEnabled = getConfirmation(SETTINGS_CONFIRMATION);
             enabled = helpEnabled;
         } else if (option == 2) {
-            invalidInputEnabled = getConfirmation();
+            invalidInputEnabled = getConfirmation(SETTINGS_CONFIRMATION);
             enabled = invalidInputEnabled;
         } else if (option == 3) {
-            colourEnabled = getConfirmation();
+            colourEnabled = getConfirmation(SETTINGS_CONFIRMATION);
             enabled = colourEnabled;
         } else if (option == 4) {
-            hintEnabled = getConfirmation();
+            hintEnabled = getConfirmation(SETTINGS_CONFIRMATION);
             enabled = hintEnabled;
         } else if (option == 5) {
-            multipleTilesEnabled = getConfirmation();
-            enabled = multipleTilesEnabled;
+            cout << "Select the number of players" << endl;
+            cout << "----------------------------" << endl;
+            cout << "1. 2 player" << endl;
+            cout << "2. 3 player" << endl;
+            cout << "3. 4 player" << endl;
+
+            numberOfPlayers= getSelection(3, PLAYER_MODE);
+            cout << numberOfPlayers << " player mode enabled successfully." << endl;
         }
 
         cout << (enabled ? "Enabled" : "Disabled") << " successfully" << endl;
@@ -529,35 +544,44 @@ void IOHandler::settingsSelection() {
 
 void IOHandler::prompt() { cout << "> "; }
 
-int IOHandler::getSelection(int range) {
+int IOHandler::getSelection(int range, HelpLocation location) {
     bool selecting = true;
-    int option = std::numeric_limits<int>::min();
+    string option;
+    int optionNumeric;
     while (!cin.eof() && selecting) {
         cout << endl;
         prompt();
         cin >> option;
+        transform(option.begin(), option.end(), option.begin(),
+            [](unsigned char c) { return std::tolower(c); });
 
-        try {
-            if (option >= 1 && option <= range) {
-                selecting = false;
-            } else if (cin.eof()) {
-                quit();
-            } else {
-                cin.clear();
-                cin.ignore(CharLimit::max(), '\n');
-                cout << endl;
-                throw std::runtime_error("Invalid input.");
+        if (helpEnabled && option == "help") {
+            help(location);
+        } else {
+            try {
+                optionNumeric = std::stoi(option);
+                if (optionNumeric >= 1 && optionNumeric <= range) {
+                    selecting = false;
+                } else if (cin.eof()) {
+                    quit();
+                } else {
+                    cin.clear();
+                    cin.ignore(CharLimit::max(), '\n');
+                    cout << endl;
+                    throw std::runtime_error("Invalid input.");
+                }
+            } catch (const std::runtime_error& e) {
+                cerr << e.what() << endl << endl;
+            } catch (const std::invalid_argument& e) {
+                cerr << "Invalid input." << endl;
             }
-        } catch (const std::runtime_error& e) {
-            cerr << e.what() << endl;
-            cout << endl;
         }
     }
 
-    return option;
+    return optionNumeric;
 }
 
-bool IOHandler::getConfirmation() {
+bool IOHandler::getConfirmation(HelpLocation location) {
     cout << "Enable? (Y/N)" << endl;
 
     bool response;
@@ -567,27 +591,35 @@ bool IOHandler::getConfirmation() {
         cout << endl;
         prompt();
         cin >> responseString;
+        string responseStringTransformed = responseString;
+        transform(responseStringTransformed.begin(),
+            responseStringTransformed.end(), responseStringTransformed.begin(),
+            [](unsigned char c) { return std::tolower(c); });
 
-        try {
-            if (responseString.length() == 1) {
-                if (std::toupper(responseString[0]) == 'Y') {
-                    response = true;
-                    selecting = false;
-                } else if (std::toupper(responseString[0]) == 'N') {
-                    response = false;
-                    selecting = false;
+        if (helpEnabled && responseStringTransformed == "help") {
+            help(location);
+        } else {
+            try {
+                if (responseString.length() == 1) {
+                    if (std::toupper(responseString[0]) == 'Y') {
+                        response = true;
+                        selecting = false;
+                    } else if (std::toupper(responseString[0]) == 'N') {
+                        response = false;
+                        selecting = false;
+                    }
+                } else if (cin.eof()) {
+                    quit();
+                } else {
+                    cin.clear();
+                    cin.ignore(CharLimit::max(), '\n');
+                    cout << endl;
+                    throw std::runtime_error("Invalid input.");
                 }
-            } else if (cin.eof()) {
-                quit();
-            } else {
-                cin.clear();
-                cin.ignore(CharLimit::max(), '\n');
+            } catch (const std::runtime_error& e) {
+                cerr << e.what() << endl;
                 cout << endl;
-                throw std::runtime_error("Invalid input.");
             }
-        } catch (const std::runtime_error& e) {
-            cerr << e.what() << endl;
-            cout << endl;
         }
     }
 
