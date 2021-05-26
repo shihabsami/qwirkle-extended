@@ -43,5 +43,5 @@ void Tile::print(ostream& os, bool coloured) const {
         }
     }
 
-    os << colour << shape << ANSI_END;
+    os << colour << shape << (coloured ? ANSI_END : "");
 }

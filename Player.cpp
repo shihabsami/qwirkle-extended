@@ -10,7 +10,7 @@ string Player::getName() { return name; }
 
 void Player::setName(const string& name) { this->name = name; }
 
-size_t Player::getScore() { return score; }
+size_t Player::getScore() const { return score; }
 
 void Player::setScore(size_t score) { this->score = score; }
 

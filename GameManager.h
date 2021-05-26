@@ -56,7 +56,7 @@ public:
      * @param player1Name - name of the first player
      * @param player2name - name of the second player
      */
-    static void beginGame(const array<string, 4>& playerNames);
+    static void beginGame(const vector<string>& playerNames);
 
     /**
      * Loads the GameManager data structures, from loaded data structures
@@ -67,9 +67,10 @@ public:
      * @param loadedBag - the loaded TileBag
      * @param loadedBoard - the loaded GameBoard
      */
-    static void loadGame(const array<shared_ptr<Player>, 4>& loadedPlayers,
-        const string& currentPlayerName, const shared_ptr<TileBag>& loadedBag,
-        const shared_ptr<GameBoard>& loadedBoard);
+    static void loadGame(const vector<shared_ptr<Player>>& loadedPlayers,
+        const string& currentPlayerName, const shared_ptr<GameBoard>& loadedBoard,
+        const shared_ptr<TileBag>& loadedBag
+        );
 
     /**
      * Place a tile on to the board from the current player's hand.
@@ -181,11 +182,11 @@ public:
      */
     static void resetGame();
 
-    static shared_ptr<TileBag> bag;
-    static array<shared_ptr<Player>, 4> players;
+    static vector<shared_ptr<Player>> players;
     static int currentPlayerIndex;
+    static shared_ptr<TileBag> bag;
     static shared_ptr<GameBoard> board;
-    static shared_ptr<unordered_map<shared_ptr<Tile>, Location>> tileRegister;
+    static unordered_map<shared_ptr<Tile>, Location> tileRegister;
 };
 
 #endif // !GAME_MANAGER_H

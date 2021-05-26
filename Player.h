@@ -41,7 +41,7 @@ public:
      *
      * @return the integer representing points
      */
-    size_t getScore();
+    size_t getScore() const;
 
     /**
      * Set the player's points.

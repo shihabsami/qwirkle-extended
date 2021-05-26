@@ -8,59 +8,45 @@
 using std::get;
 using std::make_pair;
 using std::make_tuple;
-using std::find_if;
-using std::distance;
 using std::ostringstream;
 using std::invalid_argument;
 using std::out_of_range;
 
-shared_ptr<TileBag> GameManager::bag = nullptr;
-array<shared_ptr<Player>, 4> GameManager::players;
+vector<shared_ptr<Player>> GameManager::players;
 int GameManager::currentPlayerIndex = FIRST_POSITION;
+shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<GameBoard> GameManager::board = nullptr;
-shared_ptr<unordered_map<shared_ptr<Tile>, Location>>
-    GameManager::tileRegister = nullptr;
+unordered_map<shared_ptr<Tile>, Location> GameManager::tileRegister;
 
-void GameManager::beginGame(const array<string, 4>& playerNames) {
+void GameManager::beginGame(const vector<string>& playerNames) {
+    board = make_shared<GameBoard>();
     bag = make_shared<TileBag>();
     bag->fill();
     bag->shuffle();
-
-    for (int i = 0; i < IOHandler::numberOfPlayers; ++i) {
-        shared_ptr<Player> player =
-            make_shared<Player>(playerNames.at(i), bag->getHand());
-        players.at(i) = player;
-    }
-
-    board = make_shared<GameBoard>();
-    tileRegister = make_shared<unordered_map<shared_ptr<Tile>, Location>>();
+    for (const string& name : playerNames)
+        players.emplace_back(make_shared<Player>(name, bag->getHand()));
 }
 
-void GameManager::loadGame(const array<shared_ptr<Player>, 4>& loadedPlayers,
-    const string& currentPlayerName, const shared_ptr<TileBag>& loadedBag,
-    const shared_ptr<GameBoard>& loadedBoard) {
-    bag = loadedBag;
+void GameManager::loadGame(const vector<shared_ptr<Player>>& loadedPlayers,
+    const string& currentPlayerName, const shared_ptr<GameBoard>& loadedBoard,
+    const shared_ptr<TileBag>& loadedBag) {
     board = loadedBoard;
-    tileRegister = make_shared<unordered_map<shared_ptr<Tile>, Location>>();
-
+    bag = loadedBag;
     for (size_t i = 0; i < BOARD_LENGTH; ++i)
         for (size_t j = 0; j < BOARD_LENGTH; ++j)
             if (board->at(i, j) != nullptr)
-                (*tileRegister)[board->at(i, j)] = {i, j};
+                tileRegister[board->at(i, j)] = {i, j};
 
     players = loadedPlayers;
-    auto it = find_if(
-        players.begin(), players.end(), [&](const shared_ptr<Player>& p) {
-            return p->getName() == currentPlayerName;
-        });
-
-    GameManager::currentPlayerIndex = (int)distance(players.begin(), it);
+    for (size_t i = 0; i < players.size(); ++i)
+        if (players.at(i)->getName() == currentPlayerName)
+            GameManager::currentPlayerIndex = (int)i;
 }
 
 void GameManager::placeTile(
     Colour colour, Shape shape, size_t row, size_t column) {
     string message = "Tile could not be placed.";
-    State state = PLACE_SUCCESS;
+    State state = PLACE_FAILURE;
 
     try {
         Tile tile(colour, shape);
@@ -97,8 +83,9 @@ void GameManager::placeTile(
         shared_ptr<Tile> tilePtr =
             getCurrentPlayer()->getHand()->playTile(tile);
         board->placeTile(tilePtr, row, column);
-        (*tileRegister)[tilePtr] = {row, column};
+        tileRegister[tilePtr] = {row, column};
         message = "Tile placed successfully.";
+        state = PLACE_SUCCESS;
 
         if (!bag->getTiles()->isEmpty()) {
             getCurrentPlayer()->getHand()->addTile(
@@ -312,7 +299,7 @@ vector<Move> GameManager::getPossibleMoves() {
         shared_ptr<Tile> tileToBePlaced = handTiles->at(i);
 
         // for each tileToBePlaced already present on the board
-        for (const auto& pair : *tileRegister) {
+        for (const auto& pair : tileRegister) {
             shared_ptr<Tile> tileComparingAgainst = pair.first;
             size_t row = pair.second.row;
             size_t column = pair.second.column;
@@ -380,8 +367,8 @@ bool GameManager::hasGameEnded() {
 }
 
 void GameManager::resetGame() {
+    tileRegister.clear();
     board.reset();
     bag.reset();
-    for (int i = 0; i < IOHandler::numberOfPlayers; ++i)
-        players.at(i).reset();
+    players.clear();
 }

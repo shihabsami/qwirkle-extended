@@ -41,8 +41,14 @@ public:
     static void newGame();
 
     /**
-     * Game Loader
-     * Loads .save file based on user input
+     * Saves the current state of the game to a specified file.
+     *
+     * @param saveFileName - the name of the file
+     */
+    static void saveGame(const string& saveFileName);
+
+    /**
+     * Loads a game from a file with .save extension.
      */
     static void loadGame();
 
@@ -55,12 +61,12 @@ public:
      * Based on user input will either
      * place tiles, replace tiles or save game
      * @param operation - place ,replace ,save
-     * @param tile - tile in format of D1
-     * @param keywordAt - needs keyword "at" to place tile
-     * @param position - tile position in format A0 - Z25
+     * @param secondKeyword - secondKeyword in format of D1
+     * @param thirdKeyword - needs keyword "at" to place secondKeyword
+     * @param fourthKeyword - secondKeyword fourthKeyword in format A0 - Z25
      */
-    static bool logicHandler(const string& operation, const string& tile,
-        const string& keywordAt, const string& position);
+    static bool operationHandler(const string& operation, const string& secondKeyword,
+        const string& thirdKeyword, const string& fourthKeyword);
 
     /**
      * Place tile operation, forwards information to GameManager.
@@ -95,10 +101,15 @@ public:
      */
     static void quit();
 
+    /// Helper attributes
     static bool gameRunning;
     static bool takingInput;
 
+    /// Attributes related to AI (if enabled)
     static bool aiEnabled;
+    static string aiName;
+
+    /// Settings
     static bool helpEnabled;
     static bool invalidInputEnabled;
     static bool colourEnabled;
@@ -107,9 +118,16 @@ public:
 
 private:
     /**
+     * Check whether the user is seeking help.
+     *
+     * @param command - the command user input
+     */
+    static bool isSeekingHelp(string command);
+
+    /**
      * Prints out a help message based on location.
      */
-    static void help(HelpLocation location);
+    static void printHelpMessage(HelpLocation location);
 
     /**
      * Prints out the main menu.
@@ -153,7 +171,7 @@ private:
      * if user requests help, it can retrieve help from the help function
      * @return true if the user responds with Y (yes), false otherwise
      */
-    static bool getConfirmation(HelpLocation location);
+    static bool getConfirmation();
 
     /**
      * Validates username according to game rules.
@@ -161,7 +179,7 @@ private:
      * @param name - the name for the player
      * @return true if valid
      */
-    static bool validateName(const string& name);
+    static bool validateName(const string& name, const vector<string>& existingNames);
 
     /**
      * Checks if tile is valid according to game rules.
