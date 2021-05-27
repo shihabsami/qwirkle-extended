@@ -28,20 +28,19 @@ bool Tile::operator==(const Tile& other) const {
 
 void Tile::print(ostream& os, bool coloured) const {
     if (coloured) {
-        if (colour == RED) {
+        if (colour == RED)
             os << RED_ANSI;
-        } else if (colour == ORANGE) {
+        else if (colour == ORANGE)
             os << ORANGE_ANSI;
-        } else if (colour == YELLOW) {
+        else if (colour == YELLOW)
             os << YELLOW_ANSI;
-        } else if (colour == GREEN) {
+        else if (colour == GREEN)
             os << GREEN_ANSI;
-        } else if (colour == BLUE) {
+        else if (colour == BLUE)
             os << BLUE_ANSI;
-        } else if (colour == PURPLE) {
+        else if (colour == PURPLE)
             os << PURPLE_ANSI;
-        }
     }
 
-    os << colour << shape << (coloured ? ANSI_END : "");
+    os << colour << shape << (coloured ? ANSI_RESET : "");
 }

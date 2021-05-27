@@ -14,8 +14,8 @@ enum HelpLocation {
     LOAD_GAME,
     GAME_ROUND,
     SETTINGS_MENU,
-    PLAYER_MODE,
-    SETTINGS_CONFIRMATION
+    SETTINGS_CONFIRMATION,
+    PLAYER_MODE
 };
 
 class IOHandler {
@@ -104,6 +104,7 @@ public:
     /// Helper attributes
     static bool gameRunning;
     static bool takingInput;
+    static array<pair<string, size_t>, 5> highScores;
 
     /// Attributes related to AI (if enabled)
     static bool aiEnabled;
@@ -117,18 +118,6 @@ public:
     static int numberOfPlayers;
 
 private:
-    /**
-     * Check whether the user is seeking help.
-     *
-     * @param command - the command user input
-     */
-    static bool isSeekingHelp(string command);
-
-    /**
-     * Prints out a help message based on location.
-     */
-    static void printHelpMessage(HelpLocation location);
-
     /**
      * Prints out the main menu.
      */
@@ -174,6 +163,18 @@ private:
     static bool getConfirmation();
 
     /**
+     * Check whether the user is seeking help.
+     *
+     * @param command - the command user input
+     */
+    static bool isSeekingHelp(string command);
+
+    /**
+     * Prints out a help message based on location.
+     */
+    static void printHelpMessage(HelpLocation location);
+
+    /**
      * Validates username according to game rules.
      *
      * @param name - the name for the player
@@ -204,6 +205,27 @@ private:
      * @return true if the file is empty
      */
     static bool isEmpty(ifstream& file);
+
+    /**
+     * Prints out the high scores.
+     */
+    static void printHighScores();
+
+    /**
+     * Saves the high scores.
+     */
+    static void saveHighScores();
+
+    /**
+     * Loads the high scores.
+     */
+    static void loadHighScores();
+
+    /**
+     * Updates the high scores.
+     * @param winners - the winners of this game
+     */
+     static void updateHighScores(const vector<shared_ptr<Player>>& winners);
 
     /**
      * Prints out credits

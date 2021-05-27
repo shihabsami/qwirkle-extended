@@ -6,9 +6,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <thread> // std::this_thread::sleep_for
-#include <chrono> // std::chrono::seconds
-
 using std::cout;
 using std::cin;
 using std::endl;
@@ -27,6 +24,9 @@ void testPlayerHand();
 
 // tests for GameBoard implementation
 void testGameBoard();
+
+// test for AI implementation
+void testAIAgainstAI();
 
 int main(int argc, char** argv) {
 //     testLinkedList();
@@ -79,41 +79,6 @@ int main(int argc, char** argv) {
         if (cin.eof())
             IOHandler::quit();
     }
-
-    //    bool hasPlayedFirstRound = false;
-    //
-    //    // run the main game loop
-    //    while (!cin.eof() && IOHandler::gameRunning) {
-    //        IOHandler::printRound();
-    //        vector<Move> moves = GameManager::getPossibleMoves();
-    //        shared_ptr<PlayerHand> hand =
-    //        GameManager::currentPlayerIndex->getHand();
-    //
-    //       if (!hasPlayedFirstRound) {
-    //           auto tile = hand->getTiles()->at(0);
-    //           GameManager::placeTileOperation(tile->getColour(),
-    //               tile->getShape(), 13, 13);
-    //            hasPlayedFirstRound = true;
-    //       } else if (moves.empty()) {
-    //            GameManager::replaceTileOperation(hand->getTiles()->at(0)->getColour(),
-    //                hand->getTiles()->at(0)->getShape());
-    //        } else {
-    //            sort(moves.begin(), moves.end(),
-    //                [](const Move& m1, const Move& m2) {
-    //                  return m1.points > m2.points;
-    //                });
-    //
-    //            auto move = moves.begin();
-    //            GameManager::placeTileOperation(move->tile->getColour(),
-    //                move->tile->getShape(), move->location.row,
-    //                move->location.column);
-    //        }
-    //
-    //        std::this_thread::sleep_for (std::chrono::seconds(1));
-    //
-    //        if (cin.eof())
-    //            IOHandler::quit();
-    //    }
 
     return EXIT_SUCCESS;
 }
@@ -275,4 +240,45 @@ void testGameBoard() {
     board->placeTile(tile6, 10, 20);
     board->print(cout, true);
     cout << endl;
+}
+
+void testAIAgainstAI() {
+    IOHandler::aiEnabled = true;
+    IOHandler::beginGame();
+    bool hasPlayedFirstRound = false;
+
+    // run the main game loop
+    while (!cin.eof() && IOHandler::gameRunning) {
+        IOHandler::printRound();
+        vector<Move> moves = GameManager::getPossibleMoves();
+        shared_ptr<PlayerHand> hand =
+            GameManager::getCurrentPlayer()->getHand();
+
+        if (!hasPlayedFirstRound) {
+            auto tile = hand->getTiles()->at(0);
+            GameManager::placeTile(tile->getColour(),
+                tile->getShape(), 13, 13);
+            hasPlayedFirstRound = true;
+        } else if (moves.empty()) {
+            GameManager::replaceTile(hand->getTiles()->at(0)->getColour(),
+                hand->getTiles()->at(0)->getShape());
+
+            if (GameManager::bag->getTiles()->isEmpty()) {
+                IOHandler::quit();
+            }
+        } else {
+            sort(moves.begin(), moves.end(),
+                [](const Move& m1, const Move& m2) {
+                  return m1.points > m2.points;
+                });
+
+            auto move = moves.begin();
+            GameManager::placeTile(move->tile->getColour(),
+                move->tile->getShape(), move->location.row,
+                move->location.column);
+        }
+
+        if (cin.eof())
+            IOHandler::quit();
+    }
 }

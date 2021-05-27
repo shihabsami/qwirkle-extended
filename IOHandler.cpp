@@ -14,9 +14,9 @@ using std::cerr;
 
 using std::endl;
 using std::get;
-using std::to_string;
 using std::toupper;
 using std::tolower;
+using std::to_string;
 using std::max_element;
 
 using std::stringstream;
@@ -28,20 +28,23 @@ typedef std::numeric_limits<std::streamsize> CharLimit;
 
 bool IOHandler::gameRunning = false;
 bool IOHandler::takingInput = false;
+array<pair<string, size_t>, 5> IOHandler::highScores{};
 
 bool IOHandler::aiEnabled = false;
-string IOHandler::aiName;
-
-bool IOHandler::helpEnabled = false;
-bool IOHandler::invalidInputEnabled = false;
-bool IOHandler::colourEnabled = false;
-bool IOHandler::hintEnabled = false;
+string IOHandler::aiName{};
 int IOHandler::numberOfPlayers = 2;
+
+// these settings are enabled by default
+bool IOHandler::helpEnabled = true;
+bool IOHandler::invalidInputEnabled = true;
+bool IOHandler::colourEnabled = true;
+bool IOHandler::hintEnabled = true;
 
 void IOHandler::beginGame() {
     cout << "Welcome to Qwirkle!" << endl;
-    cout << "-------------------" << endl << endl;
+    cout << "-------------------" << endl;
 
+    loadHighScores();
     mainMenu();
 }
 
@@ -56,27 +59,30 @@ void IOHandler::settingsMenu() {
 }
 
 void IOHandler::newGame() {
-    cout << "Starting a new game" << endl << endl;
-    string message = "Must enter a name in CAPS for player and name must "
-                     "not contain numbers or symbols or duplicate names.";
+    cout << endl << "Starting a new game" << endl;
 
     vector<string> playerNames;
     numberOfPlayers = aiEnabled ? 2 : numberOfPlayers;
     for (int i = 0; i < numberOfPlayers; ++i) {
         bool nameCheck = true;
         string name;
-        while (!cin.eof() && nameCheck) {
+        while (nameCheck) {
             bool aiNameCheck = aiEnabled && i == SECOND_POSITION;
-            cout << "Enter a name for " << (aiNameCheck ? "AI" : "player ")
+            cout << endl
+                 << "Enter a name for " << (aiNameCheck ? "AI" : "player ")
                  << (aiNameCheck ? "" : to_string(i + 1))
                  << " (uppercase characters only)" << endl;
             prompt();
             cin >> name;
+            if (cin.eof())
+                quit();
 
             if (isSeekingHelp(name)) {
                 printHelpMessage(NEW_GAME);
             } else if (!validateName(name, playerNames)) {
-                cout << message << endl;
+                cout << "Must enter a name in CAPS for player and name must "
+                        "not contain numbers or symbols or duplicate names"
+                     << endl;
                 cin.clear();
                 cin.ignore(CharLimit::max(), '\n');
             } else {
@@ -87,19 +93,16 @@ void IOHandler::newGame() {
         }
     }
 
-    if (cin.eof())
-        quit();
-
     cin.clear();
     cin.ignore(CharLimit::max(), '\n');
-    cout << "Let's Play!" << endl;
+    cout << endl << "Let's Play!" << endl;
     GameManager::beginGame(playerNames);
     gameRunning = true;
 }
 
 void IOHandler::saveGame(const string& saveFileName) {
     ofstream file(saveFileName);
-    file << SAVE_FILE_FORMAT << endl;
+    file << NEW_SAVE_FILE_FORMAT << endl;
     file << BOARD_LENGTH << "," << BOARD_LENGTH << endl;
     file << *GameManager::board << endl;
     file << *GameManager::bag->getTiles() << endl;
@@ -128,7 +131,7 @@ void IOHandler::loadGame() {
     while (fileCheck) {
         try {
             string filename;
-            cout << "Enter the filename from which to load a game." << endl;
+            cout << "Enter the filename from which to load a game" << endl;
             prompt();
             cin >> filename;
 
@@ -142,9 +145,9 @@ void IOHandler::loadGame() {
 
             ifstream file(filename);
             if (!file)
-                throw invalid_argument("File does not exist.");
+                throw invalid_argument("File does not exist");
             if (isEmpty(file))
-                throw invalid_argument("File is empty.");
+                throw invalid_argument("File is empty");
 
             cin.clear();
             cin.ignore();
@@ -172,10 +175,9 @@ void IOHandler::loadGame() {
                         if (number < 0 || number > BOARD_LENGTH) {
                             throw invalid_argument(
                                 "The board size should be more than 0 and less "
-                                "than 26.");
+                                "than 26");
                         }
                     }
-
                 } else if (lineIndex == BOARD_TILES_LINE_INDEX) {
                     stringstream ss(text);
                     while (ss.good()) {
@@ -186,7 +188,7 @@ void IOHandler::loadGame() {
                             if (substr[THIRD_POSITION] != at)
                                 throw invalid_argument(
                                     "The board should appear as a list of "
-                                    "tile@postion.");
+                                    "tile@postion");
 
                         char last = substr.length() < 6 ? ',' : substr[5];
                         char tile[2] = {substr[0], substr[1]};
@@ -229,14 +231,14 @@ void IOHandler::loadGame() {
                     else if (settingName == GET_SETTING_NAME(numberOfPlayers))
                         numberOfPlayers = stoi(settingValue);
                 } else if (lineIndex == CURRENT_PLAYER_LINE_INDEX ||
-                    (lineIndex >= PLAYER_NAME_INDEX_BEGIN &&
-                        (lineIndex - PLAYER_NAME_INDEX_BEGIN) % 3 == 0)) {
+                    (lineIndex >= PLAYER_NAME_LINE_INDEX_BEGIN &&
+                        (lineIndex - PLAYER_NAME_LINE_INDEX_BEGIN) % 3 == 0)) {
                     for (unsigned i = 0; i < text.length() - 1; i++) {
                         int ascii = static_cast<unsigned char>(text[i]);
                         if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
                             ascii > ASCII_ALPHABET_END + 1 || ascii == 0) {
                             throw invalid_argument(
-                                "Name format is not part of ASCII text.");
+                                "Name format is not part of ASCII text");
                         }
                     }
 
@@ -245,18 +247,18 @@ void IOHandler::loadGame() {
                     else
                         players.emplace_back(make_shared<Player>(
                             text, make_shared<PlayerHand>()));
-                } else if (lineIndex >= PLAYER_SCORE_INDEX_BEGIN &&
-                    (lineIndex - PLAYER_SCORE_INDEX_BEGIN) % 3 == 0) {
+                } else if (lineIndex >= PLAYER_SCORE_LINE_INDEX_BEGIN &&
+                    (lineIndex - PLAYER_SCORE_LINE_INDEX_BEGIN) % 3 == 0) {
                     int score = stoi(text);
                     if (score < 0)
                         throw invalid_argument(
-                            "Player score should be positive.");
+                            "Player score should be positive");
 
                     players.at(playerScoresRead)->setScore(score);
                     ++playerScoresRead;
                 } else if (lineIndex == TILEBAG_LINE_INDEX ||
-                    (lineIndex >= PLAYER_HAND_INDEX_BEGIN &&
-                        (lineIndex - PLAYER_HAND_INDEX_BEGIN) % 3 == 0)) {
+                    (lineIndex >= PLAYER_HAND_LINE_INDEX_BEGIN &&
+                        (lineIndex - PLAYER_HAND_LINE_INDEX_BEGIN) % 3 == 0)) {
                     stringstream ss(text);
                     bool readPlayerHand = false;
                     while (ss.good()) {
@@ -265,16 +267,18 @@ void IOHandler::loadGame() {
                         if (text[FIRST_POSITION] != '\0')
                             if (substr.length() != 2)
                                 throw invalid_argument(
-                                    "Wrong tile list format.");
+                                    "Wrong tile list format");
 
                         if (lineIndex == TILEBAG_LINE_INDEX) {
                             tileBag->getTiles()->addBack(
-                                make_shared<Tile>(substr[0], substr[1] - '0'));
+                                make_shared<Tile>(substr[FIRST_POSITION],
+                                    substr[SECOND_POSITION] - '0'));
                         } else {
                             players.at(playerHandsRead)
                                 ->getHand()
-                                ->addTile(make_shared<Tile>(
-                                    substr[0], substr[1] - '0'));
+                                ->addTile(
+                                    make_shared<Tile>(substr[FIRST_POSITION],
+                                        substr[SECOND_POSITION] - '0'));
                             readPlayerHand = true;
                         }
                     }
@@ -285,7 +289,7 @@ void IOHandler::loadGame() {
                 ++lineIndex;
             }
 
-            cout << "Qwirkle game successfully loaded." << endl;
+            cout << "Qwirkle game successfully loaded" << endl;
             file.close();
             GameManager::loadGame(players, currentPlayerName, board, tileBag);
             gameRunning = true;
@@ -312,8 +316,8 @@ void IOHandler::playRound() {
         command >> operation >> tile >> keywordAt >> position;
         saveName = tile;
 
-        auto toUpper = [](unsigned char c) { return tolower(c); };
-        auto toLower = [](unsigned char c) { return toupper(c); };
+        auto toLower = [](unsigned char c) { return tolower(c); };
+        auto toUpper = [](unsigned char c) { return toupper(c); };
         transform(
             operation.begin(), operation.end(), operation.begin(), toLower);
         transform(tile.begin(), tile.end(), tile.begin(), toUpper);
@@ -346,33 +350,37 @@ bool IOHandler::operationHandler(const string& operation,
             replaceTileOperation(secondKeyword);
         else
             takingInput = true;
-    } else if (operation == "hint") {
+    } else if (hintEnabled && operation == "hint") {
         vector<Move> moves = GameManager::getPossibleMoves();
         if (!moves.empty()) {
-            cout << "Your possible moves are as follows." << endl;
+            cout << "Your possible moves are as follows" << endl;
             for (const auto& move : moves) {
                 move.tile->print(cout, colourEnabled);
                 cout << " at "
                      << (char)(move.location.row + ASCII_ALPHABET_BEGIN)
                      << move.location.column << " for " << move.points
-                     << " points." << endl;
+                     << " points" << endl;
             }
         } else {
-            cout << "Your only possible move is to replace a tile." << endl;
+            if (GameManager::board->isEmpty())
+                cout << "You can place any tile at any location" << endl;
+            else
+                cout << "Your only possible move is to replace a tile" << endl;
         }
     } else if (operation == "save" && !secondKeyword.empty()) {
         saveGame(secondKeyword + ".save");
         cout << endl;
-        cout << "Game successfully saved." << endl;
+        cout << "Game successfully saved" << endl;
         cout << endl;
         takingInput = true;
-    } else if (helpEnabled && operation == "help") {
+    } else if (isSeekingHelp(operation)) {
         printHelpMessage(GAME_ROUND);
     } else if (operation == "quit") {
         quit();
         takingInput = false;
     } else {
-        cout << ERROR_MESSAGE << "Not a valid command." << endl;
+        cout << ERROR_MESSAGE
+             << (invalidInputEnabled ? " - Not a valid command" : "") << endl;
     }
 
     return takingInput;
@@ -415,7 +423,7 @@ void IOHandler::replaceTileOperation(const string& tile) {
 
 void IOHandler::printRound() {
     cout << endl;
-    cout << GameManager::getCurrentPlayer()->getName() << ", it's your turn "
+    cout << GameManager::getCurrentPlayer()->getName() << ", it's your turn"
          << endl;
 
     for (const shared_ptr<Player>& player : GameManager::players)
@@ -425,9 +433,10 @@ void IOHandler::printRound() {
     cout << endl;
     GameManager::board->print(cout, colourEnabled);
     cout << endl;
-    cout << (GameManager::getCurrentPlayer()->getName() == aiName ? "AI's"
-                                                                  : "Your")
-         << " hand is " << endl;
+    cout << (aiEnabled && GameManager::getCurrentPlayer()->getName() == aiName
+                    ? "AI's"
+                    : "Your")
+         << " hand is" << endl;
     GameManager::getCurrentPlayer()->getHand()->print(cout, colourEnabled);
     cout << endl;
 }
@@ -438,12 +447,15 @@ void IOHandler::notify(const string& message, State state) {
         cout << message << endl;
         takingInput = false;
     } else if (state == PLACE_FAILURE || state == REPLACE_FAILURE) {
-        cout << ERROR_MESSAGE << message << endl;
+        if (invalidInputEnabled)
+            cout << ERROR_MESSAGE << " - " << message << endl;
+        else
+            cout << ERROR_MESSAGE << endl;
     } else if (state == GAME_OVER) {
         cout << endl;
         GameManager::board->print(cout, colourEnabled);
         cout << endl;
-        cout << "Game Over" << endl;
+        cout << "Game Over!" << endl;
 
         for (const shared_ptr<Player>& player : GameManager::players)
             cout << "Score for " << player->getName() << ": "
@@ -463,21 +475,21 @@ void IOHandler::notify(const string& message, State state) {
                 winners.push_back(player);
         }
 
+        updateHighScores(winners);
         if (winners.size() == 1) {
-            cout << "Player " << winners.begin()->get()->getName() << "won!"
+            cout << "Player " << winners.begin()->get()->getName() << " won!"
                  << endl;
         } else {
             cout << "Game is drawn between ";
             for (size_t i = 0; i < winners.size(); ++i) {
                 cout << winners.at(i)->getName();
-                cout << (i == winners.size() - 1 ? "." : " and ");
+                cout << (i == winners.size() - 1 ? "" : " and ");
             }
             cout << endl;
         }
 
-        cout << "Goodbye" << endl;
-        takingInput = false;
-        gameRunning = false;
+        saveHighScores();
+        quit();
     }
 }
 
@@ -495,32 +507,43 @@ bool IOHandler::isSeekingHelp(string command) {
 }
 
 void IOHandler::printHelpMessage(HelpLocation location) {
-    // TODO add help messages
     if (location == MAIN_MENU) {
-        cout << "MAIN_MENU" << endl;
+        cout << "Choose an option from 1 to 5 inclusive" << endl;
     } else if (location == NEW_GAME) {
-        cout << "NEW_GAME" << endl;
+        cout << "Type the name of the player according to the rules" << endl;
     } else if (location == LOAD_GAME) {
-        cout << "LOAD_GAME" << endl;
+        cout
+            << "Type the name of the file with the .save extension to load from"
+            << endl;
     } else if (location == GAME_ROUND) {
-        cout << "GAME_ROUND" << endl;
+        cout << "You may type one of the following commands" << endl
+             << "PLACE __ (tile) AT __ (location)" << endl
+             << "Or" << endl
+             << "REPLACE __ (tile)" << endl
+             << "Or" << endl
+             << "HINT (if enabled from settings)" << endl;
     } else if (location == SETTINGS_MENU) {
-        cout << "SETTINGS_MENU" << endl;
+        cout << "Choose an option from 1 to 6 inclusive" << endl;
+    } else if (location == SETTINGS_CONFIRMATION) {
+        cout << "Type Y to enable, or N to disable the setting" << endl;
+    } else {
+        cout << "Choose and option from 1 to 3 inclusive" << endl;
     }
 }
 
 void IOHandler::printMenu() {
-    cout << "Menu" << endl;
+    cout << endl << "Menu" << endl;
     cout << "----" << endl;
     cout << "1. New Game" << endl;
     cout << "2. Load Game" << endl;
     cout << "3. Settings" << endl;
-    cout << "4. Credits (Show student information)" << endl;
-    cout << "5. Quit" << endl;
+    cout << "4. High Scores" << endl;
+    cout << "5. Credits (Show student information)" << endl;
+    cout << "6. Quit" << endl;
 }
 
 void IOHandler::menuSelection() {
-    int option = getSelection(5, MAIN_MENU);
+    int option = getSelection(6, MAIN_MENU);
 
     if (option == 1)
         newGame();
@@ -529,13 +552,15 @@ void IOHandler::menuSelection() {
     else if (option == 3)
         settingsMenu();
     else if (option == 4)
+        printHighScores();
+    else if (option == 5)
         credits();
-    else if (option == 5 && !cin.eof())
+    else if (option == 6 && !cin.eof())
         quit();
 }
 
 void IOHandler::printSettings() {
-    cout << "Settings" << endl;
+    cout << endl << "Settings" << endl;
     cout << "--------" << endl;
     cout << "1. Help!" << endl;
     cout << "2. Better invalid input" << endl;
@@ -570,6 +595,7 @@ void IOHandler::settingsSelection() {
             cout << "3. 4 player" << endl;
 
             numberOfPlayers = getSelection(3, PLAYER_MODE) + 1;
+            enabled = true;
         }
 
         cout << (enabled ? "Enabled" : "Disabled") << " successfully" << endl;
@@ -585,7 +611,7 @@ int IOHandler::getSelection(int range, HelpLocation location) {
     bool selecting = true;
     string option;
     int optionNumeric;
-    while (!cin.eof() && selecting) {
+    while (selecting) {
         cout << endl;
         prompt();
         cin >> option;
@@ -604,13 +630,12 @@ int IOHandler::getSelection(int range, HelpLocation location) {
                 } else {
                     cin.clear();
                     cin.ignore(CharLimit::max(), '\n');
-                    cout << endl;
-                    throw runtime_error("Invalid input.");
+                    throw runtime_error("");
                 }
             } catch (const runtime_error& e) {
-                cerr << e.what() << endl << endl;
+                cerr << ERROR_MESSAGE << endl;
             } catch (const invalid_argument& e) {
-                cerr << "Invalid input." << endl;
+                cerr << ERROR_MESSAGE << endl;
             }
         }
     }
@@ -619,13 +644,12 @@ int IOHandler::getSelection(int range, HelpLocation location) {
 }
 
 bool IOHandler::getConfirmation() {
-    cout << "Enable? (Y/N)" << endl;
+    cout << endl << "Enable? (Y/N)" << endl;
 
     bool response;
     bool selecting = true;
     string responseString;
     while (!cin.eof() && selecting) {
-        cout << endl;
         prompt();
         cin >> responseString;
 
@@ -646,12 +670,10 @@ bool IOHandler::getConfirmation() {
                 } else {
                     cin.clear();
                     cin.ignore(CharLimit::max(), '\n');
-                    cout << endl;
-                    throw runtime_error("Invalid input.");
+                    throw runtime_error("");
                 }
             } catch (const runtime_error& e) {
-                cerr << e.what() << endl;
-                cout << endl;
+                cerr << ERROR_MESSAGE << endl;
             }
         }
     }
@@ -694,9 +716,10 @@ bool IOHandler::checkTile(const string& tile) {
         if (validLetter && validNumber)
             condition = true;
         else
-            cout << ERROR_MESSAGE "Not a valid tile." << endl;
+            throw invalid_argument("");
     } catch (const invalid_argument& e) {
-        cout << ERROR_MESSAGE "Not a valid tile." << endl;
+        cerr << ERROR_MESSAGE
+             << (invalidInputEnabled ? " - Not a valid tile" : "") << endl;
     }
 
     return condition;
@@ -707,37 +730,34 @@ bool IOHandler::checkTilePosition(const string& position) {
     bool condition = false, validLetter = false, validNumber = false;
 
     try {
-        if (position.size() == STRING_SIZE_2) {
+        if (position.size() == STRING_SIZE_2 ||
+            position.size() == STRING_SIZE_3) {
             char letter = position.at(FIRST_POSITION);
-            char num1 = position.at(SECOND_POSITION);
             int asciiLetter = static_cast<unsigned char>(int(letter));
             validLetter = asciiLetter >= ASCII_ALPHABET_BEGIN &&
                 asciiLetter <= ASCII_ALPHABET_END;
 
-            appended.append(1, num1);
-            validNumber = stoi(appended) <= MAX_TILE_RANGE;
-        } else if (position.size() == STRING_SIZE_3) {
-            char letter = position.at(FIRST_POSITION);
-            char number1 = position.at(SECOND_POSITION);
-            char number2 = position.at(THIRD_POSITION);
+            char firstDigit = position.at(SECOND_POSITION);
+            appended.append(1, firstDigit);
 
-            int asciiLetter = static_cast<unsigned char>(int(letter));
-            validLetter = asciiLetter >= ASCII_ALPHABET_BEGIN &&
-                asciiLetter <= ASCII_ALPHABET_END;
-
-            appended.append(1, number1);
-            appended.append(1, number2);
-            int combinedNumber = stoi(appended);
-            validNumber =
-                combinedNumber > BOARD_LENGTH - 1 || combinedNumber < 0;
+            if (position.size() == STRING_SIZE_3) {
+                char lastDigit = position.at(THIRD_POSITION);
+                appended.append(1, lastDigit);
+                int combinedNumber = stoi(appended);
+                validNumber =
+                    combinedNumber < BOARD_LENGTH - 1 && combinedNumber > 0;
+            } else {
+                validNumber = stoi(appended) <= MAX_ASCII_DIGIT;
+            }
         }
 
         if (validNumber && validLetter)
             condition = true;
         else
-            cout << ERROR_MESSAGE "Not a valid position." << endl;
+            throw invalid_argument("");
     } catch (const invalid_argument& e) {
-        cout << ERROR_MESSAGE "Not a valid position." << endl;
+        cerr << ERROR_MESSAGE
+             << (invalidInputEnabled ? " - Not a valid position" : "") << endl;
     }
 
     return condition;
@@ -745,6 +765,64 @@ bool IOHandler::checkTilePosition(const string& position) {
 
 bool IOHandler::isEmpty(ifstream& file) {
     return file.peek() == ifstream::traits_type::eof();
+}
+
+void IOHandler::printHighScores() {
+    for (size_t i = 0; i < highScores.size(); ++i) {
+        cout << i + 1 << ". ";
+        if (highScores.at(i).first.empty())
+            cout << "Empty slot" << endl;
+        else
+            cout << highScores.at(i).second << " by " << highScores.at(i).first
+                 << endl;
+    }
+
+    mainMenu();
+}
+
+void IOHandler::saveHighScores() {
+    ofstream file(HIGH_SCORES_FILE_NAME);
+    for (const pair<string, size_t>& score : highScores)
+        file << score.first << "-" << score.second << endl;
+}
+
+void IOHandler::loadHighScores() {
+    ifstream file(HIGH_SCORES_FILE_NAME);
+    string text;
+    int highScoresRead = 0;
+    while (getline(file, text)) {
+        text.erase(remove(text.begin(), text.end(), '\r'), text.end());
+        text.erase(remove(text.begin(), text.end(), '\n'), text.end());
+
+        size_t delimiterPosition = text.find('-');
+        if (delimiterPosition != 0) {
+            string playerName = text.substr(0, delimiterPosition);
+            size_t playerScore = stoi(text.substr(delimiterPosition + 1));
+            highScores.at(highScoresRead) = make_pair(playerName, playerScore);
+            ++highScoresRead;
+        }
+    }
+}
+
+void IOHandler::updateHighScores(const vector<shared_ptr<Player>>& winners) {
+    shared_ptr<Player> winner = winners.at(FIRST_POSITION);
+    size_t maxScore = winner->getScore();
+    bool scoreUpdated = false;
+    for (size_t i = 0; i < highScores.size() && !scoreUpdated; ++i) {
+        if (maxScore > highScores.at(i).second) {
+            if (winners.size() > 1) {
+                for (size_t j = 0, k = i;
+                     j < winners.size() && k < highScores.size(); ++j, ++k)
+                    highScores.at(i) = make_pair(
+                        winners.at(j)->getName(), winners.at(j)->getScore());
+                scoreUpdated = true;
+            } else {
+                highScores.at(i) =
+                    make_pair(winner->getName(), winner->getScore());
+                scoreUpdated = true;
+            }
+        }
+    }
 }
 
 void IOHandler::credits() {

@@ -29,13 +29,14 @@ typedef int Shape;
 #define STAR_6    5
 #define CLOVER    6
 
+// ANSI colour codes
 #define RED_ANSI      "\033[0;31m"
 #define ORANGE_ANSI   "\033[0;38;5;208m"
-#define YELLOW_ANSI   "\033[0;38;5;226m"
+#define YELLOW_ANSI   "\033[0;33m"
 #define GREEN_ANSI    "\033[0;32m"
 #define BLUE_ANSI     "\033[0;34m"
 #define PURPLE_ANSI   "\033[0;35m"
-#define ANSI_END      "\033[0m"
+#define ANSI_RESET    "\033[0m"
 
 /**
  * @note

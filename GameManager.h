@@ -67,9 +67,9 @@ public:
      * @param loadedBag - the loaded TileBag
      * @param loadedBoard - the loaded GameBoard
      */
-    static void loadGame(const vector<shared_ptr<Player>>& loadedPlayers,
-        const string& currentPlayerName, const shared_ptr<GameBoard>& loadedBoard,
-        const shared_ptr<TileBag>& loadedBag
+    static void loadGame(vector<shared_ptr<Player>>& loadedPlayers,
+        const string& currentPlayerName, shared_ptr<GameBoard>& loadedBoard,
+        shared_ptr<TileBag>& loadedBag
         );
 
     /**

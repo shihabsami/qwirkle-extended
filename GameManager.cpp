@@ -6,12 +6,14 @@
 #include <algorithm>
 
 using std::get;
+using std::move;
 using std::make_pair;
 using std::make_tuple;
 using std::ostringstream;
 using std::invalid_argument;
 using std::out_of_range;
 
+/// Initialise the static variables
 vector<shared_ptr<Player>> GameManager::players;
 int GameManager::currentPlayerIndex = FIRST_POSITION;
 shared_ptr<TileBag> GameManager::bag = nullptr;
@@ -27,17 +29,17 @@ void GameManager::beginGame(const vector<string>& playerNames) {
         players.emplace_back(make_shared<Player>(name, bag->getHand()));
 }
 
-void GameManager::loadGame(const vector<shared_ptr<Player>>& loadedPlayers,
-    const string& currentPlayerName, const shared_ptr<GameBoard>& loadedBoard,
-    const shared_ptr<TileBag>& loadedBag) {
-    board = loadedBoard;
-    bag = loadedBag;
+void GameManager::loadGame(vector<shared_ptr<Player>>& loadedPlayers,
+    const string& currentPlayerName, shared_ptr<GameBoard>& loadedBoard,
+    shared_ptr<TileBag>& loadedBag) {
+    board = move(loadedBoard);
+    bag = move(loadedBag);
     for (size_t i = 0; i < BOARD_LENGTH; ++i)
         for (size_t j = 0; j < BOARD_LENGTH; ++j)
             if (board->at(i, j) != nullptr)
                 tileRegister[board->at(i, j)] = {i, j};
 
-    players = loadedPlayers;
+    players = move(loadedPlayers);
     for (size_t i = 0; i < players.size(); ++i)
         if (players.at(i)->getName() == currentPlayerName)
             GameManager::currentPlayerIndex = (int)i;
@@ -45,19 +47,19 @@ void GameManager::loadGame(const vector<shared_ptr<Player>>& loadedPlayers,
 
 void GameManager::placeTile(
     Colour colour, Shape shape, size_t row, size_t column) {
-    string message = "Tile could not be placed.";
-    State state = PLACE_FAILURE;
+    string message = "Tile could not be placed";
+    State state;
 
     try {
         Tile tile(colour, shape);
         if (!isTileInHand(tile)) {
             message = IOHandler::invalidInputEnabled
-                ? "The specified tile is not present in hand."
+                ? "The specified tile is not present in hand"
                 : message;
             throw invalid_argument("");
         } else if (!isGridLocationEmpty(row, column)) {
             message = IOHandler::invalidInputEnabled
-                ? "A tile is already present in the provided grid location."
+                ? "A tile is already present in the provided grid location"
                 : message;
             throw invalid_argument("");
         }
@@ -65,12 +67,12 @@ void GameManager::placeTile(
         Lines lines = getAdjacentLines(tile, row, column);
         if (!board->isEmpty() && !hasAdjacentTile(tile, lines)) {
             message = IOHandler::invalidInputEnabled
-                ? "No adjacent tile to form line."
+                ? "No adjacent tile to form line"
                 : message;
             throw invalid_argument("");
         } else if (!isTileValidOnLine(tile, lines)) {
             message = IOHandler::invalidInputEnabled
-                ? "Tile violates line rules."
+                ? "Tile violates line rules"
                 : message;
             throw invalid_argument("");
         }
@@ -80,11 +82,12 @@ void GameManager::placeTile(
             getCurrentPlayer()->setScore(1);
 
         updateScore(lines);
-        shared_ptr<Tile> tilePtr =
+        shared_ptr<Tile> playedTile =
             getCurrentPlayer()->getHand()->playTile(tile);
-        board->placeTile(tilePtr, row, column);
-        tileRegister[tilePtr] = {row, column};
-        message = "Tile placed successfully.";
+
+        board->placeTile(playedTile, row, column);
+        tileRegister[playedTile] = {row, column};
+        message = "Tile placed successfully";
         state = PLACE_SUCCESS;
 
         if (!bag->getTiles()->isEmpty()) {
@@ -94,7 +97,7 @@ void GameManager::placeTile(
         }
 
         if (IOHandler::aiEnabled &&
-            *getCurrentPlayer() == *players.at(SECOND_POSITION)) {
+            getCurrentPlayer()->getName() == IOHandler::aiName) {
             ostringstream stream;
             stream << "AI played ";
             tile.print(stream, IOHandler::colourEnabled);
@@ -112,30 +115,41 @@ void GameManager::placeTile(
 }
 
 void GameManager::replaceTile(Colour colour, Shape shape) {
-    string message = "Tile replaced successfully.";
-    State state = REPLACE_SUCCESS;
+    string message = "Tile could not be replaced";
+    State state;
 
     try {
         Tile tile(colour, shape);
         if (!isTileInHand(tile)) {
             message = IOHandler::invalidInputEnabled
-                ? "The specified tile is not present in hand."
+                ? "The specified tile is not present in hand"
                 : message;
             throw invalid_argument("");
         } else if (board->isEmpty()) {
             message = IOHandler::invalidInputEnabled
-                ? "Must place a tile on the first move."
+                ? "Must place a tile on the first move"
                 : message;
             throw invalid_argument("");
         }
 
         if (!bag->getTiles()->isEmpty()) {
             getCurrentPlayer()->getHand()->replaceTile(tile, *bag);
+            message = "Tile replaced successfully";
+            state = REPLACE_SUCCESS;
             GameManager::switchPlayer();
         } else {
             message = IOHandler::invalidInputEnabled
-                ? "No more tiles remain to be replaced."
+                ? "No more tiles remain to be replaced"
                 : message;
+
+            if (getPossibleMoves().empty()) {
+                message = IOHandler::invalidInputEnabled
+                    ? "No more moves possible"
+                    : message;
+
+                IOHandler::notify(message, GAME_OVER);
+            }
+
             throw out_of_range("");
         }
     } catch (...) {
@@ -367,8 +381,8 @@ bool GameManager::hasGameEnded() {
 }
 
 void GameManager::resetGame() {
-    tileRegister.clear();
-    board.reset();
-    bag.reset();
     players.clear();
+    bag.reset();
+    board.reset();
+    tileRegister.clear();
 }
