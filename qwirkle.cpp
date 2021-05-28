@@ -10,6 +10,8 @@
 using std::cout;
 using std::cin;
 using std::endl;
+using std::random_device;
+using std::uniform_int_distribution;
 
 // tests for LinkedList implementation
 void testLinkedList();
@@ -33,6 +35,7 @@ int main(int argc, char** argv) {
         testPlayerHand();
         testGameBoard();
         testAIAgainstAI();
+        testAIAgainstAI();
     */
 
     if (argc > 1) {
@@ -50,7 +53,6 @@ int main(int argc, char** argv) {
     // run the main game loop
     while (!cin.eof() && IOHandler::gameRunning) {
         IOHandler::printRound();
-
         if (IOHandler::aiEnabled &&
             GameManager::getCurrentPlayer()->getName() == IOHandler::aiName) {
             vector<Move> moves = GameManager::getPossibleMoves();
@@ -58,8 +60,9 @@ int main(int argc, char** argv) {
                 GameManager::getCurrentPlayer()->getHand();
 
             if (moves.empty()) {
-                GameManager::replaceTile(hand->getTiles()->at(0)->getColour(),
-                    hand->getTiles()->at(0)->getShape());
+                GameManager::replaceTile(
+                    hand->getTiles()->at(FIRST_POSITION)->getColour(),
+                    hand->getTiles()->at(FIRST_POSITION)->getShape());
             } else {
                 auto move = max_element(moves.begin(), moves.end(),
                     [](const Move& m1, const Move& m2) {
@@ -73,9 +76,6 @@ int main(int argc, char** argv) {
         } else {
             IOHandler::playRound();
         }
-
-        if (cin.eof())
-            IOHandler::quit();
     }
 
     return EXIT_SUCCESS;
@@ -245,9 +245,8 @@ void testAIAgainstAI() {
     IOHandler::beginGame();
     bool hasPlayedFirstRound = false;
 
-    std::random_device engine;
-//    std::mt19937 engine(seeder());
-    std::uniform_int_distribution<int> distribution(0, BOARD_LENGTH - 1);
+    random_device engine;
+    uniform_int_distribution<int> distribution(0, BOARD_LENGTH - 1);
     int firstRoundPosition = distribution(engine);
 
     // run the main game loop
@@ -277,8 +276,5 @@ void testAIAgainstAI() {
                 move->tile->getShape(), move->location.row,
                 move->location.column);
         }
-
-        if (cin.eof())
-            IOHandler::quit();
     }
 }

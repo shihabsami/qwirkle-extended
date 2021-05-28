@@ -15,17 +15,25 @@
 
 using std::unordered_map;
 
-// TODO comment these structs
+/// The location a tile can be placed.
 struct Location {
     size_t row;
     size_t column;
 };
 
+/// The lines formed by placing a tile at a location.
 struct Lines {
     LinkedList horizontal;
     LinkedList vertical;
 };
 
+/**
+ * A move that can be made by the player.
+ *
+ * @var tile - the tile to place
+ * @var location - the location to place the tile.
+ * @var points - the points gained
+ */
 struct Move {
     shared_ptr<Tile> tile;
     Location location;
@@ -47,6 +55,11 @@ enum State {
 class GameManager {
 public:
     /**
+     * The destructor.
+     */
+    ~GameManager();
+
+    /**
      * Initialise the board, tilebag and the players for the game.
      *
      * @param player1Name - name of the first player
@@ -65,8 +78,7 @@ public:
      */
     static void loadGame(vector<shared_ptr<Player>>& loadedPlayers,
         const string& currentPlayerName, shared_ptr<GameBoard>& loadedBoard,
-        shared_ptr<TileBag>& loadedBag
-        );
+        shared_ptr<TileBag>& loadedBag);
 
     /**
      * Place a tile on to the board from the current player's hand.

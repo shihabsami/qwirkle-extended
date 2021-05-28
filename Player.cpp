@@ -4,7 +4,10 @@
 Player::Player(const string& name, shared_ptr<PlayerHand> hand)
     : name(name), score(0), hand(hand) {}
 
-Player::~Player() { hand.reset(); }
+Player::~Player() {
+    name.clear();
+    hand.reset();
+}
 
 string Player::getName() { return name; }
 

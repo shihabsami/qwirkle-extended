@@ -21,6 +21,7 @@ enum HelpLocation {
     PLAYER_MODE
 };
 
+/// The different line indices that define the save file format.
 struct SaveFileFormat {
     unsigned int boardSizeLineIndex;
     unsigned int boardTilesLineIndex;

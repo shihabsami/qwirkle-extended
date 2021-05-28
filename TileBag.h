@@ -10,8 +10,8 @@ class PlayerHand;
 class TileBag {
 public:
     /**
-    * Construct a bag with an empty LinkedList.
-    */
+     * Construct a bag with an empty LinkedList.
+     */
     TileBag();
 
     /**

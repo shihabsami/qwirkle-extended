@@ -64,7 +64,8 @@ void IOHandler::newGame() {
 
     vector<string> playerNames;
     numberOfPlayers = aiEnabled ? 2 : numberOfPlayers;
-    for (unsigned int i = 0; i < numberOfPlayers; ++i) {
+    bool gameStarted = true;
+    for (unsigned int i = 0; i < numberOfPlayers && gameStarted; ++i) {
         bool nameCheck = true;
         string name;
         while (nameCheck) {
@@ -75,30 +76,38 @@ void IOHandler::newGame() {
                  << " (uppercase characters only)" << endl;
             prompt();
             cin >> name;
-            if (cin.eof())
-                quit();
-
-            if (isSeekingHelp(name)) {
-                printHelpMessage(NEW_GAME);
-            } else if (!validateName(name, playerNames)) {
-                cerr << "Must enter a name in CAPS for player and name must "
-                        "not contain numbers or symbols or duplicate names"
-                     << endl;
-                cin.clear();
-                cin.ignore(CharLimit::max(), '\n');
-            } else {
+            if (cin.eof()) {
                 nameCheck = false;
-                playerNames.push_back(name);
-                aiName = aiNameCheck ? name : aiName;
+                gameStarted = false;
+                quit();
+            }
+
+            if (nameCheck) {
+                if (isSeekingHelp(name)) {
+                    printHelpMessage(NEW_GAME);
+                } else if (!validateName(name, playerNames)) {
+                    cerr
+                        << "Must enter a name in CAPS for player and name must "
+                           "not contain numbers or symbols or duplicate names"
+                        << endl;
+                    cin.clear();
+                    cin.ignore(CharLimit::max(), '\n');
+                } else {
+                    nameCheck = false;
+                    playerNames.push_back(name);
+                    aiName = aiNameCheck ? name : aiName;
+                }
             }
         }
     }
 
-    cin.clear();
-    cin.ignore(CharLimit::max(), '\n');
-    cout << endl << "Let's Play!" << endl;
-    GameManager::beginGame(playerNames);
-    gameRunning = true;
+    if (gameStarted) {
+        cin.clear();
+        cin.ignore(CharLimit::max(), '\n');
+        cout << endl << "Let's Play!" << endl;
+        GameManager::beginGame(playerNames);
+        gameRunning = true;
+    }
 }
 
 void IOHandler::saveGame(const string& saveFileName) {
@@ -136,201 +145,220 @@ void IOHandler::loadGame() {
             prompt();
             cin >> filename;
 
-            if (cin.eof())
+            if (cin.eof()) {
+                fileCheck = false;
+                takingInput = false;
                 quit();
-
-            if (isSeekingHelp(filename)) {
-                printHelpMessage(LOAD_GAME);
-                throw invalid_argument("");
             }
 
-            ifstream file(filename);
-            if (!file)
-                throw invalid_argument("File does not exist");
-            if (isEmpty(file))
-                throw invalid_argument("File is empty");
+            if (fileCheck) {
+                if (isSeekingHelp(filename)) {
+                    printHelpMessage(LOAD_GAME);
+                    throw invalid_argument("");
+                }
 
-            cin.clear();
-            cin.ignore();
+                ifstream file(filename);
+                if (!file)
+                    throw invalid_argument("File does not exist");
+                if (isEmpty(file))
+                    throw invalid_argument("File is empty");
 
-            vector<shared_ptr<Player>> players;
-            shared_ptr<TileBag> tileBag = make_shared<TileBag>();
-            shared_ptr<GameBoard> board = make_shared<GameBoard>();
-            string currentPlayerName;
+                cin.clear();
+                cin.ignore();
 
-            unsigned int playerNamesRead = 0;
-            unsigned int playerScoresRead = 0;
-            unsigned int playerHandsRead = 0;
-            bool oldFormat = false;
+                vector<shared_ptr<Player>> players;
+                shared_ptr<TileBag> tileBag = make_shared<TileBag>();
+                shared_ptr<GameBoard> board = make_shared<GameBoard>();
+                string currentPlayerName;
 
-            unsigned int lineIndex = 0;
-            string text;
-            while (getline(file, text)) {
-                text.erase(remove(text.begin(), text.end(), '\r'), text.end());
-                text.erase(remove(text.begin(), text.end(), '\n'), text.end());
-                if (lineIndex == 0)
-                    oldFormat = deduceSaveFileFormat(text);
+                unsigned int playerNamesRead = 0;
+                unsigned int playerScoresRead = 0;
+                unsigned int playerHandsRead = 0;
+                bool oldFormat = false;
 
-                if (lineIndex == saveFileFormat.boardSizeLineIndex) {
-                    stringstream ss(text);
-                    while (ss.good()) {
-                        string substr;
-                        getline(ss, substr, ',');
-                        int number = stoi(substr);
-                        if (number < 0 || number > BOARD_LENGTH) {
-                            throw invalid_argument(
-                                "The board size should be more than 0 and less "
-                                "than 26");
-                        }
-                    }
-                } else if (lineIndex == saveFileFormat.boardTilesLineIndex) {
-                    stringstream ss(text);
-                    while (ss.good()) {
-                        string substr;
-                        getline(ss, substr, ' ');
-                        const char at = '@';
-                        if (substr[FIRST_POSITION] != '\0')
-                            if (substr[THIRD_POSITION] != at)
+                unsigned int lineIndex = 0;
+                string text;
+                while (getline(file, text)) {
+                    text.erase(
+                        remove(text.begin(), text.end(), '\r'), text.end());
+                    text.erase(
+                        remove(text.begin(), text.end(), '\n'), text.end());
+                    if (lineIndex == 0)
+                        oldFormat = deduceSaveFileFormat(text);
+
+                    if (lineIndex == saveFileFormat.boardSizeLineIndex) {
+                        stringstream ss(text);
+                        while (ss.good()) {
+                            string substr;
+                            getline(ss, substr, ',');
+                            int number = stoi(substr);
+                            if (number < 0 || number > BOARD_LENGTH) {
                                 throw invalid_argument(
-                                    "The board should appear as a list of "
-                                    "tile@postion");
-
-                        char last = substr.length() < 6 ? ',' : substr[5];
-                        char tile[2] = {substr[0], substr[1]};
-                        char position[3] = {substr[3], substr[4], last};
-
-                        int row =
-                            position[FIRST_POSITION] - ASCII_ALPHABET_BEGIN;
-                        int column = (position[THIRD_POSITION] == ASCII_COMMA ||
-                                         position[THIRD_POSITION] == '\r' ||
-                                         position[THIRD_POSITION] == '\n')
-                            ? position[SECOND_POSITION] - '0'
-                            : (int)(position[SECOND_POSITION] - '0') * 10 +
-                                (int)(position[THIRD_POSITION] - '0');
-
-                        if (!substr.empty())
-                            board->placeTile(
-                                make_shared<Tile>(tile[0], tile[1] - '0'), row,
-                                column);
-                    }
-
-                } else if (lineIndex >= saveFileFormat.settingsLineIndexBegin &&
-                    lineIndex <= saveFileFormat.settingsLineIndexEnd) {
-                    size_t delimiterPosition = text.find('-');
-                    string settingName = text.substr(0, delimiterPosition);
-                    string settingValue = text.substr(delimiterPosition + 1);
-
-                    if (settingName == GET_SETTING_NAME(aiEnabled))
-                        aiEnabled = settingValue != "0";
-                    if (settingName == GET_SETTING_NAME(aiName))
-                        aiName = settingValue;
-                    else if (settingName == GET_SETTING_NAME(helpEnabled))
-                        helpEnabled = settingValue != "0";
-                    else if (settingName ==
-                        GET_SETTING_NAME(invalidInputEnabled))
-                        invalidInputEnabled = settingValue != "0";
-                    else if (settingName == GET_SETTING_NAME(colourEnabled))
-                        colourEnabled = settingValue != "0";
-                    else if (settingName == GET_SETTING_NAME(hintEnabled))
-                        hintEnabled = settingValue != "0";
-                    else if (settingName == GET_SETTING_NAME(numberOfPlayers))
-                        numberOfPlayers = stoi(settingValue);
-                } else if (lineIndex == saveFileFormat.currentPlayerLineIndex ||
-                    (lineIndex >= saveFileFormat.playerNameLineIndex &&
-                        (lineIndex - saveFileFormat.playerNameLineIndex) % 3 ==
-                            0)) {
-                    for (unsigned i = 0; i < text.length() - 1; i++) {
-                        int ascii = static_cast<unsigned char>(text[i]);
-                        if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
-                            ascii > ASCII_ALPHABET_END + 1 || ascii == 0) {
-                            throw invalid_argument(
-                                "Name format is not part of ASCII text");
+                                    "The board size should be more than 0 and "
+                                    "less "
+                                    "than 26");
+                            }
                         }
-                    }
+                    } else if (lineIndex ==
+                        saveFileFormat.boardTilesLineIndex) {
+                        stringstream ss(text);
+                        while (ss.good()) {
+                            string substr;
+                            getline(ss, substr, ' ');
+                            const char at = '@';
+                            if (substr[FIRST_POSITION] != '\0')
+                                if (substr[THIRD_POSITION] != at)
+                                    throw invalid_argument(
+                                        "The board should appear as a list of "
+                                        "tile@postion");
 
-                    if (lineIndex == saveFileFormat.currentPlayerLineIndex) {
-                        currentPlayerName = text;
-                    } else {
-                        if (oldFormat) {
-                            if (playerNamesRead < 2) {
+                            char last = substr.length() < 6 ? ',' : substr[5];
+                            char tile[2] = {substr[0], substr[1]};
+                            char position[3] = {substr[3], substr[4], last};
+
+                            int row =
+                                position[FIRST_POSITION] - ASCII_ALPHABET_BEGIN;
+                            int column =
+                                (position[THIRD_POSITION] == ASCII_COMMA ||
+                                    position[THIRD_POSITION] == '\r' ||
+                                    position[THIRD_POSITION] == '\n')
+                                ? position[SECOND_POSITION] - '0'
+                                : (int)(position[SECOND_POSITION] - '0') * 10 +
+                                    (int)(position[THIRD_POSITION] - '0');
+
+                            if (!substr.empty())
+                                board->placeTile(
+                                    make_shared<Tile>(tile[0], tile[1] - '0'),
+                                    row, column);
+                        }
+
+                    } else if (lineIndex >=
+                            saveFileFormat.settingsLineIndexBegin &&
+                        lineIndex <= saveFileFormat.settingsLineIndexEnd) {
+                        size_t delimiterPosition = text.find('-');
+                        string settingName = text.substr(0, delimiterPosition);
+                        string settingValue =
+                            text.substr(delimiterPosition + 1);
+
+                        if (settingName == GET_SETTING_NAME(aiEnabled))
+                            aiEnabled = settingValue != "0";
+                        if (settingName == GET_SETTING_NAME(aiName))
+                            aiName = settingValue;
+                        else if (settingName == GET_SETTING_NAME(helpEnabled))
+                            helpEnabled = settingValue != "0";
+                        else if (settingName ==
+                            GET_SETTING_NAME(invalidInputEnabled))
+                            invalidInputEnabled = settingValue != "0";
+                        else if (settingName == GET_SETTING_NAME(colourEnabled))
+                            colourEnabled = settingValue != "0";
+                        else if (settingName == GET_SETTING_NAME(hintEnabled))
+                            hintEnabled = settingValue != "0";
+                        else if (settingName ==
+                            GET_SETTING_NAME(numberOfPlayers))
+                            numberOfPlayers = stoi(settingValue);
+                    } else if (lineIndex ==
+                            saveFileFormat.currentPlayerLineIndex ||
+                        (lineIndex >= saveFileFormat.playerNameLineIndex &&
+                            (lineIndex - saveFileFormat.playerNameLineIndex) %
+                                    3 ==
+                                0)) {
+                        for (unsigned i = 0; i < text.length() - 1; i++) {
+                            int ascii = static_cast<unsigned char>(text[i]);
+                            if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
+                                ascii > ASCII_ALPHABET_END + 1 || ascii == 0) {
+                                throw invalid_argument(
+                                    "Name format is not part of ASCII text");
+                            }
+                        }
+
+                        if (lineIndex ==
+                            saveFileFormat.currentPlayerLineIndex) {
+                            currentPlayerName = text;
+                        } else {
+                            if (oldFormat) {
+                                if (playerNamesRead < 2) {
+                                    players.emplace_back(make_shared<Player>(
+                                        text, make_shared<PlayerHand>()));
+                                }
+                            } else {
                                 players.emplace_back(make_shared<Player>(
                                     text, make_shared<PlayerHand>()));
                             }
-                        } else {
-                            players.emplace_back(make_shared<Player>(
-                                text, make_shared<PlayerHand>()));
+
+                            ++playerNamesRead;
                         }
+                    } else if (lineIndex >=
+                            saveFileFormat.playerScoreLineIndex &&
+                        (lineIndex - saveFileFormat.playerScoreLineIndex) % 3 ==
+                            0) {
+                        int score = stoi(text);
+                        if (score < 0)
+                            throw invalid_argument(
+                                "Player score should be positive");
 
-                        ++playerNamesRead;
-                    }
-                } else if (lineIndex >= saveFileFormat.playerScoreLineIndex &&
-                    (lineIndex - saveFileFormat.playerScoreLineIndex) % 3 ==
-                        0) {
-                    int score = stoi(text);
-                    if (score < 0)
-                        throw invalid_argument(
-                            "Player score should be positive");
-
-                    if (oldFormat) {
-                        if (playerScoresRead < 2) {
+                        if (oldFormat) {
+                            if (playerScoresRead < 2) {
+                                players.at(playerScoresRead)->setScore(score);
+                            }
+                        } else {
                             players.at(playerScoresRead)->setScore(score);
                         }
-                    } else {
-                        players.at(playerScoresRead)->setScore(score);
-                    }
 
-                    ++playerScoresRead;
-                } else if (lineIndex == saveFileFormat.tileBagLineIndex ||
-                    (lineIndex >= saveFileFormat.playerHandLineIndex &&
-                        (lineIndex - saveFileFormat.playerHandLineIndex) % 3 ==
-                            0)) {
-                    stringstream ss(text);
-                    bool readPlayerHand = false;
-                    while (ss.good()) {
-                        string substr;
-                        getline(ss, substr, ',');
-                        if (text[FIRST_POSITION] != '\0')
-                            if (substr.length() != 2)
-                                throw invalid_argument(
-                                    "Wrong tile list format");
+                        ++playerScoresRead;
+                    } else if (lineIndex == saveFileFormat.tileBagLineIndex ||
+                        (lineIndex >= saveFileFormat.playerHandLineIndex &&
+                            (lineIndex - saveFileFormat.playerHandLineIndex) %
+                                    3 ==
+                                0)) {
+                        stringstream ss(text);
+                        bool readPlayerHand = false;
+                        while (ss.good()) {
+                            string substr;
+                            getline(ss, substr, ',');
+                            if (text[FIRST_POSITION] != '\0')
+                                if (substr.length() != 2)
+                                    throw invalid_argument(
+                                        "Wrong tile list format");
 
-                        if (lineIndex == saveFileFormat.tileBagLineIndex) {
-                            tileBag->getTiles()->addBack(
-                                make_shared<Tile>(substr[FIRST_POSITION],
-                                    substr[SECOND_POSITION] - '0'));
-                        } else {
-                            if (oldFormat) {
-                                if (playerHandsRead < 2) {
+                            if (lineIndex == saveFileFormat.tileBagLineIndex) {
+                                tileBag->getTiles()->addBack(
+                                    make_shared<Tile>(substr[FIRST_POSITION],
+                                        substr[SECOND_POSITION] - '0'));
+                            } else {
+                                if (oldFormat) {
+                                    if (playerHandsRead < 2) {
+                                        players.at(playerHandsRead)
+                                            ->getHand()
+                                            ->addTile(make_shared<Tile>(
+                                                substr[FIRST_POSITION],
+                                                substr[SECOND_POSITION] - '0'));
+                                    }
+                                } else {
                                     players.at(playerHandsRead)
                                         ->getHand()
                                         ->addTile(make_shared<Tile>(
                                             substr[FIRST_POSITION],
                                             substr[SECOND_POSITION] - '0'));
                                 }
-                            } else {
-                                players.at(playerHandsRead)
-                                    ->getHand()
-                                    ->addTile(make_shared<Tile>(
-                                        substr[FIRST_POSITION],
-                                        substr[SECOND_POSITION] - '0'));
-                            }
 
-                            readPlayerHand = true;
+                                readPlayerHand = true;
+                            }
                         }
+                        playerHandsRead = readPlayerHand ? playerHandsRead + 1
+                                                         : playerHandsRead;
                     }
-                    playerHandsRead =
-                        readPlayerHand ? playerHandsRead + 1 : playerHandsRead;
+
+                    ++lineIndex;
                 }
 
-                ++lineIndex;
+                cout << "Qwirkle game successfully loaded" << endl;
+                file.close();
+                numberOfPlayers = (unsigned int)players.size();
+                GameManager::loadGame(
+                    players, currentPlayerName, board, tileBag);
+                gameRunning = true;
+                fileCheck = false;
             }
-
-            cout << "Qwirkle game successfully loaded" << endl;
-            file.close();
-            numberOfPlayers = (unsigned int)players.size();
-            GameManager::loadGame(players, currentPlayerName, board, tileBag);
-            gameRunning = true;
-            fileCheck = false;
         } catch (const invalid_argument& error) {
             cerr << error.what() << endl;
         }
@@ -344,8 +372,10 @@ void IOHandler::playRound() {
         string commandString, operation, tile, keywordAt, position, saveName;
         getline(cin, commandString);
         istringstream command(commandString);
-        if (cin.eof())
+        if (cin.eof()) {
+            takingInput = false;
             quit();
+        }
 
         command >> operation >> tile >> keywordAt >> position;
         saveName = tile;
@@ -359,12 +389,13 @@ void IOHandler::playRound() {
             keywordAt.begin(), keywordAt.end(), keywordAt.begin(), toLower);
         transform(position.begin(), position.end(), position.begin(), toUpper);
 
-        if (operation == "save") {
-            takingInput =
-                operationHandler(operation, saveName, keywordAt, position);
-        } else {
-            takingInput =
-                operationHandler(operation, tile, keywordAt, position);
+        if (takingInput) {
+            if (operation == "save")
+                takingInput =
+                    operationHandler(operation, saveName, keywordAt, position);
+            else
+                takingInput =
+                    operationHandler(operation, tile, keywordAt, position);
         }
     }
 }
@@ -461,8 +492,9 @@ void IOHandler::printRound() {
          << endl;
 
     for (const shared_ptr<Player>& player : GameManager::players)
-        cout << "Score for " << player->getName() << ": " << player->getScore()
-             << endl;
+        cout << "Score for " << player->getName()
+             << (player->getName() == aiName ? " (AI): " : ": ")
+             << player->getScore() << endl;
 
     cout << endl;
     GameManager::board->print(cout, colourEnabled);
@@ -522,15 +554,18 @@ void IOHandler::notify(const string& message, State state) {
             cout << endl;
         }
 
+        winners.clear();
         saveHighScores();
-        quit();
+        takingInput = false;
+        gameRunning = false;
     }
 }
 
 void IOHandler::quit() {
     GameManager::resetGame();
     cout << "Goodbye" << endl;
-    exit(EXIT_SUCCESS);
+    takingInput = false;
+    gameRunning = false;
 }
 
 bool IOHandler::isSeekingHelp(string command) {
@@ -607,7 +642,7 @@ void IOHandler::printSettings() {
 void IOHandler::settingsSelection() {
     unsigned int option = getSelection(6, SETTINGS_MENU);
 
-    if (option <= 5) {
+    if (option > 0 && option < 6) {
         bool enabled = false;
         if (option == 1) {
             helpEnabled = getConfirmation();
@@ -645,32 +680,38 @@ unsigned int IOHandler::getSelection(
     unsigned int range, HelpLocation location) {
     bool selecting = true;
     string option;
-    unsigned int optionNumeric;
+    unsigned int optionNumeric = 0;
     while (selecting) {
         cout << endl;
         prompt();
         cin >> option;
-        if (cin.eof())
+        if (cin.eof()) {
+            selecting = false;
+            takingInput = false;
             quit();
-        transform(option.begin(), option.end(), option.begin(),
-            [](unsigned char c) { return tolower(c); });
+        }
 
-        if (isSeekingHelp(option)) {
-            printHelpMessage(location);
-        } else {
-            try {
-                optionNumeric = stoi(option);
-                if (optionNumeric >= 1 && optionNumeric <= range) {
-                    selecting = false;
-                } else {
-                    cin.clear();
-                    cin.ignore(CharLimit::max(), '\n');
-                    throw runtime_error("");
+        if (selecting) {
+            transform(option.begin(), option.end(), option.begin(),
+                [](unsigned char c) { return tolower(c); });
+
+            if (isSeekingHelp(option)) {
+                printHelpMessage(location);
+            } else {
+                try {
+                    optionNumeric = stoi(option);
+                    if (optionNumeric >= 1 && optionNumeric <= range) {
+                        selecting = false;
+                    } else {
+                        cin.clear();
+                        cin.ignore(CharLimit::max(), '\n');
+                        throw runtime_error("");
+                    }
+                } catch (const runtime_error& e) {
+                    cerr << ERROR_MESSAGE << endl;
+                } catch (const invalid_argument& e) {
+                    cerr << ERROR_MESSAGE << endl;
                 }
-            } catch (const runtime_error& e) {
-                cerr << ERROR_MESSAGE << endl;
-            } catch (const invalid_argument& e) {
-                cerr << ERROR_MESSAGE << endl;
             }
         }
     }
@@ -701,6 +742,8 @@ bool IOHandler::getConfirmation() {
                         selecting = false;
                     }
                 } else if (cin.eof()) {
+                    selecting = false;
+                    takingInput = false;
                     quit();
                 } else {
                     cin.clear();
@@ -846,6 +889,8 @@ void IOHandler::saveHighScores() {
     ofstream file(HIGH_SCORES_FILE_NAME);
     for (const pair<string, size_t>& score : highScores)
         file << score.first << "-" << score.second << endl;
+
+    file.close();
 }
 
 void IOHandler::loadHighScores() {
@@ -864,6 +909,8 @@ void IOHandler::loadHighScores() {
             ++highScoresRead;
         }
     }
+
+    file.close();
 }
 
 void IOHandler::updateHighScores(const vector<shared_ptr<Player>>& winners) {

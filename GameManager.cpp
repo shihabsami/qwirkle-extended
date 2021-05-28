@@ -11,12 +11,16 @@ using std::ostringstream;
 using std::invalid_argument;
 using std::out_of_range;
 
-/// Initialise the static variables
+/// Initialise the static variables.
 vector<shared_ptr<Player>> GameManager::players;
 unsigned int GameManager::currentPlayerIndex = FIRST_POSITION;
 shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<GameBoard> GameManager::board = nullptr;
 unordered_map<shared_ptr<Tile>, Location> GameManager::tileRegister;
+
+GameManager::~GameManager() {
+    resetGame();
+}
 
 void GameManager::beginGame(const vector<string>& playerNames) {
     board = make_shared<GameBoard>();
@@ -100,6 +104,7 @@ void GameManager::placeTile(
             stream << "AI played ";
             tile.print(stream, IOHandler::colourEnabled);
             message = stream.str();
+            stream.clear();
         }
 
         GameManager::switchPlayer();
@@ -108,8 +113,10 @@ void GameManager::placeTile(
     }
 
     IOHandler::notify(message, state);
-    if (hasGameEnded())
+    if (hasGameEnded()) {
+        message.clear();
         IOHandler::notify("", GAME_OVER);
+    }
 }
 
 void GameManager::replaceTile(Colour colour, Shape shape) {
@@ -144,9 +151,8 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
 
         // dead end prevention
         if (getPossibleMoves().empty()) {
-            message = IOHandler::invalidInputEnabled
-                ? "No more moves possible"
-                : message;
+            message = IOHandler::invalidInputEnabled ? "No more moves possible"
+                                                     : message;
 
             IOHandler::notify(message, REPLACE_SUCCESS);
             IOHandler::notify(message, GAME_OVER);
@@ -156,6 +162,7 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
     }
 
     IOHandler::notify(message, state);
+    message.clear();
 }
 
 void GameManager::switchPlayer() {
