@@ -10,9 +10,6 @@
 using std::cout;
 using std::cin;
 using std::endl;
-using std::sort;
-using std::find;
-using std::get;
 
 // tests for LinkedList implementation
 void testLinkedList();
@@ -248,8 +245,8 @@ void testAIAgainstAI() {
     IOHandler::beginGame();
     bool hasPlayedFirstRound = false;
 
-    std::random_device seeder;
-    std::mt19937 engine(seeder());
+    std::random_device engine;
+//    std::mt19937 engine(seeder());
     std::uniform_int_distribution<int> distribution(0, BOARD_LENGTH - 1);
     int firstRoundPosition = distribution(engine);
 

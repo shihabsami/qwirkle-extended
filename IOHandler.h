@@ -3,7 +3,10 @@
 
 #include "GameManager.h"
 
+#include <utility>
+
 using std::ifstream;
+using std::pair;
 
 /**
  * The possible locations help can be seeked. (i.e., a prompt is provided)

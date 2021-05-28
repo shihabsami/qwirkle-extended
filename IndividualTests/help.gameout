@@ -1,0 +1,53 @@
+
+░█▀▀█ ░█──░█ ▀█▀ ░█▀▀█ ░█─▄▀ ░█─── ░█▀▀▀
+░█─░█ ░█░█░█ ░█─ ░█▄▄▀ ░█▀▄─ ░█─── ░█▀▀▀
+─▀▀█▄ ░█▄▀▄█ ▄█▄ ░█─░█ ░█─░█ ░█▄▄█ ░█▄▄▄
+
+Welcome to Qwirkle!
+-------------------
+
+Menu
+----
+1. New Game
+2. Load Game
+3. Settings
+4. High Scores
+5. Credits (Show student information)
+6. Quit
+
+> 
+Settings
+--------
+1. Help!
+2. Better invalid input
+3. Colour
+4. Hint
+5. 3-4 player modes
+6. Return to menu
+
+> 
+Enable? (Y/N)
+> Enabled successfully
+
+Settings
+--------
+1. Help!
+2. Better invalid input
+3. Colour
+4. Hint
+5. 3-4 player modes
+6. Return to menu
+
+> 
+Menu
+----
+1. New Game
+2. Load Game
+3. Settings
+4. High Scores
+5. Credits (Show student information)
+6. Quit
+
+> Choose an option from 1 to 5 inclusive
+
+> Goodbye

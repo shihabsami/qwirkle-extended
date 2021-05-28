@@ -2,11 +2,10 @@
 #include "Constants.h"
 
 #include <algorithm>
-#include <cctype>
-#include <iostream>
 #include <limits>
-#include <sstream>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 using std::cin;
 using std::cout;
@@ -39,7 +38,7 @@ unsigned int IOHandler::numberOfPlayers = 2;
 // these settings are enabled by default
 bool IOHandler::helpEnabled = true;
 bool IOHandler::invalidInputEnabled = true;
-bool IOHandler::colourEnabled = true;
+bool IOHandler::colourEnabled = false;
 bool IOHandler::hintEnabled = true;
 
 void IOHandler::beginGame() {
@@ -82,7 +81,7 @@ void IOHandler::newGame() {
             if (isSeekingHelp(name)) {
                 printHelpMessage(NEW_GAME);
             } else if (!validateName(name, playerNames)) {
-                cout << "Must enter a name in CAPS for player and name must "
+                cerr << "Must enter a name in CAPS for player and name must "
                         "not contain numbers or symbols or duplicate names"
                      << endl;
                 cin.clear();
@@ -332,8 +331,8 @@ void IOHandler::loadGame() {
             GameManager::loadGame(players, currentPlayerName, board, tileBag);
             gameRunning = true;
             fileCheck = false;
-        } catch (const invalid_argument& e) {
-            cerr << e.what() << endl;
+        } catch (const invalid_argument& error) {
+            cerr << error.what() << endl;
         }
     }
 }
@@ -345,11 +344,8 @@ void IOHandler::playRound() {
         string commandString, operation, tile, keywordAt, position, saveName;
         getline(cin, commandString);
         istringstream command(commandString);
-
-        if (cin.eof()) {
+        if (cin.eof())
             quit();
-            cin.clear();
-        }
 
         command >> operation >> tile >> keywordAt >> position;
         saveName = tile;
@@ -645,7 +641,8 @@ void IOHandler::settingsSelection() {
 
 void IOHandler::prompt() { cout << "> "; }
 
-unsigned int IOHandler::getSelection(unsigned int range, HelpLocation location) {
+unsigned int IOHandler::getSelection(
+    unsigned int range, HelpLocation location) {
     bool selecting = true;
     string option;
     unsigned int optionNumeric;
@@ -805,7 +802,6 @@ bool IOHandler::isEmpty(ifstream& file) {
     return file.peek() == ifstream::traits_type::eof();
 }
 
-
 bool IOHandler::deduceSaveFileFormat(const string& formatTag) {
     bool oldFormat = formatTag != NEW_SAVE_FILE_FORMAT;
     if (!oldFormat) {
@@ -832,7 +828,6 @@ bool IOHandler::deduceSaveFileFormat(const string& formatTag) {
 
     return oldFormat;
 }
-
 
 void IOHandler::printHighScores() {
     for (size_t i = 0; i < highScores.size(); ++i) {

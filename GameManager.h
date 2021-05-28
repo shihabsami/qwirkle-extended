@@ -5,9 +5,7 @@
 #include "GameBoard.h"
 #include "Player.h"
 
-#include <tuple>
 #include <unordered_map>
-#include <utility>
 
 // Line calculation constants
 #define DIRECTION_UP 0
@@ -15,8 +13,6 @@
 #define DIRECTION_LEFT 2
 #define DIRECTION_RIGHT 3
 
-using std::pair;
-using std::tuple;
 using std::unordered_map;
 
 // TODO comment these structs
@@ -183,7 +179,7 @@ public:
     static void resetGame();
 
     static vector<shared_ptr<Player>> players;
-    static int currentPlayerIndex;
+    static unsigned int currentPlayerIndex;
     static shared_ptr<TileBag> bag;
     static shared_ptr<GameBoard> board;
     static unordered_map<shared_ptr<Tile>, Location> tileRegister;

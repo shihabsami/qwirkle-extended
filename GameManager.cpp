@@ -7,15 +7,13 @@
 
 using std::get;
 using std::move;
-using std::make_pair;
-using std::make_tuple;
 using std::ostringstream;
 using std::invalid_argument;
 using std::out_of_range;
 
 /// Initialise the static variables
 vector<shared_ptr<Player>> GameManager::players;
-int GameManager::currentPlayerIndex = FIRST_POSITION;
+unsigned int GameManager::currentPlayerIndex = FIRST_POSITION;
 shared_ptr<TileBag> GameManager::bag = nullptr;
 shared_ptr<GameBoard> GameManager::board = nullptr;
 unordered_map<shared_ptr<Tile>, Location> GameManager::tileRegister;
@@ -132,16 +130,6 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             throw invalid_argument("");
         }
 
-        // dead end prevention
-        if (getPossibleMoves().empty()) {
-            message = IOHandler::invalidInputEnabled
-                ? "No more moves possible"
-                : message;
-
-            IOHandler::notify(message, REPLACE_SUCCESS);
-            IOHandler::notify(message, GAME_OVER);
-        }
-
         if (!bag->getTiles()->isEmpty()) {
             getCurrentPlayer()->getHand()->replaceTile(tile, *bag);
             message = "Tile replaced successfully";
@@ -151,8 +139,17 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             message = IOHandler::invalidInputEnabled
                 ? "No more tiles remain to be replaced"
                 : message;
+            state = REPLACE_FAILURE;
+        }
 
-            throw out_of_range("");
+        // dead end prevention
+        if (getPossibleMoves().empty()) {
+            message = IOHandler::invalidInputEnabled
+                ? "No more moves possible"
+                : message;
+
+            IOHandler::notify(message, REPLACE_SUCCESS);
+            IOHandler::notify(message, GAME_OVER);
         }
     } catch (...) {
         state = REPLACE_FAILURE;
