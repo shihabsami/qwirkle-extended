@@ -1,4 +1,4 @@
-for i in {0..100}
+for i in {0..1000}
 do
   ./qwirkle --ai < input.in
   echo "game_number #$i"

@@ -25,14 +25,16 @@ using std::invalid_argument;
 using std::runtime_error;
 
 typedef std::numeric_limits<std::streamsize> CharLimit;
+typedef std::numeric_limits<int> IntLimit;
 
 bool IOHandler::gameRunning = false;
 bool IOHandler::takingInput = false;
 array<pair<string, size_t>, 5> IOHandler::highScores{};
+SaveFileFormat IOHandler::saveFileFormat;
 
 bool IOHandler::aiEnabled = false;
 string IOHandler::aiName{};
-int IOHandler::numberOfPlayers = 2;
+unsigned int IOHandler::numberOfPlayers = 2;
 
 // these settings are enabled by default
 bool IOHandler::helpEnabled = true;
@@ -63,7 +65,7 @@ void IOHandler::newGame() {
 
     vector<string> playerNames;
     numberOfPlayers = aiEnabled ? 2 : numberOfPlayers;
-    for (int i = 0; i < numberOfPlayers; ++i) {
+    for (unsigned int i = 0; i < numberOfPlayers; ++i) {
         bool nameCheck = true;
         string name;
         while (nameCheck) {
@@ -157,16 +159,20 @@ void IOHandler::loadGame() {
             shared_ptr<GameBoard> board = make_shared<GameBoard>();
             string currentPlayerName;
 
-            int playerScoresRead = 0;
-            int playerHandsRead = 0;
+            unsigned int playerNamesRead = 0;
+            unsigned int playerScoresRead = 0;
+            unsigned int playerHandsRead = 0;
+            bool oldFormat = false;
 
-            int lineIndex = 0;
+            unsigned int lineIndex = 0;
             string text;
             while (getline(file, text)) {
                 text.erase(remove(text.begin(), text.end(), '\r'), text.end());
                 text.erase(remove(text.begin(), text.end(), '\n'), text.end());
+                if (lineIndex == 0)
+                    oldFormat = deduceSaveFileFormat(text);
 
-                if (lineIndex == BOARD_SIZE_LINE_INDEX) {
+                if (lineIndex == saveFileFormat.boardSizeLineIndex) {
                     stringstream ss(text);
                     while (ss.good()) {
                         string substr;
@@ -178,7 +184,7 @@ void IOHandler::loadGame() {
                                 "than 26");
                         }
                     }
-                } else if (lineIndex == BOARD_TILES_LINE_INDEX) {
+                } else if (lineIndex == saveFileFormat.boardTilesLineIndex) {
                     stringstream ss(text);
                     while (ss.good()) {
                         string substr;
@@ -209,8 +215,8 @@ void IOHandler::loadGame() {
                                 column);
                     }
 
-                } else if (lineIndex >= SETTINGS_LINE_INDEX_BEGIN &&
-                    lineIndex <= SETTINGS_LINE_INDEX_END) {
+                } else if (lineIndex >= saveFileFormat.settingsLineIndexBegin &&
+                    lineIndex <= saveFileFormat.settingsLineIndexEnd) {
                     size_t delimiterPosition = text.find('-');
                     string settingName = text.substr(0, delimiterPosition);
                     string settingValue = text.substr(delimiterPosition + 1);
@@ -230,9 +236,10 @@ void IOHandler::loadGame() {
                         hintEnabled = settingValue != "0";
                     else if (settingName == GET_SETTING_NAME(numberOfPlayers))
                         numberOfPlayers = stoi(settingValue);
-                } else if (lineIndex == CURRENT_PLAYER_LINE_INDEX ||
-                    (lineIndex >= PLAYER_NAME_LINE_INDEX_BEGIN &&
-                        (lineIndex - PLAYER_NAME_LINE_INDEX_BEGIN) % 3 == 0)) {
+                } else if (lineIndex == saveFileFormat.currentPlayerLineIndex ||
+                    (lineIndex >= saveFileFormat.playerNameLineIndex &&
+                        (lineIndex - saveFileFormat.playerNameLineIndex) % 3 ==
+                            0)) {
                     for (unsigned i = 0; i < text.length() - 1; i++) {
                         int ascii = static_cast<unsigned char>(text[i]);
                         if (ascii < ASCII_ALPHABET_BEGIN - 1 ||
@@ -242,23 +249,42 @@ void IOHandler::loadGame() {
                         }
                     }
 
-                    if (lineIndex == CURRENT_PLAYER_LINE_INDEX)
+                    if (lineIndex == saveFileFormat.currentPlayerLineIndex) {
                         currentPlayerName = text;
-                    else
-                        players.emplace_back(make_shared<Player>(
-                            text, make_shared<PlayerHand>()));
-                } else if (lineIndex >= PLAYER_SCORE_LINE_INDEX_BEGIN &&
-                    (lineIndex - PLAYER_SCORE_LINE_INDEX_BEGIN) % 3 == 0) {
+                    } else {
+                        if (oldFormat) {
+                            if (playerNamesRead < 2) {
+                                players.emplace_back(make_shared<Player>(
+                                    text, make_shared<PlayerHand>()));
+                            }
+                        } else {
+                            players.emplace_back(make_shared<Player>(
+                                text, make_shared<PlayerHand>()));
+                        }
+
+                        ++playerNamesRead;
+                    }
+                } else if (lineIndex >= saveFileFormat.playerScoreLineIndex &&
+                    (lineIndex - saveFileFormat.playerScoreLineIndex) % 3 ==
+                        0) {
                     int score = stoi(text);
                     if (score < 0)
                         throw invalid_argument(
                             "Player score should be positive");
 
-                    players.at(playerScoresRead)->setScore(score);
+                    if (oldFormat) {
+                        if (playerScoresRead < 2) {
+                            players.at(playerScoresRead)->setScore(score);
+                        }
+                    } else {
+                        players.at(playerScoresRead)->setScore(score);
+                    }
+
                     ++playerScoresRead;
-                } else if (lineIndex == TILEBAG_LINE_INDEX ||
-                    (lineIndex >= PLAYER_HAND_LINE_INDEX_BEGIN &&
-                        (lineIndex - PLAYER_HAND_LINE_INDEX_BEGIN) % 3 == 0)) {
+                } else if (lineIndex == saveFileFormat.tileBagLineIndex ||
+                    (lineIndex >= saveFileFormat.playerHandLineIndex &&
+                        (lineIndex - saveFileFormat.playerHandLineIndex) % 3 ==
+                            0)) {
                     stringstream ss(text);
                     bool readPlayerHand = false;
                     while (ss.good()) {
@@ -269,16 +295,27 @@ void IOHandler::loadGame() {
                                 throw invalid_argument(
                                     "Wrong tile list format");
 
-                        if (lineIndex == TILEBAG_LINE_INDEX) {
+                        if (lineIndex == saveFileFormat.tileBagLineIndex) {
                             tileBag->getTiles()->addBack(
                                 make_shared<Tile>(substr[FIRST_POSITION],
                                     substr[SECOND_POSITION] - '0'));
                         } else {
-                            players.at(playerHandsRead)
-                                ->getHand()
-                                ->addTile(
-                                    make_shared<Tile>(substr[FIRST_POSITION],
+                            if (oldFormat) {
+                                if (playerHandsRead < 2) {
+                                    players.at(playerHandsRead)
+                                        ->getHand()
+                                        ->addTile(make_shared<Tile>(
+                                            substr[FIRST_POSITION],
+                                            substr[SECOND_POSITION] - '0'));
+                                }
+                            } else {
+                                players.at(playerHandsRead)
+                                    ->getHand()
+                                    ->addTile(make_shared<Tile>(
+                                        substr[FIRST_POSITION],
                                         substr[SECOND_POSITION] - '0'));
+                            }
+
                             readPlayerHand = true;
                         }
                     }
@@ -291,6 +328,7 @@ void IOHandler::loadGame() {
 
             cout << "Qwirkle game successfully loaded" << endl;
             file.close();
+            numberOfPlayers = (unsigned int)players.size();
             GameManager::loadGame(players, currentPlayerName, board, tileBag);
             gameRunning = true;
             fileCheck = false;
@@ -543,7 +581,7 @@ void IOHandler::printMenu() {
 }
 
 void IOHandler::menuSelection() {
-    int option = getSelection(6, MAIN_MENU);
+    unsigned int option = getSelection(6, MAIN_MENU);
 
     if (option == 1)
         newGame();
@@ -571,7 +609,7 @@ void IOHandler::printSettings() {
 }
 
 void IOHandler::settingsSelection() {
-    int option = getSelection(6, SETTINGS_MENU);
+    unsigned int option = getSelection(6, SETTINGS_MENU);
 
     if (option <= 5) {
         bool enabled = false;
@@ -607,10 +645,10 @@ void IOHandler::settingsSelection() {
 
 void IOHandler::prompt() { cout << "> "; }
 
-int IOHandler::getSelection(int range, HelpLocation location) {
+unsigned int IOHandler::getSelection(unsigned int range, HelpLocation location) {
     bool selecting = true;
     string option;
-    int optionNumeric;
+    unsigned int optionNumeric;
     while (selecting) {
         cout << endl;
         prompt();
@@ -766,6 +804,35 @@ bool IOHandler::checkTilePosition(const string& position) {
 bool IOHandler::isEmpty(ifstream& file) {
     return file.peek() == ifstream::traits_type::eof();
 }
+
+
+bool IOHandler::deduceSaveFileFormat(const string& formatTag) {
+    bool oldFormat = formatTag != NEW_SAVE_FILE_FORMAT;
+    if (!oldFormat) {
+        saveFileFormat.boardSizeLineIndex = 1;
+        saveFileFormat.boardTilesLineIndex = 2;
+        saveFileFormat.tileBagLineIndex = 3;
+        saveFileFormat.currentPlayerLineIndex = 4;
+        saveFileFormat.settingsLineIndexBegin = 5;
+        saveFileFormat.settingsLineIndexEnd = 11;
+        saveFileFormat.playerNameLineIndex = 12;
+        saveFileFormat.playerScoreLineIndex = 13;
+        saveFileFormat.playerHandLineIndex = 14;
+    } else {
+        saveFileFormat.boardSizeLineIndex = 6;
+        saveFileFormat.boardTilesLineIndex = 7;
+        saveFileFormat.tileBagLineIndex = 8;
+        saveFileFormat.currentPlayerLineIndex = 9;
+        saveFileFormat.settingsLineIndexBegin = IntLimit::max();
+        saveFileFormat.settingsLineIndexEnd = IntLimit::max();
+        saveFileFormat.playerNameLineIndex = 0;
+        saveFileFormat.playerScoreLineIndex = 1;
+        saveFileFormat.playerHandLineIndex = 2;
+    }
+
+    return oldFormat;
+}
+
 
 void IOHandler::printHighScores() {
     for (size_t i = 0; i < highScores.size(); ++i) {

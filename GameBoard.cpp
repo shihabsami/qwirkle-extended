@@ -15,7 +15,7 @@ using std::out_of_range;
 
 GameBoard::GameBoard() : tileCount(0) {
     for (size_t i = 0; i < BOARD_LENGTH; ++i) {
-        board.push_back(vector<shared_ptr<Tile>>());
+        board.emplace_back();
         board.at(i).resize(BOARD_LENGTH, nullptr);
     }
 }

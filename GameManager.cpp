@@ -132,6 +132,16 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             throw invalid_argument("");
         }
 
+        // dead end prevention
+        if (getPossibleMoves().empty()) {
+            message = IOHandler::invalidInputEnabled
+                ? "No more moves possible"
+                : message;
+
+            IOHandler::notify(message, REPLACE_SUCCESS);
+            IOHandler::notify(message, GAME_OVER);
+        }
+
         if (!bag->getTiles()->isEmpty()) {
             getCurrentPlayer()->getHand()->replaceTile(tile, *bag);
             message = "Tile replaced successfully";
@@ -141,14 +151,6 @@ void GameManager::replaceTile(Colour colour, Shape shape) {
             message = IOHandler::invalidInputEnabled
                 ? "No more tiles remain to be replaced"
                 : message;
-
-            if (getPossibleMoves().empty()) {
-                message = IOHandler::invalidInputEnabled
-                    ? "No more moves possible"
-                    : message;
-
-                IOHandler::notify(message, GAME_OVER);
-            }
 
             throw out_of_range("");
         }

@@ -18,6 +18,18 @@ enum HelpLocation {
     PLAYER_MODE
 };
 
+struct SaveFileFormat {
+    unsigned int boardSizeLineIndex;
+    unsigned int boardTilesLineIndex;
+    unsigned int tileBagLineIndex;
+    unsigned int currentPlayerLineIndex;
+    unsigned int settingsLineIndexBegin;
+    unsigned int settingsLineIndexEnd;
+    unsigned int playerNameLineIndex;
+    unsigned int playerScoreLineIndex;
+    unsigned int playerHandLineIndex;
+};
+
 class IOHandler {
 public:
     /**
@@ -105,6 +117,7 @@ public:
     static bool gameRunning;
     static bool takingInput;
     static array<pair<string, size_t>, 5> highScores;
+    static SaveFileFormat saveFileFormat;
 
     /// Attributes related to AI (if enabled)
     static bool aiEnabled;
@@ -115,7 +128,7 @@ public:
     static bool invalidInputEnabled;
     static bool colourEnabled;
     static bool hintEnabled;
-    static int numberOfPlayers;
+    static unsigned int numberOfPlayers;
 
 private:
     /**
@@ -151,7 +164,7 @@ private:
      * if user requests help, it can retrieve help from the help function
      * @return the selected integer
      */
-    static int getSelection(int range, HelpLocation location);
+    static unsigned int getSelection(unsigned int range, HelpLocation location);
 
     /**
      * Asks for user input on confirming an option as either yes or no.
@@ -205,6 +218,12 @@ private:
      * @return true if the file is empty
      */
     static bool isEmpty(ifstream& file);
+
+    /**
+     * Check what save file format to use.
+     * @param formatTag - the line of the save file that defines the format
+     */
+    static bool deduceSaveFileFormat(const string& formatTag);
 
     /**
      * Prints out the high scores.
